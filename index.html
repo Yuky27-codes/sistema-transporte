@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | TransLog Frota</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #003366 0%, #00509d 100%); 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0;
+        }
+        .login-card { 
+            width: 100%; 
+            max-width: 400px; 
+            padding: 40px 30px; 
+            border-radius: 20px; 
+            background: white; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+        }
+        .logo-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo-area i {
+            color: #003366;
+            font-size: 3rem;
+        }
+        .btn-login {
+            background-color: #003366;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn-login:hover {
+            background-color: #00509d;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="logo-area">
+        <i class="fas fa-bus-alt"></i>
+        <h3 class="mt-2 fw-bold" style="color: #003366;">TRANSLOG</h3>
+        <p class="text-muted small">Gerenciamento de Contingência</p>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold"><i class="fas fa-user me-2"></i>Identificação</label>
+        <input type="text" id="usuario" class="form-control form-control-lg" placeholder="motorista ou central" autofocus>
+    </div>
+    
+    <button onclick="fazerLogin()" class="btn btn-primary btn-login w-100 mb-3">
+        ENTRAR NO SISTEMA
+    </button>
+
+    <div class="text-center">
+        <small class="text-muted">Dica: Use "motorista" ou "central"</small>
+    </div>
+</div>
+
+<script>
+    // Função de Login
+    function fazerLogin() {
+        const user = document.getElementById('usuario').value.toLowerCase().trim();
+        
+        if(user === 'motorista') {
+            window.location.href = 'motorista.html';
+        } else if(user === 'central') {
+            window.location.href = 'central.html';
+        } else {
+            alert('❌ Usuário não reconhecido.\nPor favor, digite "motorista" ou "central".');
+        }
+    }
+
+    // Permitir login ao apertar a tecla ENTER
+    document.getElementById('usuario').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            fazerLogin();
+        }
+    });
+</script>
+
+</body>
+</html>

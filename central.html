@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Monitoramento | TransLog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #f0f2f5; }
+        .sidebar { background: #003366; color: white; min-height: 100vh; padding: 20px; }
+        .card-stats { border-radius: 15px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .status-badge { font-size: 0.8rem; padding: 5px 10px; border-radius: 20px; }
+        .table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .emergencia-anim { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 sidebar d-none d-md-block">
+            <h4 class="text-center mb-4"><i class="fas fa-satellite-dish"></i> TransLog</h4>
+            <hr>
+            <nav class="nav flex-column">
+                <a class="nav-link text-white active" href="#"><i class="fas fa-home me-2"></i> Dashboard</a>
+                <a class="nav-link text-white" href="index.html"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
+            </nav>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Painel de Controle de Frota</h3>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalFrota">
+                    <i class="fas fa-plus"></i> Novo Veículo
+                </button>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card card-stats p-3 bg-white border-start border-danger border-5">
+                        <small class="text-muted fw-bold">ALERTAS ATIVOS</small>
+                        <h2 id="countAlertas">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-stats p-3 bg-white border-start border-success border-5">
+                        <small class="text-muted fw-bold">FROTA CADASTRADA</small>
+                        <h2 id="countFrota">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-stats p-3 bg-white border-start border-primary border-5">
+                        <small class="text-muted fw-bold">RESOLVIDOS HOJE</small>
+                        <h2 id="countResolvidos">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container mb-4 emergencia-anim" id="containerAlertas" style="display:none;">
+                <h5 class="text-danger fw-bold mb-3"><i class="fas fa-exclamation-triangle"></i> Chamados de Emergência</h5>
+                <div id="listaAlertas" class="row"></div>
+            </div>
+
+            <div class="table-container">
+                <h5 class="mb-3"><i class="fas fa-bus"></i> Frota de Veículos</h5>
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nº</th>
+                            <th>Placa</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaFrota"></tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 collapse" id="collapseHistorico">
+                <div class="table-container border-top border-primary border-4">
+                    <h5><i class="fas fa-history"></i> Histórico de Ocorrências</h5>
+                    <div id="listaHistorico" class="small"></div>
+                </div>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistorico">
+                Ver/Ocultar Histórico
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalFrota" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Cadastrar Veículo</h5></div>
+            <div class="modal-body">
+                <input type="text" id="novaPlaca" class="form-control mb-2" placeholder="Placa (Ex: ABC-1234)">
+                <input type="number" id="novoNumero" class="form-control mb-2" placeholder="Número do Ônibus">
+                <select id="statusInicial" class="form-select">
+                    <option value="Disponível">Disponível</option>
+                    <option value="Em Viagem">Em Viagem</option>
+                    <option value="Manutenção">Manutenção</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button onclick="adicionarVeiculo()" class="btn btn-primary w-100">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<audio id="somAlerta" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let ultimosChamadosLength = 0;
+
+    function atualizarDados() {
+        const frota = JSON.parse(localStorage.getItem('frota') || '[]');
+        const chamados = JSON.parse(localStorage.getItem('chamados') || '[]');
+        const historico = JSON.parse(localStorage.getItem('historico') || '[]');
+
+        // Atualiza contadores
+        document.getElementById('countFrota').innerText = frota.length;
+        document.getElementById('countAlertas').innerText = chamados.length;
+        document.getElementById('countResolvidos').innerText = historico.length;
+
+        // Som de Alerta se chegar novo chamado
+        if (chamados.length > ultimosChamadosLength) {
+            document.getElementById('somAlerta').play();
+            ultimosChamadosLength = chamados.length;
+        } else {
+            ultimosChamadosLength = chamados.length;
+        }
+
+        // Renderiza Alertas
+        const listaAlertas = document.getElementById('listaAlertas');
+        const containerAlertas = document.getElementById('containerAlertas');
+        listaAlertas.innerHTML = "";
+        
+        if(chamados.length > 0) {
+            containerAlertas.style.display = "block";
+            chamados.forEach((c, index) => {
+                listaAlertas.innerHTML += `
+                    <div class="col-md-4 mb-2">
+                        <div class="card border-danger shadow-sm">
+                            <div class="card-body p-2">
+                                <h6 class="card-title text-danger mb-1 fw-bold">${c.problema}</h6>
+                                <p class="small mb-1">🚌 <b>Bus: ${c.numero}</b> | 🕒 ${c.hora}</p>
+                                <button onclick="resolverChamado(${index})" class="btn btn-sm btn-success w-100">Resolver</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        } else {
+            containerAlertas.style.display = "none";
+        }
+
+        // Renderiza Frota
+        const tabela = document.getElementById('tabelaFrota');
+        tabela.innerHTML = "";
+        frota.forEach((v, index) => {
+            const badgeClass = v.status === 'Disponível' ? 'bg-success' : (v.status === 'Manutenção' ? 'bg-warning' : 'bg-primary');
+            tabela.innerHTML += `
+                <tr>
+                    <td><b>${v.numero}</b></td>
+                    <td>${v.placa}</td>
+                    <td><span class="badge ${badgeClass}">${v.status}</span></td>
+                    <td><button onclick="removerVeiculo(${index})" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
+        });
+
+        // Renderiza Histórico
+        const listaHist = document.getElementById('listaHistorico');
+        listaHist.innerHTML = historico.map(h => `<div class="border-bottom py-1 text-muted">✅ <b>Bus ${h.numero}</b>: ${h.problema} resolvido em ${h.dataResolvido}</div>`).reverse().join('');
+    }
+
+    function adicionarVeiculo() {
+        const placa = document.getElementById('novaPlaca').value.toUpperCase();
+        const numero = document.getElementById('novoNumero').value;
+        const status = document.getElementById('statusInicial').value;
+        
+        if(!placa || !numero) return alert("Preencha tudo!");
+
+        let frota = JSON.parse(localStorage.getItem('frota') || '[]');
+        frota.push({ placa, numero, status });
+        localStorage.setItem('frota', JSON.stringify(frota));
+        
+        bootstrap.Modal.getInstance(document.getElementById('modalFrota')).hide();
+        atualizarDados();
+    }
+
+    function resolverChamado(index) {
+        let chamados = JSON.parse(localStorage.getItem('chamados') || '[]');
+        let historico = JSON.parse(localStorage.getItem('historico') || '[]');
+        
+        const resolvido = chamados.splice(index, 1)[0];
+        resolvido.dataResolvido = new Date().toLocaleString();
+        
+        historico.push(resolvido);
+        localStorage.setItem('chamados', JSON.stringify(chamados));
+        localStorage.setItem('historico', JSON.stringify(historico));
+        atualizarDados();
+    }
+
+    function removerVeiculo(index) {
+        let frota = JSON.parse(localStorage.getItem('frota') || '[]');
+        frota.splice(index, 1);
+        localStorage.setItem('frota', JSON.stringify(frota));
+        atualizarDados();
+    }
+
+    setInterval(atualizarDados, 3000);
+    atualizarDados();
+</script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Motorista | TransLog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background-color: #f4f7f6; }
+        .btn-panic { 
+            height: 90px; 
+            font-size: 1.3rem; 
+            border-radius: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
+        }
+        .btn-panic:active { transform: scale(0.95); }
+        .header-motorista {
+            background-color: #003366;
+            color: white;
+            padding: 20px;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="pb-5">
+
+    <div class="header-motorista shadow">
+        <h2 class="mb-0"><i class="fas fa-bus"></i> Suporte ao Motorista</h2>
+        <small>TransLog Transportes</small>
+    </div>
+
+    <div class="container">
+        <div class="card p-3 mb-4 shadow-sm border-0">
+            <h5 class="text-muted mb-3"><i class="fas fa-id-card"></i> Identificação do Veículo</h5>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Placa do Ônibus:</label>
+                <input type="text" id="placa" class="form-control form-control-lg text-uppercase" placeholder="ABC-1234">
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Número do Ônibus:</label>
+                <input type="number" id="numero" class="form-control form-control-lg" placeholder="Ex: 001">
+            </div>
+        </div>
+
+        <p class="fw-bold text-secondary text-uppercase small ml-2">Selecione o problema ocorrido:</p>
+        
+        <div class="d-grid gap-3">
+            <button onclick="enviarAlerta('Pneu Furado')" class="btn btn-warning btn-panic">
+                <i class="fas fa-compact-disc fa-lg"></i> Pneu Furado
+            </button>
+            
+            <button onclick="enviarAlerta('Superaquecimento')" class="btn btn-danger btn-panic">
+                <i class="fas fa-thermometer-high fa-lg"></i> Aquecimento
+            </button>
+            
+            <button onclick="enviarAlerta('Pane Mecânica')" class="btn btn-dark btn-panic">
+                <i class="fas fa-tools fa-lg"></i> Pane Mecânica
+            </button>
+            
+            <button onclick="enviarAlerta('Falta de Combustível')" class="btn btn-info text-white btn-panic" style="background-color: #00509d;">
+                <i class="fas fa-gas-pump fa-lg"></i> Combustível
+            </button>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="index.html" class="text-muted text-decoration-none small">
+                <i class="fas fa-sign-out-alt"></i> Sair do Sistema
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function enviarAlerta(tipo) {
+    const placaInput = document.getElementById('placa');
+    const numeroInput = document.getElementById('numero');
+    
+    const placa = placaInput.value.trim().toUpperCase();
+    const numero = numeroInput.value.trim();
+
+    if(!placa || !numero) {
+        alert("🚨 ERRO: Informe a PLACA e o NÚMERO!");
+        return;
+    }
+
+    // Tentar pegar localização
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            salvarChamado(placa, numero, tipo, position.coords.latitude, position.coords.longitude);
+        }, function() {
+            // Se o motorista negar o GPS, salva sem localização
+            salvarChamado(placa, numero, tipo, null, null);
+        });
+    } else {
+        salvarChamado(placa, numero, tipo, null, null);
+    }
+}
+
+function salvarChamado(placa, numero, tipo, lat, lng) {
+    const chamado = {
+        placa,
+        numero,
+        problema: tipo,
+        hora: new Date().toLocaleTimeString('pt-BR'),
+        lat: lat,
+        lng: lng,
+        status: '🚨 Pendente'
+    };
+
+    let chamados = JSON.parse(localStorage.getItem('chamados') || '[]');
+    chamados.push(chamado);
+    localStorage.setItem('chamados', JSON.stringify(chamados));
+
+    let msg = "✅ SOLICITAÇÃO ENVIADA!";
+    if(lat) msg += "\nLocalização rastreada com sucesso.";
+    
+    alert(msg);
+    document.getElementById('placa').value = "";
+    document.getElementById('numero').value = "";
+}
+
+    </script>
+</body>
+</html>
