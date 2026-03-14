@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | TransLog Frota</title>
+    <title>Login | Águia Conecta</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
     <style>
         body { 
             background: linear-gradient(135deg, #003366 0%, #00509d 100%); 
@@ -15,6 +16,7 @@
             align-items: center; 
             justify-content: center; 
             margin: 0;
+            font-family: 'Segoe UI', sans-serif;
         }
         .login-card { 
             width: 100%; 
@@ -28,9 +30,11 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        .logo-area i {
-            color: #003366;
-            font-size: 3rem;
+        /* Ajuste para usar sua logo.png se desejar */
+        .logo-img {
+            width: 80px;
+            height: auto;
+            margin-bottom: 10px;
         }
         .btn-login {
             background-color: #003366;
@@ -49,44 +53,95 @@
 
 <div class="login-card">
     <div class="logo-area">
-        <i class="fas fa-bus-alt"></i>
-        <h3 class="mt-2 fw-bold" style="color: #003366;">TRANSLOG</h3>
+        <i class="fas fa-bus-alt" style="font-size: 3rem; color: #003366;"></i>
+        <h3 class="mt-2 fw-bold" style="color: #003366;">Águia Conecta</h3>
         <p class="text-muted small">Gerenciamento de Contingência</p>
     </div>
 
     <div class="mb-3">
-        <label class="form-label fw-bold"><i class="fas fa-user me-2"></i>Identificação</label>
-        <input type="text" id="usuario" class="form-control form-control-lg" placeholder="motorista ou central" autofocus>
+        <label class="form-label fw-bold"><i class="fas fa-id-card me-2"></i>Matrícula ou Acesso</label>
+        <input type="text" id="usuario" class="form-control form-control-lg text-center" placeholder="Digite sua matrícula" autofocus>
     </div>
     
-    <button onclick="fazerLogin()" class="btn btn-primary btn-login w-100 mb-3">
+    <button onclick="fazerLogin()" id="btnEntrar" class="btn btn-primary btn-login w-100 mb-3">
         ENTRAR NO SISTEMA
     </button>
 
     <div class="text-center">
-        <small class="text-muted">Dica: Use "motorista" ou "central"</small>
+        <small class="text-muted">Acesso Administrativo: <b>central</b></small><br>
+        <small class="text-muted">Motoristas: Use sua matrícula cadastrada</small>
     </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
 <script>
-    // Função de Login
-    function fazerLogin() {
-        const user = document.getElementById('usuario').value.toLowerCase().trim();
+    // Configuração do seu Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
+        authDomain: "translog-231da.firebaseapp.com",
+        projectId: "translog-231da",
+        storageBucket: "translog-231da.firebasestorage.app",
+        messagingSenderId: "306116251077",
+        appId: "1:306116251077:web:cf9e590b7a14b5ff540fac",
+        databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    async function fazerLogin() {
+        const input = document.getElementById('usuario').value.toLowerCase().trim();
+        const btn = document.getElementById('btnEntrar');
         
-        if(user === 'motorista') {
-            window.location.href = 'motorista.html';
-        } else if(user === 'central') {
+        if(!input) return alert("Digite algo!");
+
+        // 1. Acesso à Central (Local)
+        if(input === 'central') {
             window.location.href = 'central.html';
-        } else {
-            alert('❌ Usuário não reconhecido.\nPor favor, digite "motorista" ou "central".');
+            return;
+        }
+
+        // 2. Busca Motorista no Firebase
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Autenticando...';
+
+        try {
+            const snapshot = await db.ref('motoristas').once('value');
+            let motoristaEncontrado = null;
+
+            snapshot.forEach((childSnapshot) => {
+                const m = childSnapshot.val();
+                if(m.matricula === input) {
+                    motoristaEncontrado = m;
+                }
+            });
+
+            if(motoristaEncontrado) {
+                // Salva na sessão local para o app saber quem é o motorista
+                localStorage.setItem('usuarioLogado', JSON.stringify({
+                    nome: motoristaEncontrado.nome,
+                    matricula: motoristaEncontrado.matricula,
+                    tipo: 'motorista'
+                }));
+                window.location.href = 'motorista.html';
+            } else {
+                alert('❌ Matrícula não cadastrada na Central!');
+                btn.disabled = false;
+                btn.innerText = 'ENTRAR NO SISTEMA';
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao conectar com o banco de dados.");
+            btn.disabled = false;
+            btn.innerText = 'ENTRAR NO SISTEMA';
         }
     }
     
-    // Permitir login ao apertar a tecla ENTER
-    document.getElementById('usuario').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            fazerLogin();
-        }
+    document.getElementById('usuario').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') fazerLogin();
     });
 </script>
 

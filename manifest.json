@@ -1,0 +1,17 @@
+{
+  "name": "Águia Conecta",
+  "short_name": "ÁguiaConecta",
+  "description": "Sistema de Monitoramento e Contingência de Frota",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#003366",
+  "theme_color": "#003366",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
