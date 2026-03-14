@@ -12,14 +12,14 @@
         .sidebar { background: #003366; color: white; min-height: 100vh; padding: 20px; position: fixed; width: 16.666667%; }
         .main-content { margin-left: 16.666667%; padding: 25px; }
         .card-stats { border-radius: 15px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; }
-        .table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 25px; }
         .status-online { color: #28a745; font-weight: bold; }
         .status-offline { color: #dc3545; font-weight: bold; animation: pulse-opacity 1.5s infinite; }
         @keyframes pulse-opacity { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .emergencia-anim { animation: pulse-red 2s infinite; border: 2px solid #dc3545 !important; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
         .nav-link { color: rgba(255,255,255,0.7); margin-bottom: 10px; border-radius: 8px; cursor: pointer; }
-        .nav-link:hover, .nav-link.active { color: white !background: rgba(255,255,255,0.1); }
+        .nav-link:hover, .nav-link.active { color: white !important; background: rgba(255,255,255,0.1) !important; }
     </style>
 </head>
 <body>
@@ -31,13 +31,16 @@
             <hr>
             <ul class="nav nav-pills flex-column" id="pills-tab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-bs-toggle="pill" href="#aba-monitoramento"><i class="fas fa-home me-2"></i> Monitoramento</a>
+                    <a class="nav-link active" data-bs-toggle="pill" href="#aba-monitoramento"><i class="fas fa-tv me-2"></i> Monitoramento</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="pill" href="#aba-motoristas"><i class="fas fa-users-cog me-2"></i> Motoristas</a>
+                    <a class="nav-link" data-bs-toggle="pill" href="#aba-motoristas"><i class="fas fa-user-tie me-2"></i> Motoristas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="index.html"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
+                    <a class="nav-link" data-bs-toggle="pill" href="#aba-frota"><i class="fas fa-bus me-2"></i> Gestão de Frota</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="index.html"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
                 </li>
             </ul>
         </div>
@@ -46,102 +49,98 @@
             <div class="tab-content">
                 
                 <div class="tab-pane fade show active" id="aba-monitoramento">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3>Monitoramento em Tempo Real</h3>
-                        <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalFrota">
-                            <i class="fas fa-bus"></i> Adicionar Veículo
-                        </button>
-                    </div>
-
+                    <h3 class="mb-4">Painel de Controle</h3>
                     <div class="row mb-4">
                         <div class="col-md-3">
                             <div class="card card-stats p-3 border-start border-danger border-5">
-                                <small class="text-muted fw-bold">ALERTAS ATIVOS</small>
+                                <small class="text-muted fw-bold">EMERGÊNCIAS</small>
                                 <h2 id="countAlertas">0</h2>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="card card-stats p-3 border-start border-warning border-5">
-                                <small class="text-muted fw-bold">FROTA OFFLINE</small>
+                                <small class="text-muted fw-bold">FROTA OFF</small>
                                 <h2 id="countOffline">0</h2>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="card card-stats p-3 border-start border-success border-5">
-                                <small class="text-muted fw-bold">VEÍCULOS NA RUA</small>
+                                <small class="text-muted fw-bold">FROTA ATIVA</small>
                                 <h2 id="countFrota">0</h2>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card card-stats p-3 border-start border-primary border-5">
-                                <small class="text-muted fw-bold">RESOLVIDOS HOJE</small>
-                                <h2 id="countResolvidos">0</h2>
                             </div>
                         </div>
                     </div>
 
                     <div class="table-container mb-4 emergencia-anim" id="containerAlertas" style="display:none;">
-                        <h5 class="text-danger fw-bold mb-3"><i class="fas fa-exclamation-triangle"></i> EMERGÊNCIAS DETECTADAS</h5>
+                        <h5 class="text-danger fw-bold mb-3"><i class="fas fa-exclamation-triangle"></i> ALERTAS EM TEMPO REAL</h5>
                         <div id="listaAlertas" class="row"></div>
                     </div>
 
                     <div class="table-container">
-                        <h5 class="mb-3 text-secondary"><i class="fas fa-microchip"></i> Status da Frota</h5>
                         <table class="table align-middle">
                             <thead class="table-light">
                                 <tr>
                                     <th>Nº Ônibus</th>
-                                    <th>Motorista</th>
+                                    <th>Motorista Responsável</th>
                                     <th>Status Conexão</th>
-                                    <th>Última Localização</th>
-                                    <th>Ações</th>
+                                    <th>Localização</th>
                                 </tr>
                             </thead>
-                            <tbody id="tabelaFrota"></tbody>
+                            <tbody id="tabelaMonitoramento"></tbody>
                         </table>
                     </div>
                 </div>
 
                 <div class="tab-pane fade" id="aba-motoristas">
                     <div class="table-container">
-                        <h4 class="mb-4">Cadastro de Motoristas (Nuvem)</h4>
+                        <h4>Cadastro de Motoristas</h4>
                         <div class="row g-3 mb-4 p-3 bg-light rounded shadow-sm">
-                            <div class="col-md-5">
-                                <label class="form-label fw-bold">Nome Completo</label>
-                                <input type="text" id="nomeMotorista" class="form-control">
-                            </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold">Matrícula (Login)</label>
-                                <input type="number" id="matriculaMotorista" class="form-control">
+                                <input type="text" id="nomeMotorista" class="form-control" placeholder="Nome Completo">
                             </div>
-                            <div class="col-md-3 d-flex align-items-end">
-                                <button onclick="cadastrarMotorista()" class="btn btn-success w-100">Cadastrar no Firebase</button>
+                            <div class="col-md-3">
+                                <input type="number" id="matriculaMotorista" class="form-control" placeholder="Matrícula">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" id="cpfMotorista" class="form-control" placeholder="CPF (apenas números)">
+                            </div>
+                            <div class="col-md-2">
+                                <button onclick="cadastrarMotorista()" class="btn btn-success w-100">Salvar</button>
                             </div>
                         </div>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr><th>Matrícula</th><th>Nome</th><th>Remover</th></tr>
-                            </thead>
+                        <table class="table">
+                            <thead><tr><th>Matrícula</th><th>Nome</th><th>CPF</th><th>Ação</th></tr></thead>
                             <tbody id="tabelaMotoristas"></tbody>
                         </table>
                     </div>
                 </div>
 
-            </div>
-        </div>
-    </div>
-</div>
+                <div class="tab-pane fade" id="aba-frota">
+                    <div class="table-container">
+                        <h4>Vincular Ônibus e Motorista</h4>
+                        <div class="row g-3 mb-4 p-3 bg-light rounded shadow-sm">
+                            <div class="col-md-3">
+                                <input type="text" id="busPlaca" class="form-control text-uppercase" placeholder="Placa">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" id="busNumero" class="form-control" placeholder="Número do Ônibus">
+                            </div>
+                            <div class="col-md-4">
+                                <select id="selectMotorista" class="form-select">
+                                    <option value="">Selecione o Motorista Responsável</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button onclick="vincularOnibus()" class="btn btn-primary w-100">Vincular</button>
+                            </div>
+                        </div>
+                        <table class="table">
+                            <thead><tr><th>Nº Ônibus</th><th>Placa</th><th>Responsável</th><th>Ação</th></tr></thead>
+                            <tbody id="tabelaFrotaInterna"></tbody>
+                        </table>
+                    </div>
+                </div>
 
-<div class="modal fade" id="modalFrota" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header"><h5>Novo Veículo</h5></div>
-            <div class="modal-body">
-                <input type="text" id="novaPlaca" class="form-control mb-2 text-uppercase" placeholder="Placa">
-                <input type="number" id="novoNumero" class="form-control mb-2" placeholder="Número do Ônibus">
-            </div>
-            <div class="modal-footer">
-                <button onclick="adicionarVeiculo()" class="btn btn-primary w-100">Salvar na Nuvem</button>
             </div>
         </div>
     </div>
@@ -166,48 +165,144 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let alertaSonoroAtivo = false;
+    // --- CADASTRO DE MOTORISTAS ---
+    function cadastrarMotorista() {
+        const nome = document.getElementById('nomeMotorista').value;
+        const matricula = document.getElementById('matriculaMotorista').value;
+        const cpf = document.getElementById('cpfMotorista').value.replace(/\D/g, "");
 
-    // --- ESCUTAR MOTORISTAS ---
+        if(!nome || !matricula || !cpf) return alert("Preencha todos os campos!");
+
+        db.ref('motoristas/' + matricula).set({ nome, matricula, cpf })
+        .then(() => {
+            alert("Motorista salvo com sucesso!");
+            document.getElementById('nomeMotorista').value = "";
+            document.getElementById('matriculaMotorista').value = "";
+            document.getElementById('cpfMotorista').value = "";
+        });
+    }
+
     db.ref('motoristas').on('value', snapshot => {
         const tbody = document.getElementById('tabelaMotoristas');
+        const select = document.getElementById('selectMotorista');
         tbody.innerHTML = "";
+        select.innerHTML = '<option value="">Selecione o Motorista Responsável</option>';
+        
         snapshot.forEach(child => {
             const m = child.val();
             tbody.innerHTML += `<tr>
                 <td>${m.matricula}</td>
                 <td>${m.nome}</td>
-                <td><button onclick="removerMotorista('${child.key}')" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td>
+                <td>${m.cpf}</td>
+                <td><button onclick="removerItem('motoristas/${child.key}')" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td>
+            </tr>`;
+            select.innerHTML += `<option value="${m.matricula}">${m.nome} (${m.matricula})</option>`;
+        });
+    });
+
+    // --- GESTÃO DE FROTA (VINCULAR) ---
+    function vincularOnibus() {
+        const placa = document.getElementById('busPlaca').value.toUpperCase();
+        const numero = document.getElementById('busNumero').value;
+        const matricula = document.getElementById('selectMotorista').value;
+
+        if(!placa || !numero || !matricula) return alert("Preencha todos os dados do ônibus!");
+
+        db.ref('frota/' + numero).set({ placa, numero, motoristaMatricula: matricula });
+    }
+
+    db.ref('frota').on('value', snapshot => {
+        const tbody = document.getElementById('tabelaFrotaInterna');
+        tbody.innerHTML = "";
+        snapshot.forEach(child => {
+            const v = child.val();
+            tbody.innerHTML += `<tr>
+                <td>${v.numero}</td>
+                <td>${v.placa}</td>
+                <td>Matrícula: ${v.motoristaMatricula}</td>
+                <td><button onclick="removerItem('frota/${child.key}')" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
     });
 
-    // --- ESCUTAR CHAMADOS (ALERTAS) ---
+    // --- MONITORAMENTO EM TEMPO REAL ---
+    function iniciarMonitoramento() {
+        db.ref('frota').on('value', snapshotFrota => {
+            const frota = [];
+            snapshotFrota.forEach(s => frota.push(s.val()));
+            document.getElementById('countFrota').innerText = frota.length;
+
+            db.ref('heartbeats').on('value', snapshotSinais => {
+                const sinais = snapshotSinais.val() || {};
+                const tbody = document.getElementById('tabelaMonitoramento');
+                tbody.innerHTML = "";
+                let offCount = 0;
+                const agora = Date.now();
+
+                frota.forEach(veiculo => {
+                    const sinal = sinais[veiculo.numero];
+                    let status = '<span class="status-offline">● Offline</span>';
+                    let local = 'Sem sinal GPS';
+                    
+                    if (sinal) {
+                        const diff = (agora - sinal.timestamp) / 1000;
+                        if (diff < 50) { // Online se sinal for menor que 50 segundos
+                            status = '<span class="status-online">● Online</span>';
+                        } else {
+                            offCount++;
+                        }
+                        
+                        if (sinal.lat) {
+                            local = `<a href="https://www.google.com/maps?q=${sinal.lat},${sinal.lng}" target="_blank" class="btn btn-sm btn-outline-primary">Ver Localização</a>`;
+                        }
+                    } else {
+                        offCount++;
+                    }
+
+                    // Busca o nome do motorista na hora
+                    db.ref('motoristas/' + veiculo.motoristaMatricula).once('value', sm => {
+                        const mNome = sm.val() ? sm.val().nome : 'Não vinculado';
+                        const rowId = `row-${veiculo.numero}`;
+                        if(!document.getElementById(rowId)){
+                            tbody.innerHTML += `
+                                <tr id="${rowId}">
+                                    <td><b>${veiculo.numero}</b><br><small>${veiculo.placa}</small></td>
+                                    <td>${mNome}</td>
+                                    <td>${status}</td>
+                                    <td>${local}</td>
+                                </tr>`;
+                        }
+                    });
+                });
+                document.getElementById('countOffline').innerText = offCount;
+            });
+        });
+    }
+
+    // --- ALERTAS ---
     db.ref('chamados').on('value', snapshot => {
-        const container = document.getElementById('containerAlertas');
         const lista = document.getElementById('listaAlertas');
-        let count = 0;
+        const container = document.getElementById('containerAlertas');
+        let cAlerta = 0;
         lista.innerHTML = "";
 
         snapshot.forEach(child => {
             const c = child.val();
-            if(c.status !== 'Resolvido') {
-                count++;
-                lista.innerHTML += `
-                    <div class="col-md-4 mb-2">
-                        <div class="card border-danger shadow-sm">
-                            <div class="card-body p-2 text-center">
-                                <h6 class="text-danger fw-bold mb-1">${c.problema}</h6>
-                                <p class="small mb-2">🚌 <b>Bus ${c.numero}</b> - ${c.motorista}</p>
-                                <button onclick="resolverChamado('${child.key}')" class="btn btn-sm btn-success w-100">Resolver</button>
-                            </div>
+            cAlerta++;
+            lista.innerHTML += `
+                <div class="col-md-4 mb-2">
+                    <div class="card border-danger shadow-sm">
+                        <div class="card-body p-2 text-center">
+                            <h6 class="text-danger fw-bold mb-1">${c.problema}</h6>
+                            <p class="small mb-2">Bus ${c.numero} | ${c.motorista}</p>
+                            <button onclick="removerItem('chamados/${child.key}')" class="btn btn-sm btn-success w-100">Resolver</button>
                         </div>
-                    </div>`;
-            }
+                    </div>
+                </div>`;
         });
 
-        document.getElementById('countAlertas').innerText = count;
-        if(count > 0) {
+        document.getElementById('countAlertas').innerText = cAlerta;
+        if(cAlerta > 0) {
             container.style.display = "block";
             document.getElementById('somAlerta').play();
         } else {
@@ -215,88 +310,9 @@
         }
     });
 
-    // --- ESCUTAR FROTA E CONEXÃO (HEARTBEAT) ---
-    function monitorarFrota() {
-        const agora = new Date().getTime();
-        
-        // Primeiro pega a lista de veículos cadastrados
-        db.ref('frota').on('value', snapshotFrota => {
-            const frota = [];
-            snapshotFrota.forEach(child => frota.push({...child.val(), key: child.key}));
-            document.getElementById('countFrota').innerText = frota.length;
+    function removerItem(caminho) { if(confirm("Deseja realizar esta ação?")) db.ref(caminho).remove(); }
 
-            // Depois pega os sinais de vida
-            db.ref('heartbeats').on('value', snapshotSinais => {
-                const sinais = snapshotSinais.val() || {};
-                const tbody = document.getElementById('tabelaFrota');
-                tbody.innerHTML = "";
-                let offlineCount = 0;
-
-                frota.forEach(v => {
-                    const sinal = sinais[v.numero];
-                    let statusHtml = '<span class="status-offline"><i class="fas fa-times-circle"></i> Offline</span>';
-                    let localHtml = 'Sem Sinal';
-                    let motorista = '---';
-
-                    if(sinal) {
-                        const diferenca = (agora - sinal.timestamp) / 1000;
-                        if(diferenca < 40) { // Se sinal veio há menos de 40 seg
-                            statusHtml = '<span class="status-online"><i class="fas fa-check-circle"></i> Online</span>';
-                        } else {
-                            offlineCount++;
-                        }
-                        motorista = sinal.motoristaNome;
-                        if(sinal.lat) {
-                            localHtml = `<a href="https://www.google.com/maps?q=${sinal.lat},${sinal.lng}" target="_blank" class="btn btn-sm btn-outline-primary">Ver Mapa</a>`;
-                        }
-                    } else {
-                        offlineCount++;
-                    }
-
-                    tbody.innerHTML += `<tr>
-                        <td><b>${v.numero}</b> <br><small class="text-muted">${v.placa}</small></td>
-                        <td>${motorista}</td>
-                        <td>${statusHtml}</td>
-                        <td>${localHtml}</td>
-                        <td><button onclick="removerVeiculo('${v.key}')" class="btn btn-sm text-muted"><i class="fas fa-trash"></i></button></td>
-                    </tr>`;
-                });
-                document.getElementById('countOffline').innerText = offlineCount;
-            });
-        });
-    }
-
-    // Funções de Ação
-    function cadastrarMotorista() {
-        const nome = document.getElementById('nomeMotorista').value;
-        const matricula = document.getElementById('matriculaMotorista').value;
-        if(nome && matricula) {
-            db.ref('motoristas').push({ nome, matricula });
-            document.getElementById('nomeMotorista').value = "";
-            document.getElementById('matriculaMotorista').value = "";
-        }
-    }
-
-    function adicionarVeiculo() {
-        const placa = document.getElementById('novaPlaca').value.toUpperCase();
-        const numero = document.getElementById('novoNumero').value;
-        if(placa && numero) {
-            db.ref('frota').push({ placa, numero });
-            bootstrap.Modal.getInstance(document.getElementById('modalFrota')).hide();
-        }
-    }
-
-    function resolverChamado(key) {
-        db.ref('chamados/' + key).remove(); // Remove o alerta quando resolvido
-        let count = parseInt(document.getElementById('countResolvidos').innerText);
-        document.getElementById('countResolvidos').innerText = count + 1;
-    }
-
-    function removerMotorista(key) { if(confirm("Remover motorista?")) db.ref('motoristas/' + key).remove(); }
-    function removerVeiculo(key) { if(confirm("Remover veículo?")) db.ref('frota/' + key).remove(); }
-
-    // Iniciar
-    monitorarFrota();
+    iniciarMonitoramento();
 </script>
 </body>
 </html>

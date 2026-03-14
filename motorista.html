@@ -26,6 +26,7 @@
         .online { background: #28a745; color: white; }
         .offline { background: #dc3545; color: white; animation: blink 1s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .bg-readonly { background-color: #e9ecef !important; opacity: 1; font-weight: bold; color: #003366; }
     </style>
 </head>
 <body class="pb-5">
@@ -39,18 +40,21 @@
 
     <div class="container">
         <div class="card p-3 mb-4 shadow-sm border-0">
-            <h5 class="text-muted mb-3"><i class="fas fa-id-card"></i> Identificação do Veículo</h5>
-            <div class="mb-3">
-                <label class="form-label fw-bold">Placa do Ônibus:</label>
-                <input type="text" id="placa" class="form-control form-control-lg text-uppercase" placeholder="ABC-1234">
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-bold">Número do Ônibus:</label>
-                <input type="number" id="numero" class="form-control form-control-lg" placeholder="Ex: 001">
+            <h5 class="text-muted mb-3"><i class="fas fa-bus-alt"></i> Veículo Designado</h5>
+            <div id="avisoVinculo" class="alert alert-warning py-2 small d-none">Buscando veículo vinculado...</div>
+            <div class="row">
+                <div class="col-6">
+                    <label class="form-label small fw-bold text-muted">PLACA</label>
+                    <input type="text" id="placa" class="form-control form-control-lg bg-readonly text-center" readonly placeholder="---">
+                </div>
+                <div class="col-6">
+                    <label class="form-label small fw-bold text-muted">Nº ÔNIBUS</label>
+                    <input type="text" id="numero" class="form-control form-control-lg bg-readonly text-center" readonly placeholder="---">
+                </div>
             </div>
         </div>
 
-        <p class="fw-bold text-secondary text-uppercase small ml-2">Selecione o problema ocorrido:</p>
+        <p class="fw-bold text-secondary text-uppercase small px-2">Selecione o problema ocorrido:</p>
         
         <div class="d-grid gap-3">
             <button onclick="enviarAlerta('Pneu Furado')" class="btn btn-warning btn-panic">
@@ -78,7 +82,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // Configuração Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
             authDomain: "translog-231da.firebaseapp.com",
@@ -92,21 +95,44 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Identificação do Usuário
         const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
         if(!usuario) window.location.href = 'index.html';
-        document.getElementById('bemVindo').innerHTML = `Motorista: <b>${usuario.nome}</b> (${usuario.matricula})`;
+        document.getElementById('bemVindo').innerHTML = `Motorista: <b>${usuario.nome}</b>`;
 
         let ultimaPosicao = { lat: null, lng: null };
+
+        // --- BUSCAR ÔNIBUS VINCULADO AO MOTORISTA ---
+        function buscarVinculo() {
+            const aviso = document.getElementById('avisoVinculo');
+            aviso.classList.remove('d-none');
+
+            db.ref('frota').on('value', snapshot => {
+                let veiculoEncontrado = false;
+                snapshot.forEach(child => {
+                    const v = child.val();
+                    if(v.motoristaMatricula === usuario.matricula) {
+                        document.getElementById('placa').value = v.placa;
+                        document.getElementById('numero').value = v.numero;
+                        aviso.classList.add('d-none');
+                        veiculoEncontrado = true;
+                    }
+                });
+
+                if(!veiculoEncontrado) {
+                    aviso.innerHTML = "⚠️ Nenhum ônibus vinculado à sua matrícula!";
+                    aviso.className = "alert alert-danger py-2 small";
+                }
+            });
+        }
 
         // GPS em tempo real
         if ("geolocation" in navigator) {
             navigator.geolocation.watchPosition(pos => {
                 ultimaPosicao = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            }, null, { enableHighAccuracy: true });
+            }, err => console.error("Erro GPS:", err), { enableHighAccuracy: true });
         }
 
-        // HEARTBEAT (Sinal enviado para o Firebase)
+        // HEARTBEAT (Agora corrigido com a lógica de tempo real)
         function enviarSinalDeVida() {
             const numeroBus = document.getElementById('numero').value;
             const statusDiv = document.getElementById('status-conexao');
@@ -120,9 +146,8 @@
                         timestamp: firebase.database.ServerValue.TIMESTAMP,
                         motoristaNome: usuario.nome,
                         matricula: usuario.matricula,
-                        lat: ultimaPosicao.lat,
-                        lng: ultimaPosicao.lng,
-                        status: "Online"
+                        lat: ultimaPosicao.lat || null,
+                        lng: ultimaPosicao.lng || null
                     });
                 }
             } else {
@@ -131,36 +156,31 @@
             }
         }
 
-        setInterval(enviarSinalDeVida, 10000); // A cada 10 segundos
-
-        // ENVIAR ALERTA PARA O BANCO DE DADOS
         function enviarAlerta(tipo) {
-            const placa = document.getElementById('placa').value.trim().toUpperCase();
-            const numero = document.getElementById('numero').value.trim();
+            const placa = document.getElementById('placa').value;
+            const numero = document.getElementById('numero').value;
 
-            if(!placa || !numero) {
-                alert("🚨 Informe a PLACA e o NÚMERO do ônibus!");
+            if(!numero) {
+                alert("🚨 Você não possui um ônibus vinculado!");
                 return;
             }
 
-            const novoChamadoRef = db.ref('chamados').push();
-            novoChamadoRef.set({
+            db.ref('chamados').push({
                 placa,
                 numero,
                 problema: tipo,
                 matricula: usuario.matricula,
                 motorista: usuario.nome,
                 hora: new Date().toLocaleTimeString('pt-BR'),
-                data: new Date().toLocaleDateString('pt-BR'),
-                lat: ultimaPosicao.lat,
-                lng: ultimaPosicao.lng,
+                lat: ultimaPosicao.lat || null,
+                lng: ultimaPosicao.lng || null,
                 status: '🚨 Pendente'
-            }).then(() => {
-                alert("✅ ALERTA ENVIADO!\nA Central já foi notificada.");
-            }).catch(err => {
-                alert("❌ Erro ao enviar. Verifique sua conexão.");
-            });
+            }).then(() => alert("✅ ALERTA ENVIADO!"));
         }
+
+        // Iniciar processos
+        buscarVinculo();
+        setInterval(enviarSinalDeVida, 10000); 
     </script>
 </body>
 </html>

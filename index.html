@@ -30,12 +30,6 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        /* Ajuste para usar sua logo.png se desejar */
-        .logo-img {
-            width: 80px;
-            height: auto;
-            margin-bottom: 10px;
-        }
         .btn-login {
             background-color: #003366;
             border: none;
@@ -59,8 +53,8 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label fw-bold"><i class="fas fa-id-card me-2"></i>Matrícula ou Acesso</label>
-        <input type="text" id="usuario" class="form-control form-control-lg text-center" placeholder="Digite sua matrícula" autofocus>
+        <label class="form-label fw-bold"><i class="fas fa-id-card me-2"></i>Acesso do Usuário</label>
+        <input type="text" id="usuario" class="form-control form-control-lg text-center" placeholder="Matrícula ou CPF" autofocus>
     </div>
     
     <button onclick="fazerLogin()" id="btnEntrar" class="btn btn-primary btn-login w-100 mb-3">
@@ -69,7 +63,7 @@
 
     <div class="text-center">
         <small class="text-muted">Acesso Administrativo: <b>central</b></small><br>
-        <small class="text-muted">Motoristas: Use sua matrícula cadastrada</small>
+        <small class="text-muted">Motoristas: Use sua matrícula ou CPF</small>
     </div>
 </div>
 
@@ -77,7 +71,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
 <script>
-    // Configuração do seu Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
         authDomain: "translog-231da.firebaseapp.com",
@@ -88,23 +81,22 @@
         databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
     };
 
-    // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     async function fazerLogin() {
-        const input = document.getElementById('usuario').value.toLowerCase().trim();
+        const inputRaw = document.getElementById('usuario').value.trim();
+        const inputClean = inputRaw.replace(/\D/g, ""); // Apenas números para CPF/Matrícula
         const btn = document.getElementById('btnEntrar');
         
-        if(!input) return alert("Digite algo!");
+        if(!inputRaw) return alert("Por favor, digite seu acesso.");
 
-        // 1. Acesso à Central (Local)
-        if(input === 'central') {
+        // 1. Acesso à Central
+        if(inputRaw.toLowerCase() === 'central') {
             window.location.href = 'central.html';
             return;
         }
 
-        // 2. Busca Motorista no Firebase
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Autenticando...';
 
@@ -114,13 +106,13 @@
 
             snapshot.forEach((childSnapshot) => {
                 const m = childSnapshot.val();
-                if(m.matricula === input) {
+                // Verifica se o que foi digitado bate com a Matrícula OU com o CPF
+                if(m.matricula === inputRaw || m.cpf === inputClean) {
                     motoristaEncontrado = m;
                 }
             });
 
             if(motoristaEncontrado) {
-                // Salva na sessão local para o app saber quem é o motorista
                 localStorage.setItem('usuarioLogado', JSON.stringify({
                     nome: motoristaEncontrado.nome,
                     matricula: motoristaEncontrado.matricula,
@@ -128,13 +120,13 @@
                 }));
                 window.location.href = 'motorista.html';
             } else {
-                alert('❌ Matrícula não cadastrada na Central!');
+                alert('❌ Usuário não localizado! Verifique os dados ou fale com a Central.');
                 btn.disabled = false;
                 btn.innerText = 'ENTRAR NO SISTEMA';
             }
         } catch (error) {
             console.error(error);
-            alert("Erro ao conectar com o banco de dados.");
+            alert("Erro ao conectar com o servidor.");
             btn.disabled = false;
             btn.innerText = 'ENTRAR NO SISTEMA';
         }
