@@ -271,5 +271,12 @@
 
     atualizarPainel();
 </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log("App pronto para uso Offline!"))
+      .catch(err => console.log("Erro ao registrar Offline:", err));
+  }
+</script>
 </body>
 </html>
