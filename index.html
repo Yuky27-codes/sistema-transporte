@@ -86,11 +86,12 @@
 
     async function fazerLogin() {
         const inputRaw = document.getElementById('usuario').value.trim();
-        const inputClean = inputRaw.replace(/\D/g, "");
+        const inputClean = inputRaw.replace(/\D/g, ""); // Apenas números para CPF/Matrícula
         const btn = document.getElementById('btnEntrar');
         
         if(!inputRaw) return alert("Por favor, digite seu acesso.");
 
+        // 1. Acesso à Central
         if(inputRaw.toLowerCase() === 'central') {
             window.location.href = 'central.html';
             return;
@@ -100,68 +101,40 @@
         btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Autenticando...';
 
         try {
-            // TENTATIVA ONLINE
             const snapshot = await db.ref('motoristas').once('value');
             let motoristaEncontrado = null;
 
             snapshot.forEach((childSnapshot) => {
                 const m = childSnapshot.val();
+                // Verifica se o que foi digitado bate com a Matrícula OU com o CPF
                 if(m.matricula === inputRaw || m.cpf === inputClean) {
                     motoristaEncontrado = m;
                 }
             });
 
             if(motoristaEncontrado) {
-                const dados = {
+                localStorage.setItem('usuarioLogado', JSON.stringify({
                     nome: motoristaEncontrado.nome,
                     matricula: motoristaEncontrado.matricula,
-                    cpf: motoristaEncontrado.cpf,
                     tipo: 'motorista'
-                };
-                // SALVA PARA ACESSO OFFLINE FUTURO
-                localStorage.setItem('usuarioLogado', JSON.stringify(dados));
+                }));
                 window.location.href = 'motorista.html';
             } else {
-                alert('❌ Usuário não localizado!');
+                alert('❌ Usuário não localizado! Verifique os dados ou fale com a Central.');
                 btn.disabled = false;
                 btn.innerText = 'ENTRAR NO SISTEMA';
             }
         } catch (error) {
-            console.log("Offline detectado, verificando base local...");
-            
-            // TENTATIVA OFFLINE (PLANO B)
-            const salvo = localStorage.getItem('usuarioLogado');
-            if (salvo) {
-                const user = JSON.parse(salvo);
-                if (user.matricula === inputRaw || user.cpf === inputClean) {
-                    alert("Acesso Offline Validado!");
-                    window.location.href = 'motorista.html';
-                } else {
-                    alert("Sem internet e usuário não reconhecido neste dispositivo.");
-                    btn.disabled = false;
-                    btn.innerText = 'ENTRAR NO SISTEMA';
-                }
-            } else {
-                alert("Primeiro acesso requer internet.");
-                btn.disabled = false;
-                btn.innerText = 'ENTRAR NO SISTEMA';
-            }
+            console.error(error);
+            alert("Erro ao conectar com o servidor.");
+            btn.disabled = false;
+            btn.innerText = 'ENTRAR NO SISTEMA';
         }
     }
     
     document.getElementById('usuario').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') fazerLogin();
     });
-</script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log("Service Worker registrado!", reg))
-        .catch(err => console.log("Erro no SW:", err));
-    });
-  }
 </script>
 
 </body>

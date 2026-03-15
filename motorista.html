@@ -115,82 +115,43 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // AJUSTE: Sincronização inteligente (apenas para o que é essencial)
-        db.ref('frota').keepSynced(true);
-        db.ref('chamados').keepSynced(true);
-
         const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
         if(!usuario) window.location.href = 'index.html';
         document.getElementById('bemVindo').innerHTML = `Olá, <b>${usuario.nome}</b>`;
 
-        let veiculoAtual = JSON.parse(localStorage.getItem('veiculoVinculado')) || null;
+        let veiculoAtual = null;
         let chamadoAtivoKey = null;
-        let ultimaPosicao = { lat: -22.12, lng: -43.20 }; 
+        let ultimaPosicao = { lat: null, lng: null };
 
-        // Monitor de Conexão
-        window.addEventListener('online', () => {
-            document.getElementById('status-conexao').className = "online fw-bold";
-            document.getElementById('status-conexao').innerText = "🟢 ONLINE";
-        });
-        window.addEventListener('offline', () => {
-            document.getElementById('status-conexao').className = "offline fw-bold";
-            document.getElementById('status-conexao').innerText = "🔴 OFFLINE";
-        });
-
+        // GPS
         navigator.geolocation.watchPosition(pos => {
             ultimaPosicao = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         }, null, { enableHighAccuracy: true });
 
-        if(veiculoAtual) {
-            abrirPainel(veiculoAtual.numero);
-        }
-
+        // --- LÓGICA DE CHECK-IN (COM TRAVA) ---
         async function fazerCheckin() {
             const num = document.getElementById('numVeiculoInput').value;
             if(!num) return alert("Por favor, digite o número do ônibus!");
 
-            // Feedback visual de carregamento
-            const btn = document.querySelector("#secao-checkin button");
-            btn.disabled = true;
-            btn.innerText = "Vinculando...";
+            const snapshot = await db.ref('frota/' + num).once('value');
+            const carro = snapshot.val();
 
-            try {
-                // Tenta buscar com um timeout manual para não travar o app
-                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
-                const snapshotPromise = db.ref('frota/' + num).once('value');
-                
-                const snapshot = await Promise.race([snapshotPromise, timeoutPromise]);
-                const carro = snapshot.val();
+            if(!carro) return alert("❌ Erro: Ônibus " + num + " não encontrado!");
+            if(carro.status === 'Em Manutenção') return alert("⚠️ Este veículo está em MANUTENÇÃO!");
 
-                if(!carro) {
-                    alert("❌ Ônibus não encontrado!");
-                    btn.disabled = false;
-                    btn.innerText = "VINCULAR VEÍCULO";
-                    return;
-                }
-                
-                veiculoAtual = { ...carro, numero: num };
-                localStorage.setItem('veiculoVinculado', JSON.stringify(veiculoAtual));
-                
-                // Faz o update mas NÃO espera por ele (Background Sync)
-                db.ref('frota/' + num).update({
-                    status: 'Em Uso',
-                    motoristaAtual: usuario.nome,
-                    matriculaAtual: usuario.matricula
-                }).catch(e => console.log("Sincronização pendente..."));
-
-                abrirPainel(num);
-            } catch(e) {
-                console.error("Erro no checkin:", e);
-                // Se falhou por rede, mas o motorista já usou esse ônibus antes, deixa passar
-                if(veiculoAtual && veiculoAtual.numero == num) {
-                    abrirPainel(num);
-                } else {
-                    alert("Sinal fraco! Tente novamente em um local com melhor conexão.");
-                    btn.disabled = false;
-                    btn.innerText = "VINCULAR VEÍCULO";
-                }
+            // TRAVA: Só entra se estiver livre ou se já for o seu veículo
+            if(carro.motoristaAtual && carro.matriculaAtual !== usuario.matricula) {
+                return alert(`🚫 BLOQUEIO: O ônibus ${num} já está em uso por ${carro.motoristaAtual}.`);
             }
+
+            await db.ref('frota/' + num).update({
+                status: 'Em Uso',
+                motoristaAtual: usuario.nome,
+                matriculaAtual: usuario.matricula
+            });
+
+            veiculoAtual = { ...carro, numero: num }; // Garante que o numero está no objeto
+            abrirPainel(num);
         }
 
         function abrirPainel(num) {
@@ -214,31 +175,33 @@
                 const listaBotoes = document.getElementById('lista-botoes');
                 const statusSocorro = document.getElementById('status-socorro');
                 const btnResolvido = document.getElementById('btn-resolvido');
+                const cardStatus = document.getElementById('card-status');
 
                 if(chamado) {
                     listaBotoes.classList.add('hidden');
                     statusSocorro.classList.remove('hidden');
+                    
                     if(chamado.status === 'Socorro a Caminho') {
                         document.getElementById('texto-status').innerText = "🚚 SOCORRO A CAMINHO!";
                         document.getElementById('spinner-status').classList.add('hidden');
-                        document.getElementById('card-status').classList.add('pulse-救援');
+                        cardStatus.classList.add('pulse-救援');
                         btnResolvido.classList.remove('hidden');
                     } else {
                         document.getElementById('texto-status').innerText = "Aguardando Central...";
                         document.getElementById('spinner-status').classList.remove('hidden');
+                        cardStatus.classList.remove('pulse-救援');
                         btnResolvido.classList.add('hidden');
                     }
                 } else {
                     listaBotoes.classList.remove('hidden');
                     statusSocorro.classList.add('hidden');
-                    document.getElementById('card-status').classList.remove('pulse-救援');
                 }
             });
         }
 
         function enviarAlerta(tipo) {
             if(!veiculoAtual) return;
-            const novoChamado = {
+            db.ref('chamados').push({
                 numero: veiculoAtual.numero,
                 placa: veiculoAtual.placa,
                 problema: tipo,
@@ -248,10 +211,7 @@
                 hora: new Date().toLocaleTimeString('pt-BR'),
                 lat: ultimaPosicao.lat,
                 lng: ultimaPosicao.lng
-            };
-
-            // O push funciona offline por padrão no Firebase
-            db.ref('chamados').push(novoChamado);
+            });
             db.ref('frota/' + veiculoAtual.numero).update({ status: 'Quebrado' });
         }
 
@@ -260,22 +220,25 @@
             document.getElementById('som-check').play();
             db.ref('chamados/' + chamadoAtivoKey).update({ status: 'Resolvido' });
             db.ref('frota/' + veiculoAtual.numero).update({ status: 'Em Uso' });
+            alert("Ótimo! Continue sua viagem com segurança.");
         }
 
         function fazerCheckout() {
-            if(confirm("Deseja trocar de veículo?")) {
+            if(!veiculoAtual) return location.reload();
+            if(confirm("Deseja desvincular deste veículo?")) {
                 db.ref('frota/' + veiculoAtual.numero).update({
                     status: 'Disponível',
                     motoristaAtual: "",
                     matriculaAtual: ""
                 });
-                localStorage.removeItem('veiculoVinculado');
+                // Limpa o heartbeat para não ficar um fantasma no mapa
+                db.ref('heartbeats/' + veiculoAtual.numero).remove();
                 location.reload();
             }
         }
 
         setInterval(() => {
-            if(veiculoAtual && navigator.onLine) {
+            if(veiculoAtual && navigator.onLine && ultimaPosicao.lat) {
                 db.ref('heartbeats/' + veiculoAtual.numero).set({
                     timestamp: firebase.database.ServerValue.TIMESTAMP,
                     motorista: usuario.nome,
