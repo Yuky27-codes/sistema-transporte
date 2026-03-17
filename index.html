@@ -63,7 +63,7 @@
 
     <div class="text-center">
         <small class="text-muted">Acesso Administrativo: <b>central</b></small><br>
-        <small class="text-muted">Motoristas: Use sua matrícula ou CPF</small>
+        <small class="text-muted">Motoristas e Mecânicos: Matrícula ou CPF</small>
     </div>
 </div>
 
@@ -86,7 +86,7 @@
 
     async function fazerLogin() {
         const inputRaw = document.getElementById('usuario').value.trim();
-        const inputClean = inputRaw.replace(/\D/g, ""); // Apenas números para CPF/Matrícula
+        const inputClean = inputRaw.replace(/\D/g, ""); 
         const btn = document.getElementById('btnEntrar');
         
         if(!inputRaw) return alert("Por favor, digite seu acesso.");
@@ -101,15 +101,13 @@
         btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Autenticando...';
 
         try {
-            const snapshot = await db.ref('motoristas').once('value');
+            // BUSCA MOTORISTAS
+            const snapMotoristas = await db.ref('motoristas').once('value');
             let motoristaEncontrado = null;
 
-            snapshot.forEach((childSnapshot) => {
-                const m = childSnapshot.val();
-                // Verifica se o que foi digitado bate com a Matrícula OU com o CPF
-                if(m.matricula === inputRaw || m.cpf === inputClean) {
-                    motoristaEncontrado = m;
-                }
+            snapMotoristas.forEach((child) => {
+                const m = child.val();
+                if(m.matricula === inputRaw || m.cpf === inputClean) motoristaEncontrado = m;
             });
 
             if(motoristaEncontrado) {
@@ -119,17 +117,52 @@
                     tipo: 'motorista'
                 }));
                 window.location.href = 'motorista.html';
-            } else {
-                alert('❌ Usuário não localizado! Verifique os dados ou fale com a Central.');
-                btn.disabled = false;
-                btn.innerText = 'ENTRAR NO SISTEMA';
+                return;
             }
+
+            // BUSCA MECÂNICOS (Cadastro Geral)
+            const snapMecanicos = await db.ref('cadastro_mecanicos').once('value');
+            let mecanicoEncontrado = null;
+
+            snapMecanicos.forEach((child) => {
+                const mec = child.val();
+                if(mec.matricula === inputRaw || mec.cpf === inputClean) mecanicoEncontrado = mec;
+            });
+
+            if(mecanicoEncontrado) {
+                // Se achou o mecânico, verifica se ele está VINCULADO a uma base
+                const snapVinculo = await db.ref('vinculos_equipe/' + mecanicoEncontrado.matricula).once('value');
+                
+                if(snapVinculo.exists()) {
+                    const dadosVinculo = snapVinculo.val();
+                    localStorage.setItem('usuarioLogado', JSON.stringify({
+                        nome: mecanicoEncontrado.nome,
+                        matricula: mecanicoEncontrado.matricula,
+                        base: dadosVinculo.baseNome, // A base que ele vai atender
+                        tipo: 'mecanico'
+                    }));
+                    window.location.href = 'mecanico.html';
+                } else {
+                    alert('⚠️ Você está cadastrado, mas não possui uma BASE vinculada. Fale com a Central.');
+                    resetBtn(btn);
+                }
+                return;
+            }
+
+            // Se não encontrou nada
+            alert('❌ Usuário não localizado! Verifique os dados ou fale com a Central.');
+            resetBtn(btn);
+
         } catch (error) {
             console.error(error);
             alert("Erro ao conectar com o servidor.");
-            btn.disabled = false;
-            btn.innerText = 'ENTRAR NO SISTEMA';
+            resetBtn(btn);
         }
+    }
+
+    function resetBtn(btn) {
+        btn.disabled = false;
+        btn.innerText = 'ENTRAR NO SISTEMA';
     }
     
     document.getElementById('usuario').addEventListener('keypress', (e) => {

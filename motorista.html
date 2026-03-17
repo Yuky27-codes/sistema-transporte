@@ -8,16 +8,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         .header-motorista {
             background-color: #003366; color: white; padding: 20px;
             border-radius: 0 0 20px 20px; margin-bottom: 25px; text-align: center;
         }
         .card-painel { border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .btn-panic { 
-            height: 80px; font-size: 1.2rem; border-radius: 15px; 
+            height: 70px; font-size: 1.1rem; border-radius: 15px; 
             display: flex; align-items: center; justify-content: center; 
-            gap: 12px; font-weight: bold; transition: 0.2s;
+            gap: 12px; font-weight: bold; transition: 0.2s; margin-bottom: 10px;
         }
         .btn-panic:active { transform: scale(0.95); }
         #status-conexao {
@@ -28,16 +28,21 @@
         .offline { background: #dc3545; color: white; }
         .hidden { display: none !important; }
         
-        .pulse-救援 {
-            animation: pulse-red 2s infinite;
+        .pulse-socorro {
+            animation: pulse-yellow 2s infinite;
             background-color: #ffc107 !important;
             color: #000 !important;
             border: none;
         }
-        @keyframes pulse-red {
+        @keyframes pulse-yellow {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
             70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+        }
+
+        .form-ocorrencia {
+            background: white; border-radius: 15px; padding: 20px;
+            margin-top: 15px; border: 2px solid #003366;
         }
     </style>
 </head>
@@ -53,9 +58,9 @@
     <div class="container">
         <div id="secao-checkin" class="card card-painel p-4 text-center">
             <h4 class="mb-3">Iniciar Jornada</h4>
-            <p class="text-muted small">Informe o número do veículo que você vai operar agora.</p>
+            <p class="text-muted small">Informe o número do veículo para operar.</p>
             <input type="number" id="numVeiculoInput" class="form-control form-control-lg text-center mb-3" placeholder="Ex: 105">
-            <button onclick="fazerCheckin()" class="btn btn-primary btn-lg w-100 fw-bold">VINCULAR VEÍCULO</button>
+            <button id="btnCheckin" onclick="fazerCheckin()" class="btn btn-primary btn-lg w-100 fw-bold">VINCULAR VEÍCULO</button>
         </div>
 
         <div id="secao-alertas" class="hidden">
@@ -67,20 +72,56 @@
                 <button onclick="fazerCheckout()" class="btn btn-outline-danger btn-sm">Trocar Carro</button>
             </div>
 
-            <p class="fw-bold text-secondary text-uppercase small px-2">Selecione o problema:</p>
-            <div class="d-grid gap-3" id="lista-botoes">
-                <button onclick="enviarAlerta('Pneu Furado')" class="btn btn-warning btn-panic">
-                    <i class="fas fa-compact-disc"></i> Pneu Furado
-                </button>
-                <button onclick="enviarAlerta('Superaquecimento')" class="btn btn-danger btn-panic">
-                    <i class="fas fa-thermometer-high"></i> Aquecimento
-                </button>
-                <button onclick="enviarAlerta('Pane Mecânica')" class="btn btn-dark btn-panic">
-                    <i class="fas fa-tools"></i> Pane Mecânica
-                </button>
-                <button onclick="enviarAlerta('Falta de Combustível')" class="btn btn-info text-white btn-panic" style="background-color: #00509d;">
-                    <i class="fas fa-gas-pump"></i> Combustível
-                </button>
+            <div id="menu-problemas">
+                <p class="fw-bold text-secondary text-uppercase small px-2">O que aconteceu?</p>
+                <div class="d-grid gap-2">
+                    <button onclick="prepararOcorrencia('Pneu Furado', 'warning')" class="btn btn-warning btn-panic">
+                        <i class="fas fa-compact-disc"></i> Pneu Furado
+                    </button>
+                    <button onclick="prepararOcorrencia('Superaquecimento', 'danger')" class="btn btn-danger btn-panic">
+                        <i class="fas fa-thermometer-high"></i> Aquecimento
+                    </button>
+                    <button onclick="prepararOcorrencia('Pane Mecânica', 'dark')" class="btn btn-dark btn-panic">
+                        <i class="fas fa-tools"></i> Pane Mecânica
+                    </button>
+                    <button onclick="prepararOcorrencia('Falta de Combustível', 'info')" class="btn btn-info text-white btn-panic" style="background-color: #00509d;">
+                        <i class="fas fa-gas-pump"></i> Combustível
+                    </button>
+                </div>
+            </div>
+
+            <div id="formulario-detalhes" class="hidden form-ocorrencia">
+                <h5 class="text-center mb-3" id="titulo-ocorrencia">Detalhes da Ocorrência</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Ponto de Referência</label>
+                    <input type="text" id="pontoRef" class="form-control" placeholder="Ex: Km 42, próximo ao Posto BR">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Descrição do Ocorrido</label>
+                    <textarea id="descOcorrido" class="form-control" rows="3" placeholder="Descreva o que houve..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Possui internet no local?</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="btnInternet" id="netSim" checked>
+                        <label class="btn btn-outline-success" for="netSim">SIM</label>
+                        <input type="radio" class="btn-check" name="btnInternet" id="netNao">
+                        <label class="btn btn-outline-danger" for="netNao">NÃO</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold">Anexar Foto (Opcional)</label>
+                    <input type="file" id="fotoInput" class="form-control" accept="image/*" capture="camera">
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button id="btnCancelarOcorrencia" onclick="cancelarOcorrencia()" class="btn btn-light w-50">Cancelar</button>
+                    <button id="btnEnviarOcorrencia" onclick="enviarAlertaCompleto()" class="btn btn-primary w-50 fw-bold">ENVIAR</button>
+                </div>
             </div>
 
             <div id="status-socorro" class="hidden mt-3 text-center">
@@ -100,13 +141,14 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
             authDomain: "translog-231da.firebaseapp.com",
             projectId: "translog-231da",
-            storageBucket: "translog-231da.firebasestorage.app",
+            storageBucket: "translog-231da.appspot.com",
             messagingSenderId: "306116251077",
             appId: "1:306116251077:web:cf9e590b7a14b5ff540fac",
             databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
@@ -114,6 +156,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const storage = firebase.storage();
 
         const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
         if(!usuario) window.location.href = 'index.html';
@@ -121,37 +164,65 @@
 
         let veiculoAtual = null;
         let chamadoAtivoKey = null;
+        let tipoSelecionado = "";
         let ultimaPosicao = { lat: null, lng: null };
 
-        // GPS
+        // MONITOR DE GPS
         navigator.geolocation.watchPosition(pos => {
             ultimaPosicao = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        }, null, { enableHighAccuracy: true });
+        }, err => console.error("Erro GPS:", err), { enableHighAccuracy: true });
 
-        // --- LÓGICA DE CHECK-IN (COM TRAVA) ---
-        async function fazerCheckin() {
-            const num = document.getElementById('numVeiculoInput').value;
-            if(!num) return alert("Por favor, digite o número do ônibus!");
+        // MONITOR DE CONEXÃO
+        window.addEventListener('online', () => atualizarStatusNet(true));
+        window.addEventListener('offline', () => atualizarStatusNet(false));
 
-            const snapshot = await db.ref('frota/' + num).once('value');
-            const carro = snapshot.val();
+        function atualizarStatusNet(status) {
+            const el = document.getElementById('status-conexao');
+            el.className = status ? 'online fw-bold' : 'offline fw-bold';
+            el.innerText = status ? '🟢 ONLINE' : '🔴 OFFLINE';
+        }
 
-            if(!carro) return alert("❌ Erro: Ônibus " + num + " não encontrado!");
-            if(carro.status === 'Em Manutenção') return alert("⚠️ Este veículo está em MANUTENÇÃO!");
-
-            // TRAVA: Só entra se estiver livre ou se já for o seu veículo
-            if(carro.motoristaAtual && carro.matriculaAtual !== usuario.matricula) {
-                return alert(`🚫 BLOQUEIO: O ônibus ${num} já está em uso por ${carro.motoristaAtual}.`);
+        // PERSISTÊNCIA: Verificar se já estava logado ao carregar página
+        window.onload = () => {
+            const salvo = localStorage.getItem('veiculoVinculado');
+            if(salvo) {
+                veiculoAtual = JSON.parse(salvo);
+                abrirPainel(veiculoAtual.numero);
             }
+        };
 
-            await db.ref('frota/' + num).update({
-                status: 'Em Uso',
-                motoristaAtual: usuario.nome,
-                matriculaAtual: usuario.matricula
-            });
+        async function fazerCheckin() {
+            const btn = document.getElementById('btnCheckin');
+            const num = document.getElementById('numVeiculoInput').value;
+            if(!num) return alert("Por favor, digite o número do veículo!");
 
-            veiculoAtual = { ...carro, numero: num }; // Garante que o numero está no objeto
-            abrirPainel(num);
+            btn.disabled = true;
+            btn.innerText = "Vinculando...";
+
+            try {
+                const snapshot = await db.ref('frota/' + num).once('value');
+                const carro = snapshot.val();
+
+                if(!carro) {
+                    alert("❌ Veículo não encontrado!");
+                    return;
+                }
+
+                await db.ref('frota/' + num).update({
+                    status: 'Em Uso',
+                    motoristaAtual: usuario.nome,
+                    matriculaAtual: usuario.matricula
+                });
+
+                veiculoAtual = { ...carro, numero: num };
+                localStorage.setItem('veiculoVinculado', JSON.stringify(veiculoAtual));
+                abrirPainel(num);
+            } catch (e) {
+                alert("Erro ao conectar ao servidor.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "VINCULAR VEÍCULO";
+            }
         }
 
         function abrirPainel(num) {
@@ -159,6 +230,82 @@
             document.getElementById('secao-alertas').classList.remove('hidden');
             document.getElementById('display-veiculo').innerText = `Nº ${num} (${veiculoAtual.placa})`;
             monitorarChamados(num);
+        }
+
+        function prepararOcorrencia(tipo, cor) {
+            tipoSelecionado = tipo;
+            document.getElementById('menu-problemas').classList.add('hidden');
+            document.getElementById('formulario-detalhes').classList.remove('hidden');
+            document.getElementById('titulo-ocorrencia').innerHTML = `<span class="badge bg-${cor}">${tipo}</span>`;
+        }
+
+        function cancelarOcorrencia() {
+            document.getElementById('formulario-detalhes').classList.add('hidden');
+            document.getElementById('menu-problemas').classList.remove('hidden');
+            limparFormulario();
+        }
+
+        function limparFormulario() {
+            document.getElementById('pontoRef').value = "";
+            document.getElementById('descOcorrido').value = "";
+            document.getElementById('fotoInput').value = "";
+        }
+
+        async function enviarAlertaCompleto() {
+            if(!ultimaPosicao.lat) {
+                return alert("Aguardando localização GPS... Certifique-se que o GPS está ligado.");
+            }
+
+            const btn = document.getElementById('btnEnviarOcorrencia');
+            const ponto = document.getElementById('pontoRef').value;
+            const desc = document.getElementById('descOcorrido').value;
+            const temNet = document.getElementById('netSim').checked ? "Sim" : "Não";
+            const fotoFile = document.getElementById('fotoInput').files[0];
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Enviando...`;
+
+            try {
+                let fotoUrl = "";
+                if(fotoFile) {
+                    const refSubida = storage.ref(`ocorrencias/${Date.now()}_${veiculoAtual.numero}`);
+                    await refSubida.put(fotoFile);
+                    fotoUrl = await refSubida.getDownloadURL();
+                }
+
+                const novoChamado = {
+                    numero: veiculoAtual.numero,
+                    placa: veiculoAtual.placa,
+                    problema: tipoSelecionado,
+                    motorista: usuario.nome,
+                    matricula: usuario.matricula,
+                    ponto_referencia: ponto,
+                    descricao_detalhada: desc,
+                    sinal_internet: temNet,
+                    foto: fotoUrl,
+                    status: '🚨 Pendente',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    hora: new Date().toLocaleTimeString('pt-BR'),
+                    lat: ultimaPosicao.lat,
+                    lng: ultimaPosicao.lng,
+                    resposta_base: "",
+                    resposta_previsao: "",
+                    resposta_obs: ""
+                };
+
+                await db.ref('chamados').push(novoChamado);
+                await db.ref('frota/' + veiculoAtual.numero).update({ status: 'Quebrado' });
+
+                document.getElementById('formulario-detalhes').classList.add('hidden');
+                alert("Chamado enviado com sucesso!");
+
+            } catch (err) {
+                console.error(err);
+                alert("Erro ao enviar chamado. Tente novamente.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "ENVIAR";
+            }
         }
 
         function monitorarChamados(num) {
@@ -172,71 +319,61 @@
                     }
                 });
 
-                const listaBotoes = document.getElementById('lista-botoes');
+                const menuProb = document.getElementById('menu-problemas');
                 const statusSocorro = document.getElementById('status-socorro');
                 const btnResolvido = document.getElementById('btn-resolvido');
                 const cardStatus = document.getElementById('card-status');
+                const textoStatus = document.getElementById('texto-status');
+                const instrucao = document.getElementById('instrucao-status');
 
                 if(chamado) {
-                    listaBotoes.classList.add('hidden');
+                    menuProb.classList.add('hidden');
+                    document.getElementById('formulario-detalhes').classList.add('hidden');
                     statusSocorro.classList.remove('hidden');
                     
-                    if(chamado.status === 'Socorro a Caminho') {
-                        document.getElementById('texto-status').innerText = "🚚 SOCORRO A CAMINHO!";
+                    if(chamado.resposta_base) {
+                        textoStatus.innerHTML = `<span style="color:#003366">🚚 SOCORRO A CAMINHO!</span><br><small>Base: ${chamado.resposta_base}</small>`;
+                        instrucao.innerHTML = `<b>Previsão:</b> ${chamado.resposta_previsao} min<br><i>${chamado.resposta_obs}</i>`;
                         document.getElementById('spinner-status').classList.add('hidden');
-                        cardStatus.classList.add('pulse-救援');
+                        cardStatus.classList.add('pulse-socorro');
                         btnResolvido.classList.remove('hidden');
                     } else {
-                        document.getElementById('texto-status').innerText = "Aguardando Central...";
+                        textoStatus.innerText = "Aguardando Central...";
+                        instrucao.innerText = "Sua solicitação detalhada foi recebida pela manutenção.";
                         document.getElementById('spinner-status').classList.remove('hidden');
-                        cardStatus.classList.remove('pulse-救援');
+                        cardStatus.classList.remove('pulse-socorro');
                         btnResolvido.classList.add('hidden');
                     }
                 } else {
-                    listaBotoes.classList.remove('hidden');
+                    menuProb.classList.remove('hidden');
                     statusSocorro.classList.add('hidden');
+                    cardStatus.classList.remove('pulse-socorro');
                 }
             });
         }
 
-        function enviarAlerta(tipo) {
-            if(!veiculoAtual) return;
-            db.ref('chamados').push({
-                numero: veiculoAtual.numero,
-                placa: veiculoAtual.placa,
-                problema: tipo,
-                motorista: usuario.nome,
-                matricula: usuario.matricula,
-                status: '🚨 Pendente',
-                hora: new Date().toLocaleTimeString('pt-BR'),
-                lat: ultimaPosicao.lat,
-                lng: ultimaPosicao.lng
-            });
-            db.ref('frota/' + veiculoAtual.numero).update({ status: 'Quebrado' });
-        }
-
-        function marcarComoResolvido() {
+        async function marcarComoResolvido() {
             if(!chamadoAtivoKey) return;
+            if(!confirm("Confirmar que o problema foi resolvido e o veículo está liberado?")) return;
+
             document.getElementById('som-check').play();
-            db.ref('chamados/' + chamadoAtivoKey).update({ status: 'Resolvido' });
-            db.ref('frota/' + veiculoAtual.numero).update({ status: 'Em Uso' });
-            alert("Ótimo! Continue sua viagem com segurança.");
+            await db.ref('chamados/' + chamadoAtivoKey).update({ status: 'Resolvido' });
+            await db.ref('frota/' + veiculoAtual.numero).update({ status: 'Em Uso' });
         }
 
-        function fazerCheckout() {
-            if(!veiculoAtual) return location.reload();
-            if(confirm("Deseja desvincular deste veículo?")) {
-                db.ref('frota/' + veiculoAtual.numero).update({
+        async function fazerCheckout() {
+            if(confirm("Deseja desvincular deste veículo e encerrar jornada?")) {
+                await db.ref('frota/' + veiculoAtual.numero).update({
                     status: 'Disponível',
                     motoristaAtual: "",
                     matriculaAtual: ""
                 });
-                // Limpa o heartbeat para não ficar um fantasma no mapa
-                db.ref('heartbeats/' + veiculoAtual.numero).remove();
+                localStorage.removeItem('veiculoVinculado');
                 location.reload();
             }
         }
 
+        // Heartbeat de segurança (atualiza posição e status a cada 15s)
         setInterval(() => {
             if(veiculoAtual && navigator.onLine && ultimaPosicao.lat) {
                 db.ref('heartbeats/' + veiculoAtual.numero).set({
@@ -246,7 +383,7 @@
                     lng: ultimaPosicao.lng
                 });
             }
-        }, 10000);
+        }, 15000);
     </script>
 </body>
 </html>

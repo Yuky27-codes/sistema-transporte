@@ -13,10 +13,14 @@
         .main-content { margin-left: 16.6%; padding: 25px; }
         .card-stats { border-radius: 15px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 25px; }
-        .status-online { color: #28a745; font-weight: bold; }
-        .status-offline { color: #dc3545; font-weight: bold; }
         .emergencia-anim { animation: pulse-red 2s infinite; border: 2px solid #dc3545 !important; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
+        .nav-link { color: rgba(255,255,255,0.8); margin-bottom: 5px; }
+        .nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
+        .nav-link.active { background: #ffc107 !important; color: #003366 !important; font-weight: bold; }
+        .secao-titulo { border-left: 5px solid #003366; padding-left: 15px; margin-bottom: 20px; color: #003366; font-weight: bold; }
+        .animate-flash { animation: flash 1s infinite; }
+        @keyframes flash { 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
@@ -29,9 +33,10 @@
             <ul class="nav nav-pills flex-column" id="pills-tab" role="tablist">
                 <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#aba-monitoramento"><i class="fas fa-tv me-2"></i> Monitoramento</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#aba-motoristas"><i class="fas fa-user-tie me-2"></i> Motoristas</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#aba-frota"><i class="fas fa-bus me-2"></i> Cadastro de Frota</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#aba-equipes"><i class="fas fa-wrench me-2"></i> Bases e Mecânicos</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#aba-frota"><i class="fas fa-bus me-2"></i> Gestão de Frota</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#aba-relatorios"><i class="fas fa-chart-bar me-2"></i> Relatórios</a></li>
-                <li class="nav-item"><a class="nav-link text-danger" href="index.html"><i class="fas fa-sign-out-alt me-2"></i> Sair</a></li>
+                <li class="nav-item mt-4"><a class="nav-link text-danger border border-danger" href="index.html"><i class="fas fa-sign-out-alt me-2"></i> Sair</a></li>
             </ul>
         </div>
 
@@ -39,36 +44,36 @@
             <div class="tab-content">
                 
                 <div class="tab-pane fade show active" id="aba-monitoramento">
-                    <h3 class="mb-4">Painel de Controle</h3>
+                    <h3 class="mb-4">Painel de Controle em Tempo Real</h3>
                     <div class="row mb-4">
                         <div class="col-md-4">
                             <div class="card card-stats p-3 border-start border-danger border-5">
-                                <small class="text-muted fw-bold">CHAMADOS ATIVOS</small>
+                                <small class="text-muted fw-bold">OCORRÊNCIAS EM ABERTO</small>
                                 <h2 id="countAlertas">0</h2>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="card card-stats p-3 border-start border-success border-5">
-                                <small class="text-muted fw-bold">VEÍCULOS EM OPERAÇÃO</small>
+                                <small class="text-muted fw-bold">FROTA EM OPERAÇÃO</small>
                                 <h2 id="countFrota">0</h2>
                             </div>
                         </div>
                     </div>
 
                     <div class="table-container mb-4 emergencia-anim" id="containerAlertas" style="display:none;">
-                        <h5 class="text-danger fw-bold mb-3"><i class="fas fa-exclamation-triangle"></i> ALERTAS CRÍTICOS</h5>
+                        <h5 class="text-danger fw-bold mb-3"><i class="fas fa-exclamation-triangle"></i> ALERTAS AGUARDANDO SOCORRO</h5>
                         <div id="listaAlertas" class="row"></div>
                     </div>
 
                     <div class="table-container">
-                        <h5>Status da Frota em Tempo Real</h5>
+                        <h5>Status da Frota e Socorros</h5>
                         <table class="table align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Nº Ônibus / Placa</th>
-                                    <th>Motorista Atual</th>
-                                    <th>Status Veículo</th>
-                                    <th>Conexão</th>
+                                    <th>Nº / Placa</th>
+                                    <th>Motorista</th>
+                                    <th>Situação</th>
+                                    <th>Socorro Responsável</th>
                                     <th>Localização</th>
                                 </tr>
                             </thead>
@@ -79,12 +84,12 @@
 
                 <div class="tab-pane fade" id="aba-motoristas">
                     <div class="table-container">
-                        <h4>Gestão de Motoristas</h4>
-                        <div class="row g-3 mb-4 p-3 bg-light rounded">
+                        <h4 class="secao-titulo">Gestão de Motoristas</h4>
+                        <div class="row g-3 mb-4 p-3 bg-light rounded shadow-sm">
                             <div class="col-md-4"><input type="text" id="nomeMotorista" class="form-control" placeholder="Nome Completo"></div>
                             <div class="col-md-3"><input type="number" id="matriculaMotorista" class="form-control" placeholder="Matrícula"></div>
                             <div class="col-md-3"><input type="text" id="cpfMotorista" class="form-control" placeholder="CPF"></div>
-                            <div class="col-md-2"><button onclick="cadastrarMotorista()" class="btn btn-success w-100">Cadastrar</button></div>
+                            <div class="col-md-2"><button onclick="cadastrarMotorista()" class="btn btn-success w-100 fw-bold">CADASTRAR</button></div>
                         </div>
                         <table class="table">
                             <thead><tr><th>Matrícula</th><th>Nome</th><th>CPF</th><th>Ação</th></tr></thead>
@@ -93,36 +98,67 @@
                     </div>
                 </div>
 
+                <div class="tab-pane fade" id="aba-equipes">
+                    <div class="table-container border-start border-dark border-5">
+                        <h4 class="secao-titulo"><i class="fas fa-user-cog"></i> 1. Cadastro de Mecânicos</h4>
+                        <div class="row g-3 p-3 bg-light rounded shadow-sm mb-3">
+                            <div class="col-md-4"><label class="small fw-bold">Nome</label><input type="text" id="mecNome" class="form-control"></div>
+                            <div class="col-md-3"><label class="small fw-bold">Matrícula</label><input type="number" id="mecMatricula" class="form-control"></div>
+                            <div class="col-md-3"><label class="small fw-bold">CPF</label><input type="text" id="mecCPF" class="form-control"></div>
+                            <div class="col-md-2 d-flex align-items-end"><button onclick="cadastrarMecanicoNovo()" class="btn btn-dark w-100 fw-bold">SALVAR</button></div>
+                        </div>
+                        <table class="table table-sm"><tbody id="listaMecanicosCadastrados"></tbody></table>
+                    </div>
+
+                    <div class="table-container border-start border-primary border-5">
+                        <h4 class="secao-titulo text-primary"><i class="fas fa-warehouse"></i> 2. Cadastro de Bases Operacionais</h4>
+                        <div class="row g-2 p-3 bg-light rounded shadow-sm mb-3">
+                            <div class="col-md-4"><label class="small fw-bold">Nome da Base</label><input type="text" id="baseNomeInput" class="form-control"></div>
+                            <div class="col-md-3"><label class="small fw-bold">CEP</label><input type="text" id="baseCEP" class="form-control" onblur="buscarEndereco()"></div>
+                            <div class="col-md-5"><label class="small fw-bold">Rua/Logradouro</label><input type="text" id="baseRua" class="form-control"></div>
+                            <div class="col-md-2"><label class="small fw-bold">Número</label><input type="text" id="baseNum" class="form-control"></div>
+                            <div class="col-md-4"><label class="small fw-bold">Cidade</label><input type="text" id="baseCidade" class="form-control"></div>
+                            <div class="col-md-2"><label class="small fw-bold">Estado</label><input type="text" id="baseUF" class="form-control" maxlength="2"></div>
+                            <div class="col-md-4"><label class="small fw-bold">Telefone</label><input type="text" id="baseTelInput" class="form-control"></div>
+                            <div class="col-md-12 mt-2">
+                                <button onclick="cadastrarBaseNova()" id="btnSalvarBase" class="btn btn-primary w-100 fw-bold">SALVAR BASE NO MAPA</button>
+                            </div>
+                        </div>
+                        <table class="table table-sm">
+                            <thead class="table-primary"><tr><th>Base</th><th>Cidade</th><th>Contato</th><th>Ações</th></tr></thead>
+                            <tbody id="listaBasesCadastradas"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-container border-top border-warning border-5">
+                        <h4 class="text-warning fw-bold mb-3">3. Atribuição de Mecânico à Base</h4>
+                        <div class="row g-3 bg-warning bg-opacity-10 p-3 rounded border border-warning">
+                            <div class="col-md-5"><select id="selectMecVinculo" class="form-select"></select></div>
+                            <div class="col-md-5"><select id="selectBaseVinculo" class="form-select"></select></div>
+                            <div class="col-md-2"><button onclick="vincularMecanicoABase()" class="btn btn-warning w-100 fw-bold">VINCULAR</button></div>
+                        </div>
+                        <table class="table mt-3"><tbody id="tabelaVinculosAtivos"></tbody></table>
+                    </div>
+                </div>
+
                 <div class="tab-pane fade" id="aba-frota">
                     <div class="table-container">
-                        <h4>Cadastro de Veículos</h4>
-                        <div class="row g-3 mb-4 p-3 bg-light rounded">
-                            <div class="col-md-4"><input type="text" id="busPlaca" class="form-control text-uppercase" placeholder="Placa (ABC1D23)"></div>
-                            <div class="col-md-4"><input type="number" id="busNumero" class="form-control" placeholder="Número (Ex: 105)"></div>
-                            <div class="col-md-4"><button onclick="cadastrarVeiculo()" class="btn btn-primary w-100">Adicionar à Frota</button></div>
+                        <h4 class="secao-titulo">Cadastro de Veículos</h4>
+                        <div class="row g-3 mb-4 p-3 bg-light rounded shadow-sm">
+                            <div class="col-md-4"><input type="text" id="busPlaca" class="form-control text-uppercase" placeholder="Placa"></div>
+                            <div class="col-md-4"><input type="number" id="busNumero" class="form-control" placeholder="Número"></div>
+                            <div class="col-md-4"><button onclick="cadastrarVeiculo()" class="btn btn-primary w-100 fw-bold">ADICIONAR</button></div>
                         </div>
-                        <table class="table align-middle">
-                            <thead><tr><th>Nº Ônibus</th><th>Placa</th><th>Status Atual</th><th>Operador</th><th>Ação</th></tr></thead>
-                            <tbody id="tabelaFrotaInterna"></tbody>
-                        </table>
+                        <table class="table"><tbody id="tabelaFrotaInterna"></tbody></table>
                     </div>
                 </div>
 
                 <div class="tab-pane fade" id="aba-relatorios">
                     <div class="table-container">
-                        <h4>Histórico de Incidentes</h4>
-                        <p class="text-muted small">Resumo de ocorrências por veículo (baseado em todos os chamados registrados)</p>
+                        <h4 class="secao-titulo">Histórico de Incidentes</h4>
                         <table class="table table-hover align-middle">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Nº Ônibus</th>
-                                    <th>Total de Ocorrências</th>
-                                    <th>Último Problema</th>
-                                    <th>Status de Saúde</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaRelatorios">
-                                </tbody>
+                            <thead class="table-dark"><tr><th>Data/Hora</th><th>Ônibus</th><th>Motorista</th><th>Problema</th><th>Status</th></tr></thead>
+                            <tbody id="tabelaRelatorios"></tbody>
                         </table>
                     </div>
                 </div>
@@ -130,6 +166,35 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="modalSocorro" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Despachar Socorro Técnico</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="modalChamadoId">
+        <div class="mb-3">
+            <label class="fw-bold small">Selecione a Base:</label>
+            <select id="modalSelectBase" class="form-select"></select>
+        </div>
+        <div class="mb-3">
+            <label class="fw-bold small">Previsão de Chegada (minutos):</label>
+            <input type="number" id="modalPrevisao" class="form-control" placeholder="Ex: 25">
+        </div>
+        <div class="mb-3">
+            <label class="fw-bold small">Observações:</label>
+            <textarea id="modalObs" class="form-control" rows="2" placeholder="Ex: Mecânico João está a caminho."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="confirmarEnvioSocorro()" class="btn btn-primary w-100 fw-bold">CONFIRMAR ENVIO</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <audio id="somAlerta" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
@@ -151,125 +216,210 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // --- CADASTROS ---
+    // --- FUNÇÕES DE CADASTRO ---
     function cadastrarMotorista() {
         const nome = document.getElementById('nomeMotorista').value;
         const matricula = document.getElementById('matriculaMotorista').value;
-        const cpf = document.getElementById('cpfMotorista').value.replace(/\D/g, "");
-        if(nome && matricula && cpf) {
-            db.ref('motoristas/' + matricula).set({ nome, matricula, cpf });
-            alert("Motorista cadastrado!");
-        }
+        const cpf = document.getElementById('cpfMotorista').value;
+        if(nome && matricula) db.ref('motoristas/' + matricula).set({ nome, matricula, cpf });
     }
 
     function cadastrarVeiculo() {
         const placa = document.getElementById('busPlaca').value.toUpperCase();
         const numero = document.getElementById('busNumero').value;
-        if(placa && numero) {
-            db.ref('frota/' + numero).set({ placa, numero, status: 'Disponível', motoristaAtual: "", matriculaAtual: "" });
-            alert("Veículo adicionado!");
+        if(placa && numero) db.ref('frota/' + numero).set({ placa, numero, status: 'Disponível', motoristaAtual: "", matriculaAtual: "" });
+    }
+
+    function cadastrarMecanicoNovo() {
+        const nome = document.getElementById('mecNome').value;
+        const matricula = document.getElementById('mecMatricula').value;
+        if(nome && matricula) db.ref('cadastro_mecanicos/' + matricula).set({ nome, matricula, cpf: document.getElementById('mecCPF').value });
+    }
+
+    // --- CADASTRO DE BASE COM CEP E GEOCODING ---
+    async function buscarEndereco() {
+        const cep = document.getElementById('baseCEP').value.replace(/\D/g, '');
+        if (cep.length === 8) {
+            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await res.json();
+            if (!data.erro) {
+                document.getElementById('baseRua').value = data.logradouro;
+                document.getElementById('baseCidade').value = data.localidade;
+                document.getElementById('baseUF').value = data.uf;
+                document.getElementById('baseNum').focus();
+            }
         }
     }
 
-    function forcarLiberacao(numero) {
-        if(confirm(`Deseja desconectar o motorista do veículo ${numero}?`)) {
-            db.ref('frota/' + numero).update({
-                status: 'Disponível',
-                motoristaAtual: "",
-                matriculaAtual: ""
+    async function cadastrarBaseNova() {
+        const nome = document.getElementById('baseNomeInput').value;
+        const rua = document.getElementById('baseRua').value;
+        const num = document.getElementById('baseNum').value;
+        const cidade = document.getElementById('baseCidade').value;
+        const uf = document.getElementById('baseUF').value;
+        const tel = document.getElementById('baseTelInput').value;
+
+        if (!nome || !rua) return alert("Nome e Rua são obrigatórios!");
+
+        const btn = document.getElementById('btnSalvarBase');
+        btn.disabled = true; btn.innerText = "Localizando...";
+
+        const endereco = `${rua}, ${num}, ${cidade}, Brazil`;
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`);
+            const geo = await response.json();
+            const lat = geo.length > 0 ? parseFloat(geo[0].lat) : 0;
+            const lng = geo.length > 0 ? parseFloat(geo[0].lon) : 0;
+
+            db.ref('cadastro_bases').push({ nome, rua, num, cidade, uf, tel, lat, lng });
+            alert("Base salva!");
+            ["baseNomeInput", "baseCEP", "baseRua", "baseNum", "baseCidade", "baseUF", "baseTelInput"].forEach(i => document.getElementById(i).value = "");
+        } catch (e) { alert("Erro na localização."); }
+        btn.disabled = false; btn.innerText = "SALVAR BASE NO MAPA";
+    }
+
+    function vincularMecanicoABase() {
+        const mat = document.getElementById('selectMecVinculo').value;
+        const base = document.getElementById('selectBaseVinculo').value;
+        if(mat && base) {
+            db.ref('cadastro_mecanicos/' + mat).once('value', s => {
+                db.ref('vinculos_equipe/' + mat).set({ nomeMec: s.val().nome, matriculaMec: mat, baseNome: base });
             });
-            db.ref('heartbeats/' + numero).remove();
         }
     }
 
-    // --- RENDERIZAÇÃO DE DADOS ---
-    db.ref('motoristas').on('value', s => {
-        let h = "";
-        s.forEach(c => {
-            const m = c.val();
-            h += `<tr><td>${m.matricula}</td><td>${m.nome}</td><td>${m.cpf}</td><td><button onclick="db.ref('motoristas/${c.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`;
+    // --- DESPACHO DE SOCORRO ---
+    function abrirModalSocorro(id) {
+        document.getElementById('modalChamadoId').value = id;
+        db.ref('cadastro_bases').once('value', s => {
+            let opt = "";
+            s.forEach(b => { opt += `<option value="${b.val().nome}">${b.val().nome}</option>`; });
+            document.getElementById('modalSelectBase').innerHTML = opt;
+            new bootstrap.Modal(document.getElementById('modalSocorro')).show();
         });
+    }
+
+    async function confirmarEnvioSocorro() {
+        const id = document.getElementById('modalChamadoId').value;
+        await db.ref('chamados/' + id).update({
+            status: 'Socorro a Caminho',
+            resposta_base: document.getElementById('modalSelectBase').value,
+            resposta_previsao: document.getElementById('modalPrevisao').value,
+            resposta_obs: document.getElementById('modalObs').value
+        });
+        bootstrap.Modal.getInstance(document.getElementById('modalSocorro')).hide();
+    }
+
+    // --- MONITORAMENTO REAL-TIME ---
+    function monitorarSistema() {
+        // Alertas Pendentes
+        db.ref('chamados').on('value', snap => {
+            const lista = document.getElementById('listaAlertas');
+            let count = 0; lista.innerHTML = "";
+            snap.forEach(child => {
+                const c = child.val();
+                if(c.status === '🚨 Pendente') {
+                    count++;
+                    lista.innerHTML += `
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-danger shadow-sm">
+                                <div class="card-header bg-danger text-white py-1 small fw-bold">BUS ${c.numero}</div>
+                                <div class="card-body p-2">
+                                    <h6 class="text-danger mb-1">${c.problema}</h6>
+                                    <p class="small mb-1"><b>Local:</b> ${c.ponto_referencia}</p>
+                                    <button onclick="abrirModalSocorro('${child.key}')" class="btn btn-danger btn-sm w-100 fw-bold">DESPACHAR</button>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            });
+            document.getElementById('countAlertas').innerText = count;
+            document.getElementById('containerAlertas').style.display = count > 0 ? "block" : "none";
+            if(count > 0) document.getElementById('somAlerta').play().catch(()=>{});
+        });
+
+        // Tabela de Frota
+        db.ref('frota').on('value', sFrota => {
+            db.ref('heartbeats').on('value', sHeart => {
+                db.ref('chamados').on('value', sCham => {
+                    const sinais = sHeart.val() || {};
+                    const chamados = sCham.val() || {};
+                    let h = ""; let op = 0;
+                    sFrota.forEach(sv => {
+                        const v = sv.val(); if(v.status === 'Disponível') return; op++;
+                        const sinal = sinais[v.numero];
+                        const isOnline = sinal && (Date.now() - sinal.timestamp) < 60000;
+                        let info = '<span class="text-muted small">Normal</span>';
+                        for(let k in chamados) {
+                            if(chamados[k].numero == v.numero && chamados[k].status !== 'Resolvido') {
+                                info = chamados[k].status === 'Socorro a Caminho' 
+                                    ? `<span class="text-success fw-bold small"><i class="fas fa-truck"></i> ${chamados[k].resposta_base}</span>`
+                                    : `<span class="text-danger fw-bold small animate-flash">🚨 AGUARDANDO</span>`;
+                            }
+                        }
+                        h += `<tr>
+                            <td><b>${v.numero}</b><br><small>${v.placa}</small></td>
+                            <td>${v.motoristaAtual}</td>
+                            <td><span class="badge ${v.status === 'Quebrado' ? 'bg-danger' : 'bg-primary'}">${v.status}</span></td>
+                            <td>${info}</td>
+                            <td>${isOnline ? `<a href="https://www.google.com/maps?q=${sinal.lat},${sinal.lng}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-map-marker-alt"></i></a>` : 'Offline'}</td>
+                        </tr>`;
+                    });
+                    document.getElementById('tabelaMonitoramento').innerHTML = h;
+                    document.getElementById('countFrota').innerText = op;
+                });
+            });
+        });
+    }
+
+    // --- LISTENERS DAS TABELAS ---
+    db.ref('motoristas').on('value', s => {
+        let h = ""; s.forEach(c => { h += `<tr><td>${c.val().matricula}</td><td>${c.val().nome}</td><td>${c.val().cpf}</td><td><button onclick="db.ref('motoristas/${c.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`; });
         document.getElementById('tabelaMotoristas').innerHTML = h;
     });
 
+    db.ref('cadastro_mecanicos').on('value', s => {
+        let h = ""; let opt = '<option value="">Selecione...</option>';
+        s.forEach(c => { 
+            h += `<tr><td>${c.val().matricula}</td><td>${c.val().nome}</td><td><button onclick="db.ref('cadastro_mecanicos/${c.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`;
+            opt += `<option value="${c.val().matricula}">${c.val().nome}</option>`;
+        });
+        document.getElementById('listaMecanicosCadastrados').innerHTML = h;
+        document.getElementById('selectMecVinculo').innerHTML = opt;
+    });
+
+    db.ref('cadastro_bases').on('value', s => {
+        let h = ""; let opt = '<option value="">Selecione...</option>';
+        s.forEach(c => { 
+            const b = c.val();
+            const mapaBtn = (b.lat && b.lng) ? `<a href="https://www.google.com/maps?q=${b.lat},${b.lng}" target="_blank" class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-map-marked-alt"></i></a>` : "";
+            h += `<tr><td><b>${b.nome}</b></td><td>${b.cidade || '---'}</td><td>${b.tel}</td><td>${mapaBtn}<button onclick="db.ref('cadastro_bases/${c.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`;
+            opt += `<option value="${b.nome}">${b.nome}</option>`;
+        });
+        document.getElementById('listaBasesCadastradas').innerHTML = h;
+        document.getElementById('selectBaseVinculo').innerHTML = opt;
+    });
+
+    db.ref('vinculos_equipe').on('value', s => {
+        let h = ""; s.forEach(c => { h += `<tr><td>${c.val().nomeMec}</td><td>${c.val().matriculaMec}</td><td><span class="badge bg-primary">${c.val().baseNome}</span></td><td><button onclick="db.ref('vinculos_equipe/${c.key}').remove()" class="btn btn-sm text-danger">Remover</button></td></tr>`; });
+        document.getElementById('tabelaVinculosAtivos').innerHTML = h;
+    });
+
     db.ref('frota').on('value', s => {
-        let h = "";
-        let countOp = 0;
-        s.forEach(c => {
-            const v = c.val();
-            if(v.status !== 'Disponível') countOp++;
-            h += `<tr><td><b>${v.numero}</b></td><td>${v.placa}</td><td><span class="badge ${v.status === 'Disponível' ? 'bg-secondary' : 'bg-success'}">${v.status}</span></td><td>${v.motoristaAtual || '---'}</td><td><button onclick="forcarLiberacao('${v.numero}')" class="btn btn-sm text-warning"><i class="fas fa-unlock"></i></button><button onclick="db.ref('frota/${c.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`;
-        });
+        let h = ""; s.forEach(c => { h += `<tr><td><b>${c.val().numero}</b></td><td>${c.val().placa}</td><td>${c.val().status}</td><td>${c.val().motoristaAtual || '---'}</td><td><button onclick="db.ref('frota/${c.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`; });
         document.getElementById('tabelaFrotaInterna').innerHTML = h;
-        document.getElementById('countFrota').innerText = countOp;
     });
 
-    // --- MONITORAMENTO ---
-    function atualizarPainel() {
-        db.ref('frota').on('value', snapFrota => {
-            db.ref('heartbeats').on('value', snapSinais => {
-                const sinais = snapSinais.val() || {};
-                let h = "";
-                const agora = Date.now();
-                snapFrota.forEach(snapV => {
-                    const v = snapV.val();
-                    if(v.status === 'Disponível') return;
-                    const sinal = sinais[v.numero];
-                    let statusCon = '<span class="status-offline">● Offline</span>';
-                    let linkMap = '---';
-                    if(sinal && (agora - sinal.timestamp) < 60000) {
-                        statusCon = '<span class="status-online">● Online</span>';
-                        linkMap = `<a href="https://www.google.com/maps?q=${sinal.lat},${sinal.lng}" target="_blank" class="btn btn-sm btn-primary">Mapa</a>`;
-                    }
-                    h += `<tr><td><b>${v.numero}</b><br><small>${v.placa}</small></td><td>${v.motoristaAtual || '---'}</td><td><span class="badge ${v.status === 'Quebrado' ? 'bg-danger' : 'bg-info'}">${v.status}</span></td><td>${statusCon}</td><td>${linkMap}</td></tr>`;
-                });
-                document.getElementById('tabelaMonitoramento').innerHTML = h;
-            });
-        });
-    }
-
-    // --- ALERTAS E RELATÓRIOS ---
-    db.ref('chamados').on('value', snapshot => {
-        const lista = document.getElementById('listaAlertas');
-        const container = document.getElementById('containerAlertas');
-        const historico = {};
-        let cAlerta = 0;
-        lista.innerHTML = "";
-
-        snapshot.forEach(child => {
+    db.ref('chamados').on('value', snap => {
+        let h = "";
+        snap.forEach(child => {
             const c = child.val();
-            
-            // Lógica para Tabela de Relatórios
-            if (!historico[c.numero]) historico[c.numero] = { total: 0, ultimo: "" };
-            historico[c.numero].total++;
-            historico[c.numero].ultimo = c.problema;
-
-            // Lógica para Alertas Ativos
-            if(c.status !== 'Resolvido') {
-                cAlerta++;
-                let acaoBotao = `<button onclick="db.ref('chamados/${child.key}').update({status:'Socorro a Caminho'})" class="btn btn-warning btn-sm w-100 mb-1">Enviar Socorro</button>`;
-                if(c.status === 'Socorro a Caminho') acaoBotao = `<div class="alert alert-warning p-1 small mb-1 text-center">Socorro Enviado</div>`;
-                lista.innerHTML += `<div class="col-md-3 mb-2"><div class="card border-danger"><div class="card-body p-2"><h6 class="text-danger fw-bold mb-0">${c.problema}</h6><p class="small mb-2"><b>Bus ${c.numero}</b> - ${c.motorista}</p>${acaoBotao}<button onclick="db.ref('chamados/${child.key}').remove()" class="btn btn-outline-success btn-sm w-100">Arquivar</button></div></div></div>`;
-            }
+            h += `<tr><td>${c.hora || '---'}</td><td><b>${c.numero}</b></td><td>${c.motorista}</td><td>${c.problema}</td><td><span class="badge ${c.status === 'Resolvido' ? 'bg-success' : 'bg-warning'}">${c.status}</span></td></tr>`;
         });
-
-        // Atualiza UI de Alertas
-        document.getElementById('countAlertas').innerText = cAlerta;
-        container.style.display = cAlerta > 0 ? "block" : "none";
-        if(cAlerta > 0) document.getElementById('somAlerta').play().catch(()=>{});
-
-        // Renderiza Tabela de Relatórios
-        let htmlRelatorio = "";
-        for (const bus in historico) {
-            let saude = '<span class="badge bg-success">Bom</span>';
-            if (historico[bus].total > 2) saude = '<span class="badge bg-warning text-dark">Alerta</span>';
-            if (historico[bus].total > 4) saude = '<span class="badge bg-danger">Crítico</span>';
-            htmlRelatorio += `<tr><td><b>${bus}</b></td><td>${historico[bus].total} ocorrências</td><td>${historico[bus].ultimo}</td><td>${saude}</td></tr>`;
-        }
-        document.getElementById('tabelaRelatorios').innerHTML = htmlRelatorio || '<tr><td colspan="4" class="text-center">Nenhum histórico encontrado</td></tr>';
+        document.getElementById('tabelaRelatorios').innerHTML = h;
     });
 
-    atualizarPainel();
+    monitorarSistema();
 </script>
 </body>
 </html>
