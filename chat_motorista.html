@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conexão Águia | Chat</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #e5ddd5; height: 100vh; display: flex; flex-direction: column; margin: 0; }
+        .chat-header { background: #003366; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        
+        .message { max-width: 75%; padding: 8px 12px; border-radius: 12px; font-size: 14px; line-height: 1.4; position: relative; }
+        .sent { background: #dcf8c6; align-self: flex-end; border-top-right-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .received { background: white; align-self: flex-start; border-top-left-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        
+        .sender-name { font-size: 10px; font-weight: bold; margin-bottom: 2px; display: block; }
+        .msg-time { font-size: 9px; opacity: 0.5; float: right; margin-top: 5px; margin-left: 8px; }
+        
+        .input-area { background: #f0f0f0; padding: 12px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
+        #msgInput { border-radius: 25px; border: 1px solid #ccc; padding: 10px 18px; flex: 1; outline: none; }
+        .btn-send { background: #075e54; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-send:active { transform: scale(0.9); background: #054d44; }
+    </style>
+</head>
+<body>
+
+    <div class="chat-header">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-headset me-2"></i>
+            <div>
+                <strong style="font-size: 14px;">CONEXÃO ÁGUIA</strong><br>
+                <small id="status-protocolo" style="font-size: 11px; opacity: 0.8;">Carregando...</small>
+            </div>
+        </div>
+        <button onclick="sairDoChat()" class="btn btn-sm btn-outline-light">Sair</button>
+    </div>
+
+    <div id="chat-window"></div>
+
+    <div class="input-area">
+        <input type="text" id="msgInput" placeholder="Digite uma mensagem..." autocomplete="off">
+        <button class="btn-send" onclick="enviarMensagem()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
+            authDomain: "translog-231da.firebaseapp.com",
+            projectId: "translog-231da",
+            storageBucket: "translog-231da.appspot.com",
+            messagingSenderId: "306116251077",
+            appId: "1:306116251077:web:cf9e590b7a14b5ff540fac",
+            databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 1. Identificação Dinâmica (Motorista ou Mecânico)
+        const urlParams = new URLSearchParams(window.location.search);
+        const protocolo = urlParams.get('id');
+        const storageUser = JSON.parse(localStorage.getItem('usuarioLogado')) || {};
+        
+        const meuNome = urlParams.get('nome') || storageUser.nome || "Usuário";
+        // Gerar um ID persistente baseado no nome para evitar duplicação visual
+        const meuId = storageUser.id || meuNome.replace(/\s/g, ''); 
+
+        document.getElementById('status-protocolo').innerText = "Protocolo: " + (protocolo || "Erro");
+
+        // 2. Escutar Mensagens em Tempo Real
+        if(protocolo) {
+            db.ref('chats/' + protocolo).on('value', snap => {
+                const chatWindow = document.getElementById('chat-window');
+                chatWindow.innerHTML = ""; 
+                
+                snap.forEach(child => {
+                    const m = child.val();
+                    const isMe = (m.senderId === meuId);
+                    
+                    const html = `
+                        <div class="message ${isMe ? 'sent' : 'received'} animate__animated animate__fadeInUp">
+                            <span class="sender-name" style="color: ${isMe ? '#075e54' : '#003366'}">
+                                ${isMe ? 'Você' : m.senderName}
+                            </span>
+                            ${m.text}
+                            <span class="msg-time">${new Date(m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                    `;
+                    chatWindow.innerHTML += html;
+                });
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            });
+        }
+
+        // 3. Função de Enviar
+        function enviarMensagem() {
+            const input = document.getElementById('msgInput');
+            const texto = input.value.trim();
+            
+            if(texto !== "" && protocolo) {
+                db.ref('chats/' + protocolo).push({
+                    senderId: meuId,
+                    senderName: meuNome,
+                    text: texto,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                input.value = "";
+                input.focus();
+            }
+        }
+
+        // Função de Sair que funciona em Celular e PC
+        function sairDoChat() {
+            if (window.opener || window.history.length === 1) {
+                window.close(); // Se for pop-up, fecha
+            } else {
+                window.history.back(); // Se for página normal, volta
+            }
+        }
+
+        // Enter para enviar
+        document.getElementById('msgInput').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') enviarMensagem();
+        });
+    </script>
+</body>
+</html>

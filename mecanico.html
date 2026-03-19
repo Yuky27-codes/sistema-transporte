@@ -3,59 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Mecânico | Águia Conecta</title>
+    <title>Mecânico | Águia Conecta</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-        .header-mec { background: #002855; color: white; padding: 15px 0; border-radius: 0 0 15px 15px; margin-bottom: 20px; }
-        .card-chamado { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; background: white; }
-        .card-chamado.atendendo { border-left: 8px solid #ffc107; background: #fffdf5; }
-        .btn-atender { background-color: #28a745; color: white; font-weight: bold; border-radius: 8px; border: none; padding: 10px; }
-        .btn-finalizar { background-color: #002855; color: white; font-weight: bold; border-radius: 8px; border: none; padding: 10px; }
-        .img-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; cursor: pointer; }
-        .badge-pendente { background-color: #dc3545; color: white; }
-        .badge-caminho { background-color: #ffc107; color: #000; }
+        body { background-color: #f8f9fa; }
+        .card-chamado { border-radius: 12px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .img-prev { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #ddd; }
+        .hidden { display: none; }
+        .navbar { background-color: #002147 !important; }
     </style>
 </head>
 <body>
 
-<div class="header-mec shadow">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div>
-            <h4 class="mb-0" id="nomeMec">Mecânico Operacional</h4>
-            <small id="baseMec"><i class="fas fa-tools"></i> Águia Conecta</small>
-        </div>
-        <button onclick="logout()" class="btn btn-outline-light btn-sm">Sair</button>
+<nav class="navbar navbar-dark mb-4 shadow">
+    <div class="container d-flex justify-content-between">
+        <strong class="text-white">MANUTENÇÃO ÁGUIA</strong>
+        <span id="nomeMecDisplay" class="text-white small">Mecânico Logado</span>
     </div>
-</div>
+</nav>
 
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold mb-0">Chamados em Aberto</h5>
-        <span id="contador" class="badge bg-dark">0</span>
-    </div>
-    
-    <div id="listaChamadosMec">
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary"></div>
-            <p class="mt-2 text-muted">Sincronizando com a base...</p>
-        </div>
-    </div>
+    <div id="listaChamados"></div>
 </div>
 
-<div class="modal fade" id="modalFinalizar" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+<div class="modal fade" id="modalMec" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header"><h5>Finalizar Atendimento</h5></div>
-            <div class="modal-body">
-                <label class="small fw-bold mb-1">Relatório Técnico:</label>
-                <textarea id="relatorioFinal" class="form-control" rows="4" placeholder="O que foi consertado no veículo?"></textarea>
+            <div class="modal-header">
+                <h5 class="modal-title">Atendimento <span id="m-prot"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" onclick="confirmarFinalizacao()" class="btn btn-success px-4">Concluir</button>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 border-end">
+                        <h6>DETALHES:</h6>
+                        <p><strong>Ônibus:</strong> <span id="m-bus"></span> | <strong>Placa:</strong> <span id="m-placa"></span></p>
+                        <div class="p-2 bg-light border rounded">
+                            <strong class="text-danger" id="m-prob"></strong><br>
+                            <small id="m-desc"></small>
+                        </div>
+                        <div id="m-midia"></div>
+                        <button class="btn btn-outline-danger btn-sm w-100 mt-3" onclick="excluirChamado()">
+                            <i class="fas fa-trash"></i> EXCLUIR SOLICITAÇÃO
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>PROGRESSO:</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="check1" onchange="setPasso(1)"> <label>Recebido</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="check2" onchange="setPasso(2)"> <label>Em Análise</label>
+                        </div>
+
+                        <a id="m-gps" href="#" target="_blank" class="btn btn-primary w-100 mb-3">
+                            <i class="fas fa-map-marker-alt"></i> VER LOCALIZAÇÃO
+                        </a>
+
+                        <h6>PREVISÃO:</h6>
+                        <div class="input-group mb-4">
+                            <input type="number" id="m-tempo" class="form-control" placeholder="Minutos">
+                            <button class="btn btn-success" onclick="setPrevisao()">ENVIAR</button>
+                        </div>
+
+                        <button class="btn btn-info w-100 text-white fw-bold py-3" onclick="abrirConexao()">
+                            <i class="fas fa-comments"></i> ABRIR CONEXÃO ÁGUIA (CHAT)
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -77,113 +94,69 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    
+    let idAtivo = "";
+    const usuarioMec = JSON.parse(localStorage.getItem('usuarioLogado')) || { nome: "Mecânico Águia" };
+    document.getElementById('nomeMecDisplay').innerText = usuarioMec.nome;
 
-    // Dados do Usuário (Se não tiver login, usa um padrão para não travar)
-    const user = JSON.parse(localStorage.getItem('usuarioLogado')) || { nome: "Mecânico Geral", base: "Base Central", tipo: "mecanico" };
-    document.getElementById('nomeMec').innerText = user.nome;
-    document.getElementById('baseMec').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${user.base}`;
-
-    let idChamadoParaFinalizar = null;
-
-    // ESCUTA EM TEMPO REAL
-    db.ref('chamados').on('value', snapshot => {
-        const lista = document.getElementById('listaChamadosMec');
-        let html = "";
-        let count = 0;
-
-        snapshot.forEach(child => {
+    db.ref('chamados').on('value', snap => {
+        const div = document.getElementById('listaChamados');
+        div.innerHTML = "";
+        snap.forEach(child => {
             const c = child.val();
-            
-            // FILTRO: Mostra '🚨 Pendente' (que o motorista envia) e 'Socorro a Caminho'
-            if(c.status !== 'Resolvido') {
-                count++;
-                const atendendoEste = c.resposta_base === user.nome;
-                const statusClass = c.status === '🚨 Pendente' ? 'badge-pendente' : 'badge-caminho';
-
-                html += `
-                <div class="card card-chamado ${atendendoEste ? 'atendendo' : ''} p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="fw-bold" style="font-size: 1.1rem; color: #002855;">🚌 Carro: ${c.numero}</span>
-                        <span class="badge ${statusClass} p-2">${c.status}</span>
-                    </div>
-
-                    <div class="row g-2 mb-3">
-                        <div class="col-7">
-                            <p class="mb-1"><b>Problema:</b> <span class="text-danger">${c.problema}</span></p>
-                            <p class="mb-1 small"><b>Motorista:</b> ${c.motorista}</p>
-                            <p class="mb-0 small text-muted"><b>Local:</b> ${c.ponto_referencia}</p>
-                        </div>
-                        <div class="col-5 text-end">
-                            ${c.foto ? `<img src="${c.foto}" class="img-preview shadow-sm" onclick="window.open('${c.foto}')">` : `<div class="bg-light text-muted small p-3 rounded">Sem foto</div>`}
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2">
-                        <a href="https://www.google.com/maps?q=${c.lat},${c.lng}" target="_blank" class="btn btn-outline-primary btn-sm flex-fill">
-                            <i class="fas fa-location-arrow"></i> Ver GPS
-                        </a>
-                        
-                        ${c.status === '🚨 Pendente' ? 
-                            `<button onclick="atenderChamado('${child.key}')" class="btn btn-atender flex-fill">ASSUMIR</button>` : 
-                            (atendendoEste ? 
-                                `<button onclick="abrirModalFinalizar('${child.key}')" class="btn btn-finalizar flex-fill">FINALIZAR</button>` : 
-                                `<button class="btn btn-light btn-sm flex-fill" disabled>Em atendimento</button>`)
-                        }
-                    </div>
+            div.innerHTML += `
+                <div class="card card-chamado p-3 border-start border-4 border-danger">
+                    <div class="d-flex justify-content-between"><strong>Ônibus ${c.numero}</strong> <small>#${c.protocolo}</small></div>
+                    <div class="text-danger fw-bold">${c.problema}</div>
+                    <button class="btn btn-dark btn-sm mt-2" onclick="gerenciar('${child.key}')">GERENCIAR</button>
                 </div>`;
-            }
         });
-
-        document.getElementById('contador').innerText = count;
-        lista.innerHTML = count > 0 ? html : '<div class="text-center text-muted mt-5">Tudo limpo! Nenhum chamado.</div>';
     });
 
-    function atenderChamado(id) {
-        if(confirm("Confirmar deslocamento para este socorro?")) {
-            db.ref('chamados/' + id).update({
-                status: 'Socorro a Caminho',
-                resposta_base: user.nome,
-                resposta_previsao: "30" // Valor padrão de exemplo
-            });
+    async function gerenciar(id) {
+        idAtivo = id;
+        const c = (await db.ref('chamados/' + id).once('value')).val();
+        document.getElementById('m-prot').innerText = "#" + c.protocolo;
+        document.getElementById('m-bus').innerText = c.numero;
+        document.getElementById('m-placa').innerText = c.placa;
+        document.getElementById('m-prob').innerText = c.problema;
+        document.getElementById('m-desc').innerText = c.descricao;
+        
+        // Correção do link do GPS
+        document.getElementById('m-gps').href = `https://www.google.com/maps?q=${c.lat},${c.lng}`;
+        
+        document.getElementById('m-midia').innerHTML = c.midia ? `<img src="${c.midia}" class="img-prev">` : "";
+        document.getElementById('check1').checked = c.status_passo >= 1;
+        document.getElementById('check2').checked = c.status_passo >= 2;
+        new bootstrap.Modal(document.getElementById('modalMec')).show();
+    }
+
+    function setPasso(p) { db.ref('chamados/' + idAtivo).update({ status_passo: p }); }
+    
+    function setPrevisao() { 
+        const t = document.getElementById('m-tempo').value;
+        if(!t) return alert("Digite o tempo!");
+        db.ref('chamados/' + idAtivo).update({ status_passo: 3, previsao_chegada: t });
+        alert("Previsão enviada ao motorista!");
+    }
+
+    function excluirChamado() {
+        const m = prompt("Motivo da exclusão (Ex: Teste):");
+        if(m) {
+            db.ref('chamados/' + idAtivo).remove();
+            bootstrap.Modal.getInstance(document.getElementById('modalMec')).hide();
         }
     }
 
-    function abrirModalFinalizar(id) {
-        idChamadoParaFinalizar = id;
-        new bootstrap.Modal(document.getElementById('modalFinalizar')).show();
-    }
-
-    async function confirmarFinalizacao() {
-        const relatorio = document.getElementById('relatorioFinal').value;
-        if(!relatorio) return alert("Descreva o que foi feito no veículo.");
-
-        try {
-            const snap = await db.ref('chamados/' + idChamadoParaFinalizar).once('value');
-            const dados = snap.val();
-
-            // 1. Atualiza o chamado
-            await db.ref('chamados/' + idChamadoParaFinalizar).update({
-                status: 'Resolvido',
-                resposta_obs: relatorio,
-                hora_conclusao: new Date().toLocaleTimeString()
-            });
-
-            // 2. Libera o ônibus na frota
-            await db.ref('frota/' + dados.numero).update({ status: 'Disponível' });
-
-            bootstrap.Modal.getInstance(document.getElementById('modalFinalizar')).hide();
-            document.getElementById('relatorioFinal').value = "";
-            alert("Veículo liberado com sucesso!");
-        } catch (err) {
-            alert("Erro ao finalizar.");
-        }
-    }
-
-    function logout() {
-        localStorage.removeItem('usuarioLogado');
-        window.location.href = 'index.html';
+    // FUNÇÃO CORRIGIDA: Agora abre o chat para o mecânico também!
+    function abrirConexao() {
+        // Puxa o motorista para o chat
+        db.ref('chamados/' + idAtivo).update({ chat_aberto_obrigatorio: true });
+        
+        // Abre a janela de chat para o próprio mecânico
+        const urlChat = `chat_motorista.html?id=${idAtivo}&nome=${encodeURIComponent(usuarioMec.nome)}`;
+        window.open(urlChat, 'chat_aguia', 'width=450,height=600');
     }
 </script>
-
 </body>
 </html>
