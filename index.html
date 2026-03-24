@@ -62,7 +62,6 @@
     </button>
 
     <div class="text-center">
-        <small class="text-muted">Acesso Administrativo: <b>central</b></small><br>
         <small class="text-muted">Motoristas e Mecânicos: Matrícula ou CPF</small>
     </div>
 </div>
@@ -86,13 +85,20 @@
 
     async function fazerLogin() {
         const inputRaw = document.getElementById('usuario').value.trim();
+        const inputLower = inputRaw.toLowerCase();
         const inputClean = inputRaw.replace(/\D/g, ""); 
         const btn = document.getElementById('btnEntrar');
         
         if(!inputRaw) return alert("Por favor, digite seu acesso.");
 
-        // 1. Acesso à Central
-        if(inputRaw.toLowerCase() === 'central') {
+        // 1. ACESSO OCULTO À TV 
+        if(inputLower === 'painel.tv') {
+            window.location.href = 'tv.html';
+            return;
+        }
+
+        // 2. Acesso à Central
+        if(inputLower === '268426') {
             window.location.href = 'central.html';
             return;
         }
@@ -120,7 +126,7 @@
                 return;
             }
 
-            // BUSCA MECÂNICOS (Cadastro Geral)
+            // BUSCA MECÂNICOS
             const snapMecanicos = await db.ref('cadastro_mecanicos').once('value');
             let mecanicoEncontrado = null;
 
@@ -130,7 +136,6 @@
             });
 
             if(mecanicoEncontrado) {
-                // Se achou o mecânico, verifica se ele está VINCULADO a uma base
                 const snapVinculo = await db.ref('vinculos_equipe/' + mecanicoEncontrado.matricula).once('value');
                 
                 if(snapVinculo.exists()) {
@@ -138,19 +143,18 @@
                     localStorage.setItem('usuarioLogado', JSON.stringify({
                         nome: mecanicoEncontrado.nome,
                         matricula: mecanicoEncontrado.matricula,
-                        base: dadosVinculo.baseNome, // A base que ele vai atender
+                        base: dadosVinculo.baseNome, 
                         tipo: 'mecanico'
                     }));
                     window.location.href = 'mecanico.html';
                 } else {
-                    alert('⚠️ Você está cadastrado, mas não possui uma BASE vinculada. Fale com a Central.');
+                    alert('⚠️ Você está cadastrado, mas não possui uma BASE vinculada.');
                     resetBtn(btn);
                 }
                 return;
             }
 
-            // Se não encontrou nada
-            alert('❌ Usuário não localizado! Verifique os dados ou fale com a Central.');
+            alert('❌ Usuário não localizado!');
             resetBtn(btn);
 
         } catch (error) {

@@ -2,50 +2,82 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Conexão Águia | Chat</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        body { background-color: #e5ddd5; height: 100vh; display: flex; flex-direction: column; margin: 0; }
-        .chat-header { background: #003366; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        body { background-color: #e5ddd5; height: 100vh; display: flex; flex-direction: column; margin: 0; overflow: hidden; font-family: sans-serif; }
         
-        .message { max-width: 75%; padding: 8px 12px; border-radius: 12px; font-size: 14px; line-height: 1.4; position: relative; }
-        .sent { background: #dcf8c6; align-self: flex-end; border-top-right-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-        .received { background: white; align-self: flex-start; border-top-left-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .chat-header { background: #003366; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 10; }
         
-        .sender-name { font-size: 10px; font-weight: bold; margin-bottom: 2px; display: block; }
-        .msg-time { font-size: 9px; opacity: 0.5; float: right; margin-top: 5px; margin-left: 8px; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
         
-        .input-area { background: #f0f0f0; padding: 12px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
-        #msgInput { border-radius: 25px; border: 1px solid #ccc; padding: 10px 18px; flex: 1; outline: none; }
-        .btn-send { background: #075e54; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-send:active { transform: scale(0.9); background: #054d44; }
+        /* Estilização das Bolhas */
+        .message { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 14.5px; line-height: 1.4; position: relative; word-wrap: break-word; }
+        
+        /* Mensagem enviada por VOCÊ (Verde / Direita) */
+        .sent { background: #dcf8c6; align-self: flex-end; border-top-right-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+        
+        /* Mensagem recebida do OUTRO (Branca / Esquerda) */
+        .received { background: white; align-self: flex-start; border-top-left-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+        
+        .sender-name { font-size: 10px; font-weight: bold; margin-bottom: 2px; display: block; text-transform: uppercase; }
+        .msg-time { font-size: 9px; opacity: 0.6; float: right; margin-top: 5px; margin-left: 10px; }
+        
+        .msg-img, .msg-video { max-width: 100%; border-radius: 8px; margin-top: 5px; cursor: pointer; }
+        audio { height: 35px; margin-top: 5px; width: 100%; max-width: 240px; }
+
+        .input-area { background: #f0f0f0; padding: 10px 15px; display: flex; gap: 8px; border-top: 1px solid #ddd; align-items: center; }
+        #msgInput { border-radius: 25px; border: 1px solid #ccc; padding: 10px 18px; flex: 1; outline: none; font-size: 15px; }
+        
+        .btn-action { font-size: 20px; color: #555; cursor: pointer; padding: 5px; transition: 0.2s; border: none; background: none; }
+        .btn-action:active { color: #003366; transform: scale(0.9); }
+        
+        .btn-send { background: #003366; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .btn-send:active { transform: scale(0.9); }
+
+        .recording { color: #d9534f !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <div class="chat-header">
         <div class="d-flex align-items-center">
+            <button onclick="sairDoChat()" class="btn btn-link text-white p-0 me-3"><i class="fas fa-arrow-left"></i></button>
             <i class="fas fa-headset me-2"></i>
             <div>
                 <strong style="font-size: 14px;">CONEXÃO ÁGUIA</strong><br>
-                <small id="status-protocolo" style="font-size: 11px; opacity: 0.8;">Carregando...</small>
+                <small id="status-protocolo" style="font-size: 11px; opacity: 0.8;">Protocolo: ---</small>
             </div>
         </div>
-        <button onclick="sairDoChat()" class="btn btn-sm btn-outline-light">Sair</button>
     </div>
 
     <div id="chat-window"></div>
 
     <div class="input-area">
-        <input type="text" id="msgInput" placeholder="Digite uma mensagem..." autocomplete="off">
+        <label for="file-input" class="btn-action">
+            <i class="fas fa-paperclip"></i>
+        </label>
+        <input type="file" id="file-input" class="hidden" accept="image/*,video/*" onchange="uploadMidia(this)">
+
+        <input type="text" id="msgInput" placeholder="Mensagem" autocomplete="off">
+
+        <button id="btn-audio" class="btn-action" 
+                onmousedown="iniciarGravacao()" onmouseup="pararGravacao()" 
+                ontouchstart="iniciarGravacao()" ontouchend="pararGravacao()">
+            <i class="fas fa-microphone"></i>
+        </button>
+
         <button class="btn-send" onclick="enviarMensagem()"><i class="fas fa-paper-plane"></i></button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -59,19 +91,23 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const storage = firebase.storage();
 
-        // 1. Identificação Dinâmica (Motorista ou Mecânico)
+        // --- CONFIGURAÇÃO DO USUÁRIO ---
         const urlParams = new URLSearchParams(window.location.search);
         const protocolo = urlParams.get('id');
         const storageUser = JSON.parse(localStorage.getItem('usuarioLogado')) || {};
-        
-        const meuNome = urlParams.get('nome') || storageUser.nome || "Usuário";
-        // Gerar um ID persistente baseado no nome para evitar duplicação visual
-        const meuId = storageUser.id || meuNome.replace(/\s/g, ''); 
 
-        document.getElementById('status-protocolo').innerText = "Protocolo: " + (protocolo || "Erro");
+        // Identificador único (Matrícula > Nome formatado)
+        const meuId = (storageUser.matricula || storageUser.cpf || urlParams.get('nome') || "user").toString().replace(/\s+/g, '_').toLowerCase();
+        const meuNome = storageUser.nome || urlParams.get('nome') || "Usuário";
 
-        // 2. Escutar Mensagens em Tempo Real
+        document.getElementById('status-protocolo').innerText = "Protocolo: #" + (protocolo || "---");
+
+        let mediaRecorder;
+        let audioChunks = [];
+
+        // --- 1. ESCUTAR MENSAGENS ---
         if(protocolo) {
             db.ref('chats/' + protocolo).on('value', snap => {
                 const chatWindow = document.getElementById('chat-window');
@@ -79,33 +115,47 @@
                 
                 snap.forEach(child => {
                     const m = child.val();
-                    const isMe = (m.senderId === meuId);
                     
-                    const html = `
-                        <div class="message ${isMe ? 'sent' : 'received'} animate__animated animate__fadeInUp">
-                            <span class="sender-name" style="color: ${isMe ? '#075e54' : '#003366'}">
-                                ${isMe ? 'Você' : m.senderName}
-                            </span>
-                            ${m.text}
-                            <span class="msg-time">${new Date(m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                        </div>
+                    // LÓGICA CRÍTICA: Verifica se o ID do remetente no Firebase é igual ao MEU ID logado
+                    const isMe = (m.senderId === meuId);
+                    const nomeExibicao = isMe ? "Você" : (m.senderName || "Mecânico/Motorista");
+                    
+                    const hora = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '--:--';
+                    
+                    let conteudo = m.text || "";
+                    if (m.type === 'image') {
+                        conteudo = `<a href="${m.url}" target="_blank"><img src="${m.url}" class="msg-img"></a>`;
+                    } else if (m.type === 'video') {
+                        conteudo = `<video src="${m.url}" controls class="msg-video"></video>`;
+                    } else if (m.type === 'audio') {
+                        conteudo = `<audio src="${m.url}" controls></audio>`;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = `message ${isMe ? 'sent' : 'received'} animate__animated animate__fadeInUp animate__faster`;
+                    div.innerHTML = `
+                        <span class="sender-name" style="color: ${isMe ? '#075e54' : '#003366'}">
+                            ${nomeExibicao}
+                        </span>
+                        ${conteudo}
+                        <span class="msg-time">${hora}</span>
                     `;
-                    chatWindow.innerHTML += html;
+                    chatWindow.appendChild(div);
                 });
-                chatWindow.scrollTop = chatWindow.scrollHeight;
+                chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
             });
         }
 
-        // 3. Função de Enviar
+        // --- 2. ENVIAR TEXTO ---
         function enviarMensagem() {
             const input = document.getElementById('msgInput');
             const texto = input.value.trim();
-            
             if(texto !== "" && protocolo) {
                 db.ref('chats/' + protocolo).push({
                     senderId: meuId,
                     senderName: meuNome,
                     text: texto,
+                    type: 'text',
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
                 input.value = "";
@@ -113,16 +163,74 @@
             }
         }
 
-        // Função de Sair que funciona em Celular e PC
-        function sairDoChat() {
-            if (window.opener || window.history.length === 1) {
-                window.close(); // Se for pop-up, fecha
-            } else {
-                window.history.back(); // Se for página normal, volta
+        // --- 3. UPLOAD DE MÍDIA ---
+        async function uploadMidia(input) {
+            const file = input.files[0];
+            if (!file || !protocolo) return;
+
+            const icon = document.querySelector('.fa-paperclip');
+            icon.className = "fas fa-spinner fa-spin";
+
+            try {
+                const fileRef = storage.ref(`chats/${protocolo}/${Date.now()}_${file.name}`);
+                await fileRef.put(file);
+                const url = await fileRef.getDownloadURL();
+
+                db.ref('chats/' + protocolo).push({
+                    senderId: meuId,
+                    senderName: meuNome,
+                    type: file.type.startsWith('image') ? 'image' : 'video',
+                    url: url,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            } catch (e) {
+                alert("Erro ao enviar arquivo.");
+            }
+            icon.className = "fas fa-paperclip";
+            input.value = "";
+        }
+
+        // --- 4. GRAVAÇÃO DE ÁUDIO ---
+        async function iniciarGravacao() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const fileRef = storage.ref(`chats/${protocolo}/audio_${Date.now()}.webm`);
+                    
+                    const snapshot = await fileRef.put(audioBlob);
+                    const url = await snapshot.ref.getDownloadURL();
+
+                    db.ref('chats/' + protocolo).push({
+                        senderId: meuId,
+                        senderName: meuNome,
+                        type: 'audio',
+                        url: url,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                };
+
+                mediaRecorder.start();
+                document.getElementById('btn-audio').classList.add('recording');
+            } catch (err) {
+                alert("Erro ao acessar microfone.");
             }
         }
 
-        // Enter para enviar
+        function pararGravacao() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                document.getElementById('btn-audio').classList.remove('recording');
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        function sairDoChat() { window.history.back(); }
+
         document.getElementById('msgInput').addEventListener('keypress', (e) => {
             if(e.key === 'Enter') enviarMensagem();
         });

@@ -9,21 +9,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
-        .header-motorista { background-color: #003366; color: white; padding: 20px; border-radius: 0 0 20px 20px; margin-bottom: 25px; text-align: center; }
-        .card-painel { border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header-motorista { background-color: #003366; color: white; padding: 15px; border-radius: 0 0 20px 20px; margin-bottom: 20px; text-align: center; }
+        .card-painel { border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.3s ease; }
         .hidden { display: none !important; }
-        
+        .secao-bloqueada { opacity: 0.5; pointer-events: none; filter: grayscale(0.5); }
+
         /* Timeline de Status */
         .timeline-status { display: flex; justify-content: space-between; margin-top: 20px; position: relative; }
         .step { text-align: center; width: 33%; position: relative; z-index: 2; }
         .step i { width: 40px; height: 40px; border-radius: 50%; background: #ddd; line-height: 40px; color: white; margin-bottom: 5px; }
         .step.active i { background: #28a745; box-shadow: 0 0 10px rgba(40,167,69,0.5); }
-        .step.pending i { background: #ffc107; }
         .line-progress { position: absolute; top: 20px; left: 15%; width: 70%; height: 2px; background: #ddd; z-index: 1; }
 
-        .btn-panic { height: 60px; font-weight: bold; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .chat-alert { animation: pulse-blue 1.5s infinite; background: #007bff !important; color: white; }
-        @keyframes pulse-blue { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .btn-panic { height: 60px; font-weight: bold; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .chat-alert { animation: pulse-blue 1.5s infinite; background: #007bff !important; color: white; border: none; }
+        @keyframes pulse-blue { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        
+        /* Estilo Botão Confirmar Retorno */
+        .btn-resolvido { background-color: #198754; color: white; border: none; font-weight: bold; padding: 20px; border-radius: 15px; animation: pulse-green 2s infinite; font-size: 1.1rem; }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(25, 135, 84, 0); } 100% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); } }
     </style>
 </head>
 <body class="pb-5">
@@ -34,74 +38,93 @@
     </div>
 
     <div class="container">
-        <div id="secao-checkin" class="card card-painel p-4 text-center">
-            <h4 class="mb-3">Iniciar Jornada</h4>
-            <div class="mb-3">
-                <label class="small fw-bold">Número do Ônibus</label>
-                <input type="number" id="numVeiculoInput" class="form-control form-control-lg text-center" placeholder="Ex: 105" oninput="buscarPlaca(this.value)">
+        
+        <div class="card card-painel p-3 mb-3 border-start border-primary border-4">
+            <div class="row align-items-center">
+                <div class="col-7">
+                    <label class="small fw-bold text-uppercase text-muted" style="font-size: 0.65rem;">Nº do Ônibus</label>
+                    <input type="number" id="numVeiculoInput" class="form-control form-control-lg fw-bold" placeholder="Ex: 105" oninput="buscarPlaca(this.value)">
+                </div>
+                <div class="col-5 text-end">
+                    <small class="text-muted d-block" style="font-size: 0.65rem;">PLACA</small>
+                    <strong id="placaAutomatica" class="text-primary h5">---</strong>
+                </div>
             </div>
-            <div class="mb-3 bg-light p-2 rounded">
-                <small class="text-muted d-block">Placa Identificada:</small>
-                <strong id="placaAutomatica" class="text-primary">---</strong>
-            </div>
-            <button id="btnCheckin" onclick="fazerCheckin()" class="btn btn-primary btn-lg w-100 fw-bold" disabled>VINCULAR VEÍCULO</button>
         </div>
 
-        <div id="secao-alertas" class="hidden">
-            <div class="card card-painel p-3 mb-4 d-flex flex-row justify-content-between align-items-center">
-                <div><small class="text-muted">VEÍCULO</small><br><strong id="display-veiculo">---</strong></div>
-                <button onclick="fazerCheckout()" class="btn btn-outline-danger btn-sm">Trocar</button>
-            </div>
+        <hr class="my-3">
 
+        <div id="area-formulario" class="secao-bloqueada">
+            
             <div id="menu-problemas">
-                <label class="fw-bold mb-2">Selecione o Problema:</label>
-                <select id="selectProblema" class="form-select form-select-lg mb-3" onchange="verificarOutros(this.value)">
-                    <option value="">Selecione...</option>
-                    <option value="Pneu Furado">Pneu Furado</option>
-                    <option value="Aquecimento no Motor">Aquecimento no Motor</option>
-                    <option value="Pane Mecânica">Pane Mecânica</option>
-                    <option value="Falta de Combustível">Falta de Combustível</option>
-                    <option value="OUTROS">OUTROS (Relatar...)</option>
-                </select>
+                <div class="card card-painel p-3 mb-3">
+                    <label class="fw-bold mb-2"><i class="fas fa-tools text-warning"></i> Qual o Problema?</label>
+                    <select id="selectProblema" class="form-select form-select-lg mb-2 shadow-sm" onchange="verificarOutros(this.value)">
+                        <option value="">Selecione...</option>
+                        <option value="Pneu Furado">Pneu Furado</option>
+                        <option value="Aquecimento no Motor">Aquecimento no Motor</option>
+                        <option value="Pane Mecânica">Pane Mecânica</option>
+                        <option value="Falta de Combustível">Falta de Combustível</option>
+                        <option value="OUTROS">OUTROS...</option>
+                    </select>
 
-                <div id="area-outros" class="hidden">
-                    <div class="alert alert-info small">Relate o problema com o máximo de informações possíveis.</div>
-                    <textarea id="descDetalhada" class="form-control mb-3" rows="4" placeholder="Descreva o que houve..."></textarea>
-                    <label class="small fw-bold">Anexar Mídia (Foto/Vídeo/Áudio):</label>
-                    <input type="file" id="midiaInput" class="form-control mb-3" accept="image/*,video/*,audio/*" capture="camera">
+                    <div id="area-outros" class="hidden mt-2">
+                        <textarea id="descDetalhada" class="form-control mb-2" rows="2" placeholder="Descreva o problema..."></textarea>
+                        <input type="file" id="midiaInput" class="form-control form-control-sm" accept="image/*,video/*" capture="camera">
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="small fw-bold">Ponto de Referência:</label>
-                    <input type="text" id="pontoRef" class="form-control" placeholder="Km, Posto, Cidade...">
+                <div class="card card-painel p-3 mb-4">
+                    <label class="small fw-bold mb-1"><i class="fas fa-map-marked-alt text-danger"></i> Onde você está?</label>
+                    <input type="text" id="pontoRef" class="form-control" placeholder="Km, Posto, Referência...">
                 </div>
 
-                <button onclick="enviarSocorro()" id="btnEnviar" class="btn btn-danger btn-lg w-100 fw-bold py-3">
+                <button onclick="enviarSocorro()" id="btnEnviar" class="btn btn-danger btn-lg w-100 fw-bold py-3 shadow">
                     SOLICITAR SOCORRO <i class="fas fa-paper-plane ms-2"></i>
                 </button>
             </div>
 
             <div id="status-socorro" class="hidden">
-                <div class="card card-painel p-4 text-center border-warning border-2">
-                    <h5 class="fw-bold">Protocolo: <span id="numProtocolo" class="text-primary">#---</span></h5>
+                <div class="card card-painel p-4 text-center border-warning border-2 shadow-lg">
                     
-                    <div class="timeline-status">
-                        <div class="line-progress"></div>
-                        <div class="step" id="step1"><i class="fas fa-check"></i><br><small>Recebido</small></div>
-                        <div class="step" id="step2"><i class="fas fa-search"></i><br><small>Análise</small></div>
-                        <div class="step" id="step3"><i class="fas fa-truck-moving"></i><br><small>A Caminho</small></div>
+                    <div id="painel-acompanhamento">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-warning text-dark">Acompanhando Chamado</span>
+                            <h6 class="mb-0 fw-bold">Prot: <span id="numProtocolo" class="text-primary">#---</span></h6>
+                        </div>
+                        
+                        <div class="timeline-status">
+                            <div class="line-progress"></div>
+                            <div class="step" id="step1"><i class="fas fa-check"></i><br><small>Recebido</small></div>
+                            <div class="step" id="step2"><i class="fas fa-wrench"></i><br><small>Análise</small></div>
+                            <div class="step" id="step3"><i class="fas fa-truck-moving"></i><br><small>A Caminho</small></div>
+                        </div>
+
+                        <div id="info-previsao" class="mt-4 p-3 bg-light rounded border hidden">
+                            <p class="mb-0 fw-bold text-success"><i class="fas fa-clock"></i> Chegada estimada: <span id="tempoPrevisao">--</span> min</p>
+                        </div>
+
+                        <hr>
+                        <button id="btnChat" onclick="irParaChat()" class="btn btn-secondary w-100 btn-panic hidden mb-2">
+                            <i class="fas fa-comments"></i> CONEXÃO ÁGUIA (Chat)
+                        </button>
                     </div>
 
-                    <div id="info-previsao" class="mt-4 p-3 bg-light rounded hidden">
-                        <p class="mb-0 fw-bold text-success"><i class="fas fa-clock"></i> Chegada estimada: <span id="tempoPrevisao">--</span> min</p>
+                    <div id="painel-conclusao" class="hidden">
+                        <div class="text-center py-3">
+                            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                            <h4 class="mt-3 fw-bold">Problema Resolvido!</h4>
+                            <p class="text-muted">O mecânico finalizou o atendimento. O veículo está pronto para seguir viagem?</p>
+                            
+                            <button onclick="confirmarResolvido()" class="btn-resolvido w-100 shadow">
+                                <i class="fas fa-bus me-2"></i> VEÍCULO REPARADO - SEGUIR
+                            </button>
+                        </div>
                     </div>
 
-                    <hr>
-                    <button id="btnChat" onclick="irParaChat()" class="btn btn-secondary w-100 btn-panic hidden">
-                        <i class="fas fa-comments"></i> CONEXÃO ÁGUIA (Chat Ativo)
-                    </button>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -116,11 +139,12 @@
             apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
             authDomain: "translog-231da.firebaseapp.com",
             projectId: "translog-231da",
-            storageBucket: "translog-231da.appspot.com",
+            storageBucket: "translog-231da.firebasestorage.app",
             messagingSenderId: "306116251077",
             appId: "1:306116251077:web:cf9e590b7a14b5ff540fac",
             databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
         };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const storage = firebase.storage();
@@ -132,18 +156,27 @@
         let placaDetectada = "";
         let ultimaPos = { lat: 0, lng: 0 };
 
+        // Monitoramento contínuo da posição
+        navigator.geolocation.watchPosition(p => {
+            ultimaPos = { lat: p.coords.latitude, lng: p.coords.longitude };
+        }, null, { enableHighAccuracy: true });
+
         async function buscarPlaca(num) {
-            const btn = document.getElementById('btnCheckin');
+            const areaForm = document.getElementById('area-formulario');
             const placaTxt = document.getElementById('placaAutomatica');
-            if(num.length < 2) { placaTxt.innerText = "---"; btn.disabled = true; return; }
+            if(num.length < 2) { 
+                placaTxt.innerText = "---"; 
+                areaForm.classList.add('secao-bloqueada');
+                return; 
+            }
             const snap = await db.ref('frota/' + num).once('value');
             if(snap.exists()) {
                 placaDetectada = snap.val().placa;
                 placaTxt.innerText = placaDetectada;
-                btn.disabled = false;
+                areaForm.classList.remove('secao-bloqueada');
             } else {
-                placaTxt.innerText = "Não encontrado";
-                btn.disabled = true;
+                placaTxt.innerText = "S/ Reg.";
+                areaForm.classList.add('secao-bloqueada');
             }
         }
 
@@ -156,26 +189,30 @@
             const prob = document.getElementById('selectProblema').value;
             const ref = document.getElementById('pontoRef').value;
             const desc = document.getElementById('descDetalhada').value;
-            const file = document.getElementById('midiaInput').files[0];
+            const fileInput = document.getElementById('midiaInput');
+            const file = fileInput ? fileInput.files[0] : null;
             const btn = document.getElementById('btnEnviar');
 
-            if(!prob || !ref) return alert("Preencha o problema e o local!");
+            if (!prob || !ref) return alert("Selecione o problema e informe o local!");
+            if (prob === 'OUTROS' && !desc.trim()) return alert("Descreva o problema!");
+
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Enviando...';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Enviando Chamado...';
 
             try {
                 let midiaUrl = "";
-                if(file) {
-                    const storageRef = storage.ref(`ocorrencias/${Date.now()}`);
-                    await storageRef.put(file);
-                    midiaUrl = await storageRef.getDownloadURL();
+                if (file) {
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Subindo Imagem...';
+                    const storageRef = storage.ref(`ocorrencias/${Date.now()}_${file.name}`);
+                    const snapshot = await storageRef.put(file);
+                    midiaUrl = await snapshot.ref.getDownloadURL();
                 }
 
                 const protocolo = "SOC-" + Math.floor(1000 + Math.random() * 9000);
                 const novoChamado = {
                     protocolo: protocolo,
                     numero: document.getElementById('numVeiculoInput').value,
-                    placa: placaDetectada,
+                    placa: placaDetectada || "N/A",
                     problema: prob,
                     descricao: (prob === 'OUTROS') ? desc : prob,
                     midia: midiaUrl,
@@ -189,11 +226,12 @@
 
                 await db.ref('chamados/' + protocolo).set(novoChamado);
                 localStorage.setItem('protocoloAtivo', protocolo);
-                alert("Solicitação enviada com sucesso!");
-                location.reload();
+                monitorarChamado();
             } catch (error) {
-                alert("Erro ao enviar.");
+                console.error(error);
+                alert("Erro ao enviar. Verifique sua conexão.");
                 btn.disabled = false;
+                btn.innerText = "SOLICITAR SOCORRO";
             }
         }
 
@@ -204,72 +242,76 @@
             document.getElementById('menu-problemas').classList.add('hidden');
             document.getElementById('status-socorro').classList.remove('hidden');
             document.getElementById('numProtocolo').innerText = "#" + prot;
+            document.getElementById('area-formulario').classList.remove('secao-bloqueada');
 
             db.ref('chamados/' + prot).on('value', snap => {
                 const c = snap.val();
-                if(!c) return;
-
-                // Timeline logic
-                if(c.status_passo >= 1) document.getElementById('step1').classList.add('active');
-                if(c.status_passo >= 2) document.getElementById('step2').classList.add('active');
-                if(c.status_passo >= 3) {
-                    document.getElementById('step3').classList.add('active');
-                    document.getElementById('info-previsao').classList.remove('hidden');
-                    document.getElementById('tempoPrevisao').innerText = c.previsao_chegada || "--";
+                if(!c) {
+                    resetarTela();
+                    return;
                 }
 
-                // Chat trigger from Mechanic
+                if(c.status_passo === 4) {
+                    document.getElementById('painel-acompanhamento').classList.add('hidden');
+                    document.getElementById('painel-conclusao').classList.remove('hidden');
+                } else {
+                    document.getElementById('painel-acompanhamento').classList.remove('hidden');
+                    document.getElementById('painel-conclusao').classList.add('hidden');
+                    
+                    if(c.status_passo >= 1) document.getElementById('step1').classList.add('active');
+                    if(c.status_passo >= 2) document.getElementById('step2').classList.add('active');
+                    if(c.status_passo >= 3) {
+                        document.getElementById('step3').classList.add('active');
+                        document.getElementById('info-previsao').classList.remove('hidden');
+                        document.getElementById('tempoPrevisao').innerText = c.previsao_chegada || "--";
+                    }
+                }
+
                 if(c.chat_aberto_obrigatorio === true) {
                     document.getElementById('som-campainha').play();
-                    document.getElementById('btnChat').classList.remove('hidden');
-                    document.getElementById('btnChat').classList.add('chat-alert');
-                    // Opcional: Redirecionar direto se quiser que seja automático
-                    // window.location.href = 'chat.html?id=' + prot; 
+                    const btnChat = document.getElementById('btnChat');
+                    btnChat.classList.remove('hidden');
+                    btnChat.classList.add('chat-alert');
                 }
             });
         }
 
-        function irParaChat() {
+        async function confirmarResolvido() {
             const prot = localStorage.getItem('protocoloAtivo');
-            // Aqui você deve colocar o link para sua página de chat real
-            window.location.href = 'chat_motorista.html?id=' + prot;
-        }
+            if(!prot) return;
 
-        function fazerCheckin() {
-            const num = document.getElementById('numVeiculoInput').value;
-            localStorage.setItem('veiculoVinculado', JSON.stringify({numero: num, placa: placaDetectada}));
-            document.getElementById('secao-checkin').classList.add('hidden');
-            document.getElementById('secao-alertas').classList.remove('hidden');
-            document.getElementById('display-veiculo').innerText = `Ônibus ${num} (${placaDetectada})`;
-            monitorarChamado();
-        }
-
-        function fazerCheckout() {
-            if(confirm("Encerrar jornada?")) {
-                localStorage.clear();
-                location.reload();
+            try {
+                await db.ref('chamados/' + prot).remove();
+                await db.ref('chats/' + prot).remove();
+                alert("Ótima viagem! O chamado foi encerrado.");
+                resetarTela();
+            } catch (error) {
+                alert("Erro ao finalizar chamado.");
             }
         }
 
-        navigator.geolocation.watchPosition(p => {
-            ultimaPos = { lat: p.coords.latitude, lng: p.coords.longitude };
-        });
+        function resetarTela() {
+            localStorage.removeItem('protocoloAtivo');
+            document.getElementById('status-socorro').classList.add('hidden');
+            document.getElementById('menu-problemas').classList.remove('hidden');
+            document.getElementById('numVeiculoInput').value = "";
+            document.getElementById('placaAutomatica').innerText = "---";
+            document.getElementById('area-formulario').classList.add('secao-bloqueada');
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('info-previsao').classList.add('hidden');
+            document.getElementById('btnEnviar').disabled = false;
+            document.getElementById('btnEnviar').innerText = "SOLICITAR SOCORRO";
+        }
+
+        function irParaChat() {
+            const prot = localStorage.getItem('protocoloAtivo');
+            window.location.href = `chat_motorista.html?id=${prot}`;
+        }
 
         window.onload = () => {
-            if(localStorage.getItem('veiculoVinculado')) fazerCheckin();
-            if(localStorage.getItem('protocoloAtivo')) monitorarChamado();
+            const protAtivo = localStorage.getItem('protocoloAtivo');
+            if(protAtivo) monitorarChamado();
         };
-        function abrirConexao() {
-    // 1. Ativa o chat para o motorista (faz o celular dele tocar)
-    db.ref('chamados/' + idAtivo).update({ chat_aberto_obrigatorio: true });
-    
-    // 2. Pega o nome do mecânico que está logado
-    const nomeMec = document.getElementById('nomeMec').innerText; 
-    
-    // 3. Abre a janela do chat passando ID e NOME
-    const urlChat = `chat_motorista.html?id=${idAtivo}&nome=${encodeURIComponent(nomeMec)}`;
-    window.open(urlChat, 'chat_aguia', 'width=400,height=600');
-}
     </script>
 </body>
 </html>

@@ -8,69 +8,108 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #f8f9fa; }
-        .card-chamado { border-radius: 12px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .img-prev { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #ddd; }
-        .hidden { display: none; }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+        .card-chamado { border-radius: 12px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 15px; cursor: pointer; transition: 0.2s; background: white; }
+        .card-chamado:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .img-prev { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #ddd; max-height: 250px; object-fit: cover; }
         .navbar { background-color: #002147 !important; }
+        .badge-status { font-size: 0.7rem; }
+        
+        /* Botão de Finalização */
+        .btn-concluir-servico { 
+            background-color: #198754; 
+            color: white; 
+            font-weight: bold; 
+            border: none; 
+            padding: 15px; 
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+        .btn-concluir-servico:hover { background-color: #146c43; transform: scale(1.02); }
+        .disabled-link { pointer-events: none; opacity: 0.6; }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-dark mb-4 shadow">
-    <div class="container d-flex justify-content-between">
-        <strong class="text-white">MANUTENÇÃO ÁGUIA</strong>
-        <span id="nomeMecDisplay" class="text-white small">Mecânico Logado</span>
+    <div class="container d-flex justify-content-between align-items-center">
+        <strong class="text-white"><i class="fas fa-wrench me-2"></i>MANUTENÇÃO ÁGUIA</strong>
+        <span id="nomeMecDisplay" class="text-white small fw-bold">Carregando...</span>
     </div>
 </nav>
 
 <div class="container">
-    <div id="listaChamados"></div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Chamados em Aberto</h5>
+        <span class="badge bg-primary" id="contadorChamados">0</span>
+    </div>
+    <div id="listaChamados" class="row"></div>
 </div>
 
-<div class="modal fade" id="modalMec" tabindex="-1">
+<div class="modal fade" id="modalMec" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Atendimento <span id="m-prot"></span></h5>
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold">Atendimento <span id="m-prot" class="text-primary"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6 border-end">
-                        <h6>DETALHES:</h6>
-                        <p><strong>Ônibus:</strong> <span id="m-bus"></span> | <strong>Placa:</strong> <span id="m-placa"></span></p>
-                        <div class="p-2 bg-light border rounded">
-                            <strong class="text-danger" id="m-prob"></strong><br>
-                            <small id="m-desc"></small>
+                        <h6><i class="fas fa-info-circle text-muted"></i> DETALHES DO VEÍCULO:</h6>
+                        <p class="mb-1"><strong>Ônibus:</strong> <span id="m-bus"></span> | <strong>Placa:</strong> <span id="m-placa"></span></p>
+                        <p class="small text-muted mb-3"><strong>Motorista:</strong> <span id="m-driver"></span></p>
+                        
+                        <div class="p-3 bg-light border rounded mb-3">
+                            <strong class="text-danger d-block mb-1" id="m-prob"></strong>
+                            <span id="m-desc" class="small text-dark" style="white-space: pre-wrap;"></span>
                         </div>
+                        
                         <div id="m-midia"></div>
-                        <button class="btn btn-outline-danger btn-sm w-100 mt-3" onclick="excluirChamado()">
-                            <i class="fas fa-trash"></i> EXCLUIR SOLICITAÇÃO
+
+                        <button class="btn btn-link btn-sm text-danger mt-4 w-100" onclick="excluirChamado()">
+                            <i class="fas fa-trash"></i> Cancelar Solicitação (Erro/Teste)
                         </button>
                     </div>
+
                     <div class="col-md-6">
-                        <h6>PROGRESSO:</h6>
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input" type="checkbox" id="check1" onchange="setPasso(1)"> <label>Recebido</label>
-                        </div>
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" id="check2" onchange="setPasso(2)"> <label>Em Análise</label>
+                        <h6><i class="fas fa-tasks text-muted"></i> AÇÕES DO MECÂNICO:</h6>
+                        
+                        <div class="mb-3 p-2 border rounded bg-white">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="check1" onchange="setPasso(1)"> 
+                                <label class="form-check-label">Confirmar Recebimento</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="check2" onchange="setPasso(2)"> 
+                                <label class="form-check-label">Iniciar Análise Técnica</label>
+                            </div>
                         </div>
 
-                        <a id="m-gps" href="#" target="_blank" class="btn btn-primary w-100 mb-3">
-                            <i class="fas fa-map-marker-alt"></i> VER LOCALIZAÇÃO
+                        <a id="m-gps" href="#" target="_blank" class="btn btn-primary w-100 mb-3 shadow-sm">
+                            <i class="fas fa-map-marker-alt me-2"></i>ABRIR NO GOOGLE MAPS
                         </a>
 
-                        <h6>PREVISÃO:</h6>
-                        <div class="input-group mb-4">
-                            <input type="number" id="m-tempo" class="form-control" placeholder="Minutos">
-                            <button class="btn btn-success" onclick="setPrevisao()">ENVIAR</button>
+                        <div class="card p-3 mb-3 bg-light border-0">
+                            <h6 class="small fw-bold mb-2 text-uppercase">Previsão de Chegada (Minutos):</h6>
+                            <div class="input-group">
+                                <input type="number" id="m-tempo" class="form-control" placeholder="Ex: 25">
+                                <button class="btn btn-success fw-bold" onclick="setPrevisao()">ENVIAR</button>
+                            </div>
                         </div>
 
-                        <button class="btn btn-info w-100 text-white fw-bold py-3" onclick="abrirConexao()">
-                            <i class="fas fa-comments"></i> ABRIR CONEXÃO ÁGUIA (CHAT)
+                        <button class="btn btn-info w-100 text-white fw-bold py-2 mb-3 shadow-sm" onclick="abrirConexao()">
+                            <i class="fas fa-comments me-2"></i>ABRIR CHAT COM MOTORISTA
                         </button>
+
+                        <hr>
+
+                        <button class="btn-concluir-servico shadow" onclick="finalizarServicoMec()">
+                            <i class="fas fa-check-double me-2"></i> LIBERAR VEÍCULO (CONCLUÍDO)
+                        </button>
+                        <p class="text-center small text-muted mt-2">O motorista deverá confirmar o reparo no painel dele.</p>
                     </div>
                 </div>
             </div>
@@ -87,75 +126,141 @@
         apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
         authDomain: "translog-231da.firebaseapp.com",
         projectId: "translog-231da",
-        storageBucket: "translog-231da.appspot.com",
+        storageBucket: "translog-231da.firebasestorage.app",
         messagingSenderId: "306116251077",
         appId: "1:306116251077:web:cf9e590b7a14b5ff540fac",
         databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     
     let idAtivo = "";
-    const usuarioMec = JSON.parse(localStorage.getItem('usuarioLogado')) || { nome: "Mecânico Águia" };
+    const usuarioMec = JSON.parse(localStorage.getItem('usuarioLogado')) || { nome: "Mecânico Logado" };
     document.getElementById('nomeMecDisplay').innerText = usuarioMec.nome;
 
+    // ESCUTAR CHAMADOS EM TEMPO REAL
     db.ref('chamados').on('value', snap => {
         const div = document.getElementById('listaChamados');
+        const contador = document.getElementById('contadorChamados');
         div.innerHTML = "";
+        
+        if(!snap.exists()) {
+            div.innerHTML = '<div class="col-12 text-center text-muted p-5"><i class="fas fa-check-circle fa-3x mb-3"></i><br>Tudo em ordem. Nenhum chamado pendente.</div>';
+            contador.innerText = "0";
+            return;
+        }
+
+        let total = 0;
         snap.forEach(child => {
+            total++;
             const c = child.val();
+            // Lógica de cores baseada no status
+            let corBorda = 'border-danger'; // Novo/Recebido
+            if(c.status_passo == 3) corBorda = 'border-info'; // A caminho
+            if(c.status_passo == 4) corBorda = 'border-success opacity-75'; // Aguardando Motorista
+
             div.innerHTML += `
-                <div class="card card-chamado p-3 border-start border-4 border-danger">
-                    <div class="d-flex justify-content-between"><strong>Ônibus ${c.numero}</strong> <small>#${c.protocolo}</small></div>
-                    <div class="text-danger fw-bold">${c.problema}</div>
-                    <button class="btn btn-dark btn-sm mt-2" onclick="gerenciar('${child.key}')">GERENCIAR</button>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-chamado p-3 border-start border-4 ${corBorda}" onclick="gerenciar('${child.key}')">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <strong><i class="fas fa-bus"></i> Carro ${c.numero}</strong>
+                            <span class="badge bg-light text-dark border badge-status">#${c.protocolo}</span>
+                        </div>
+                        <div class="text-danger fw-bold my-1">${c.problema}</div>
+                        <div class="small text-muted">
+                            <i class="fas fa-user-circle"></i> ${c.motorista} <br>
+                            <i class="fas fa-map-marker-alt"></i> ${c.local}
+                            ${c.status_passo == 4 ? '<br><b class="text-success">[ AGUARDANDO MOTORISTA LIBERAR ]</b>' : ''}
+                        </div>
+                        <div class="mt-2 text-end small fw-bold text-primary">DETALHES <i class="fas fa-arrow-right"></i></div>
+                    </div>
                 </div>`;
         });
+        contador.innerText = total;
     });
 
     async function gerenciar(id) {
         idAtivo = id;
-        const c = (await db.ref('chamados/' + id).once('value')).val();
+        const snap = await db.ref('chamados/' + id).once('value');
+        const c = snap.val();
+        
         document.getElementById('m-prot').innerText = "#" + c.protocolo;
         document.getElementById('m-bus').innerText = c.numero;
         document.getElementById('m-placa').innerText = c.placa;
         document.getElementById('m-prob').innerText = c.problema;
-        document.getElementById('m-desc').innerText = c.descricao;
+        document.getElementById('m-desc').innerText = c.descricao || "Sem detalhes adicionais.";
+        document.getElementById('m-driver').innerText = c.motorista;
         
-        // Correção do link do GPS
-        document.getElementById('m-gps').href = `https://www.google.com/maps?q=${c.lat},${c.lng}`;
+        const btnGps = document.getElementById('m-gps');
+        if(c.lat && c.lng) {
+            btnGps.href = `https://www.google.com/maps?q=${c.lat},${c.lng}`;
+            btnGps.classList.remove('disabled', 'btn-secondary');
+            btnGps.classList.add('btn-primary');
+            btnGps.innerHTML = '<i class="fas fa-map-marker-alt me-2"></i>ABRIR NO GOOGLE MAPS';
+        } else {
+            btnGps.href = "#";
+            btnGps.classList.add('disabled', 'btn-secondary');
+            btnGps.innerText = "GPS NÃO ENVIADO";
+        }
         
-        document.getElementById('m-midia').innerHTML = c.midia ? `<img src="${c.midia}" class="img-prev">` : "";
+        document.getElementById('m-midia').innerHTML = c.midia ? 
+            `<a href="${c.midia}" target="_blank"><img src="${c.midia}" class="img-prev shadow-sm"></a>` : 
+            `<div class="alert alert-light border small text-center mt-2">Nenhuma foto anexada</div>`;
+        
         document.getElementById('check1').checked = c.status_passo >= 1;
         document.getElementById('check2').checked = c.status_passo >= 2;
+        document.getElementById('m-tempo').value = c.previsao_chegada || "";
+
         new bootstrap.Modal(document.getElementById('modalMec')).show();
     }
 
-    function setPasso(p) { db.ref('chamados/' + idAtivo).update({ status_passo: p }); }
+    function setPasso(p) { 
+        db.ref('chamados/' + idAtivo).update({ status_passo: p }); 
+    }
     
     function setPrevisao() { 
         const t = document.getElementById('m-tempo').value;
-        if(!t) return alert("Digite o tempo!");
-        db.ref('chamados/' + idAtivo).update({ status_passo: 3, previsao_chegada: t });
-        alert("Previsão enviada ao motorista!");
+        if(!t) return alert("Informe o tempo estimado!");
+        
+        db.ref('chamados/' + idAtivo).update({ 
+            status_passo: 3, 
+            previsao_chegada: t 
+        });
+        alert("Previsão atualizada para " + t + " minutos.");
+    }
+
+    async function finalizarServicoMec() {
+        if(confirm("Confirma a conclusão do reparo? O motorista será notificado para confirmar a saída do veículo.")) {
+            try {
+                await db.ref('chamados/' + idAtivo).update({ status_passo: 4 });
+                alert("Status atualizado! Aguardando confirmação final do motorista.");
+                bootstrap.Modal.getInstance(document.getElementById('modalMec')).hide();
+            } catch (e) {
+                alert("Erro na conexão com o banco.");
+            }
+        }
     }
 
     function excluirChamado() {
-        const m = prompt("Motivo da exclusão (Ex: Teste):");
-        if(m) {
+        if(confirm("Deseja EXCLUIR permanentemente este chamado? Use apenas para erros ou testes.")) {
             db.ref('chamados/' + idAtivo).remove();
             bootstrap.Modal.getInstance(document.getElementById('modalMec')).hide();
         }
     }
 
-    // FUNÇÃO CORRIGIDA: Agora abre o chat para o mecânico também!
     function abrirConexao() {
-        // Puxa o motorista para o chat
+        // Ativa o alerta visual no motorista
         db.ref('chamados/' + idAtivo).update({ chat_aberto_obrigatorio: true });
         
-        // Abre a janela de chat para o próprio mecânico
         const urlChat = `chat_motorista.html?id=${idAtivo}&nome=${encodeURIComponent(usuarioMec.nome)}`;
-        window.open(urlChat, 'chat_aguia', 'width=450,height=600');
+        
+        // Se for celular abre na mesma aba, se for PC abre popup
+        if(window.innerWidth < 768) {
+            window.location.href = urlChat;
+        } else {
+            window.open(urlChat, 'chat_aguia', 'width=400,height=600,left=100,top=100');
+        }
     }
 </script>
 </body>
