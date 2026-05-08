@@ -8,101 +8,204 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { 
-            background-color: #001529; 
-            color: white; 
-            font-family: 'Segoe UI', sans-serif; 
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: #001529;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
             overflow: hidden;
             height: 100vh;
         }
+
+        /* ── Header ── */
         .tv-header {
-            background: #002855;
+            background: linear-gradient(135deg, #002855 0%, #003a7a 100%);
             padding: 15px 30px;
             border-bottom: 4px solid #00146b;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: slideDown 0.6s cubic-bezier(0.34,1.2,0.64,1) forwards;
         }
+        @keyframes slideDown {
+            from { transform: translateY(-80px); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+
         .header-logo {
-            height: 60px; /* Ajuste a altura da logo conforme necessário */
-            width: auto;
+            height: 60px; width: auto;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+            animation: logoPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.3s both;
         }
+        @keyframes logoPop {
+            from { transform: scale(0.6); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+
+        /* ── Relógio ── */
+        .clock {
+            font-size: 1.6rem;
+            font-weight: bold;
+            font-family: monospace;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0,180,255,0.4);
+        }
+
+        /* ── Badge online ── */
+        #status-audio {
+            font-size: 11px;
+            transition: all 0.3s;
+        }
+
+        /* ── Grid ── */
         .grid-chamados {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 20px;
             padding: 20px;
-            height: calc(100vh - 100px); /* Otimiza espaço vertical */
-            overflow-y: auto; /* Permite rolagem se houver muitos chamados */
+            height: calc(100vh - 102px);
+            overflow-y: auto;
         }
+
+        /* ── Card TV ── */
         .card-tv {
-            background: #003366;
-            border-radius: 15px;
+            background: linear-gradient(160deg, #003366 0%, #002244 100%);
+            border-radius: 18px;
             padding: 25px;
             border: 2px solid #00509d;
-            transition: all 0.5s;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+
+            /* Entrada animada */
+            opacity: 0;
+            transform: translateY(20px) scale(0.97);
+            animation: cardEntrada 0.5s cubic-bezier(0.34,1.2,0.64,1) forwards;
         }
-        /* Efeito de Piscado Vermelho para Emergência */
+        @keyframes cardEntrada {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ── Urgente ── */
         .urgente {
-            animation: flash-red 1s infinite;
-            border: 5px solid #ff0000 !important;
+            border: 3px solid #ff2222 !important;
+            animation: cardEntrada 0.5s cubic-bezier(0.34,1.2,0.64,1) forwards,
+                       flashRed 1s infinite;
         }
-        @keyframes flash-red {
-            0% { background-color: #003366; }
-            50% { background-color: #8b0000; }
-            100% { background-color: #003366; }
+        @keyframes flashRed {
+            0%   { background: linear-gradient(160deg, #003366 0%, #002244 100%); box-shadow: 0 0 0   rgba(255,0,0,0.3); }
+            50%  { background: linear-gradient(160deg, #6b0000 0%, #3d0000 100%); box-shadow: 0 0 30px rgba(255,0,0,0.5); }
+            100% { background: linear-gradient(160deg, #003366 0%, #002244 100%); box-shadow: 0 0 0   rgba(255,0,0,0.3); }
         }
+
+        /* ── Número do ônibus ── */
         .bus-number-display {
-            font-size: 5rem; /* Número bem grande */
+            font-size: 5.5rem;
             font-weight: 900;
             color: #ffffff;
             line-height: 1;
             margin: 15px 0;
+            text-shadow: 0 4px 16px rgba(0,80,157,0.6);
+            animation: numberPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
         }
+        @keyframes numberPop {
+            from { transform: scale(0.7); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+
+        /* ── Placa ── */
         .placa-badge {
             background: white;
             color: black;
             padding: 5px 15px;
-            border-radius: 5px;
+            border-radius: 6px;
             font-weight: bold;
             font-family: monospace;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
+
+        /* ── Problema ── */
         .problema-title {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
+            text-shadow: 0 2px 8px rgba(220,53,69,0.4);
+            animation: fadeIn 0.4s ease 0.3s both;
         }
-        .clock {
-            font-size: 1.5rem;
-            font-weight: bold;
-            font-family: monospace;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0);   }
+        }
+
+        /* ── Status badge ── */
+        .status-badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+            margin-top: 6px;
+        }
+        .status-1 { background: rgba(220,53,69,0.2);  color: #ff6b6b; border: 1px solid rgba(220,53,69,0.4); }
+        .status-2 { background: rgba(255,193,7,0.2);  color: #ffd166; border: 1px solid rgba(255,193,7,0.4); }
+        .status-3 { background: rgba(13,202,240,0.2); color: #56cfe1; border: 1px solid rgba(13,202,240,0.4); }
+        .status-4 { background: rgba(25,135,84,0.2);  color: #6fcf97; border: 1px solid rgba(25,135,84,0.4); }
+
+        /* ── Estado vazio ── */
+        #estado-vazio {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        #estado-vazio .fa-check-circle {
+            animation: numberPop 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+        }
+
+        /* ── Scrollbar estilizada ── */
+        .grid-chamados::-webkit-scrollbar { width: 6px; }
+        .grid-chamados::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        .grid-chamados::-webkit-scrollbar-thumb { background: rgba(0,80,157,0.5); border-radius: 3px; }
+
+        /* ── Partículas de fundo ── */
+        .bg-particle {
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(0,80,157,0.08);
+            pointer-events: none;
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            from { transform: translateY(100vh) scale(0); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            to   { transform: translateY(-100px) scale(1); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="tv-header">
+    <!-- Partículas de fundo -->
+    <div id="particles" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0"></div>
+
+    <div class="tv-header" style="position:relative;z-index:1">
         <div class="d-flex align-items-center">
             <img src="logo.png" alt="Águia Conecta" class="header-logo me-3">
             <div>
-                <h1 class="mb-0 fw-bold" style="color: #ffffff;">ÁGUIA CONECTA</h1>
-                <span class="text-uppercase small" style="opacity: 0.8;">Painel de Monitoramento de Manutenção</span>
+                <h1 class="mb-0 fw-bold" style="font-size:1.8rem">ÁGUIA CONECTA</h1>
+                <span class="text-uppercase small" style="opacity:0.7">
+                    Painel de Monitoramento de Manutenção
+                </span>
             </div>
         </div>
         <div class="text-end">
             <div id="relogio" class="clock">00:00:00</div>
-            <div class="d-flex align-items-center justify-content-end mt-1">
-                <i class="fas fa-circle text-success me-2" style="font-size: 10px;"></i>
-                <span class="badge bg-success text-uppercase">Online</span>
+            <div class="d-flex align-items-center justify-content-end mt-1 gap-2">
+                <i class="fas fa-circle text-success" style="font-size:9px"></i>
+                <span id="status-audio" class="badge bg-success text-uppercase">Online</span>
             </div>
         </div>
     </div>
 
-    <div id="container-chamados" class="grid-chamados">
-        </div>
+    <div id="container-chamados" class="grid-chamados" style="position:relative;z-index:1"></div>
 
     <audio id="alarme-sonoro" loop>
         <source src="https://assets.mixkit.co/active_storage/sfx/951/951-preview.mp3" type="audio/mpeg">
@@ -112,84 +215,100 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // Configuração do seu Firebase
-        const firebaseConfig = {
+        // ─── PARTÍCULAS ───────────────────────────────────────────────
+        const particlesEl = document.getElementById('particles');
+        for (let i = 0; i < 12; i++) {
+            const p = document.createElement('div');
+            p.className = 'bg-particle';
+            const size = Math.random() * 80 + 30;
+            p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*20+15}s;animation-delay:${Math.random()*15}s`;
+            particlesEl.appendChild(p);
+        }
+
+        // ─── FIREBASE ─────────────────────────────────────────────────
+        firebase.initializeApp({
             apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
             authDomain: "translog-231da.firebaseapp.com",
             projectId: "translog-231da",
-            storageBucket: "translog-231da.appspot.com",
+            storageBucket: "translog-231da.firebasestorage.app",
             messagingSenderId: "306116251077",
             appId: "1:306116251077:web:cf9e590b7a14b5ff540fac",
             databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
-        };
-        firebase.initializeApp(firebaseConfig);
+        });
         const db = firebase.database();
 
-        const somAlarme = document.getElementById('alarme-sonoro');
-        let somLiberado = false;
+        const somAlarme  = document.getElementById('alarme-sonoro');
+        const statusEl   = document.getElementById('status-audio');
+        let somLiberado  = false;
 
-        // Atualiza o relógio no cabeçalho
+        // ─── RELÓGIO ──────────────────────────────────────────────────
         setInterval(() => {
             document.getElementById('relogio').innerText = new Date().toLocaleTimeString();
         }, 1000);
 
-        // Escuta os chamados no Firebase em tempo real
+        // ─── RÓTULOS DE STATUS ────────────────────────────────────────
+        const statusLabel = {
+            1: { txt: 'Aguardando Mecânico', cls: 'status-1' },
+            2: { txt: 'Em Análise',          cls: 'status-2' },
+            3: { txt: 'Mecânico a Caminho',  cls: 'status-3' },
+            4: { txt: 'Aguard. Motorista',   cls: 'status-4' },
+        };
+
+        // ─── ESCUTAR CHAMADOS ─────────────────────────────────────────
         db.ref('chamados').on('value', snapshot => {
             const container = document.getElementById('container-chamados');
             container.innerHTML = "";
             let temUrgente = false;
+            let total = 0;
 
             snapshot.forEach(child => {
                 const c = child.val();
-                
-                // Mostra chamados que não estão resolvidos
-                if(c.status !== 'Resolvido') {
-                    // Considera urgente se estiver no passo 1 (Recebido)
-                    const isPendente = (c.status_passo === 1);
-                    if(isPendente) temUrgente = true;
+                if (c.status === 'Resolvido') return;
 
-                    // Cria o card focado nas informações principais
-                    const html = `
-                        <div class="card-tv ${isPendente ? 'urgente' : ''}">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge bg-warning text-dark fw-bold">PROT: ${c.protocolo}</span>
-                                <span class="placa-badge">${c.placa}</span>
-                            </div>
-                            <div class="text-center flex-grow-1 d-flex flex-column justify-content-center">
-                                <div class="small text-uppercase" style="opacity: 0.7;">Ônibus</div>
-                                <div class="bus-number-display">${c.numero}</div>
-                                <div class="problema-title text-danger">${c.problema}</div>
-                            </div>
-                            <div class="border-top pt-3 mt-3 d-flex justify-content-between small" style="opacity: 0.8;">
-                                <span><i class="fas fa-user me-1"></i> ${c.motorista}</span>
-                                <span><i class="fas fa-map-marker-alt me-1"></i> ${c.local}</span>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += html;
-                }
+                total++;
+                const isPendente = (c.status_passo === 1);
+                if (isPendente) temUrgente = true;
+
+                const st = statusLabel[c.status_passo] || { txt: 'Em atendimento', cls: 'status-2' };
+
+                const card = document.createElement('div');
+                card.className = `card-tv ${isPendente ? 'urgente' : ''}`;
+                card.style.animationDelay = `${(total - 1) * 80}ms`;
+                card.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-warning text-dark fw-bold">PROT: ${c.protocolo}</span>
+                        <span class="placa-badge">${c.placa}</span>
+                    </div>
+                    <div class="text-center flex-grow-1 d-flex flex-column justify-content-center">
+                        <div class="small text-uppercase" style="opacity:0.6;letter-spacing:2px">Ônibus</div>
+                        <div class="bus-number-display">${c.numero}</div>
+                        <div class="problema-title text-danger">${c.problema}</div>
+                        <span class="status-badge ${st.cls}">${st.txt}</span>
+                    </div>
+                    <div class="border-top pt-3 mt-3 d-flex justify-content-between small" style="opacity:0.75;border-color:rgba(255,255,255,0.1)!important">
+                        <span><i class="fas fa-user me-1"></i>${c.motorista}</span>
+                        <span><i class="fas fa-map-marker-alt me-1"></i>${c.local}</span>
+                    </div>`;
+                container.appendChild(card);
             });
 
-            // Lógica do Som de Alerta
-            if(temUrgente && somLiberado) {
-                somAlarme.play().catch(e => console.log("Erro ao tocar som:", e));
-                
-                // Para o som automaticamente após 2 minutos (120000ms)
-                setTimeout(() => {
-                    pararSom();
-                }, 120000); 
-            } else {
-                pararSom();
+            // ── Tela vazia ──
+            if (total === 0) {
+                container.innerHTML = `
+                    <div id="estado-vazio" class="d-flex flex-column align-items-center justify-content-center"
+                         style="grid-column:1/-1;min-height:60vh;opacity:0.5">
+                        <i class="fas fa-check-circle text-success mb-4" style="font-size:5rem"></i>
+                        <h2 class="fw-bold">TUDO LIMPO</h2>
+                        <p class="opacity-75">Nenhuma ocorrência ativa no momento.</p>
+                    </div>`;
             }
 
-            // Mensagem caso não haja ocorrências
-            if(container.innerHTML === "") {
-                container.innerHTML = `
-                    <div class='text-center w-100 mt-5 opacity-50 d-flex flex-column align-items-center'>
-                        <i class="fas fa-check-circle text-success mb-3" style="font-size: 4rem;"></i>
-                        <h3>TUDO LIMPO</h3>
-                        <p>Nenhuma ocorrência ativa no momento.</p>
-                    </div>`;
+            // ── Som de alerta ──
+            if (temUrgente && somLiberado) {
+                somAlarme.play().catch(() => {});
+                setTimeout(() => pararSom(), 120000);
+            } else {
+                pararSom();
             }
         });
 
@@ -198,15 +317,16 @@
             somAlarme.currentTime = 0;
         }
 
-        // Navegadores bloqueiam som automático. É necessário um clique na tela para liberar.
+        // ─── LIBERAR ÁUDIO COM CLIQUE ────────────────────────────────
         document.body.addEventListener('click', () => {
             somLiberado = true;
-            console.log("Sistema de áudio liberado.");
-            // Exibe um feedback visual rápido
-            document.getElementById('status-db').innerText = "ÁUDIO OK";
-            setTimeout(() => document.getElementById('status-db').innerText = "ONLINE", 2000);
-        }, {once: true}); // Executa apenas uma vez
-
+            statusEl.innerText  = 'ÁUDIO OK';
+            statusEl.className  = 'badge bg-info text-uppercase';
+            setTimeout(() => {
+                statusEl.innerText = 'Online';
+                statusEl.className = 'badge bg-success text-uppercase';
+            }, 2000);
+        }, { once: true });
     </script>
 </body>
 </html>

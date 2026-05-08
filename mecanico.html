@@ -8,26 +8,142 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        .card-chamado { border-radius: 12px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 15px; cursor: pointer; transition: 0.2s; background: white; }
-        .card-chamado:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-        .img-prev { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #ddd; max-height: 250px; object-fit: cover; }
-        .navbar { background-color: #002147 !important; }
-        .badge-status { font-size: 0.7rem; }
-        
-        /* Botão de Finalização */
-        .btn-concluir-servico { 
-            background-color: #198754; 
-            color: white; 
-            font-weight: bold; 
-            border: none; 
-            padding: 15px; 
-            border-radius: 10px;
-            width: 100%;
-            margin-top: 15px;
-            transition: 0.3s;
+        * { box-sizing: border-box; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
+
+        /* ── Navbar ── */
+        .navbar {
+            background: linear-gradient(135deg, #002147 0%, #003a6b 100%) !important;
+            border-bottom: 3px solid #001530;
+            animation: slideDown 0.5s cubic-bezier(0.34,1.2,0.64,1) forwards;
         }
-        .btn-concluir-servico:hover { background-color: #146c43; transform: scale(1.02); }
+        @keyframes slideDown {
+            from { transform: translateY(-60px); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+
+        /* ── Cards de chamado ── */
+        .card-chamado {
+            border-radius: 14px; border: none;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 15px; cursor: pointer;
+            background: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+            opacity: 0; transform: translateY(16px);
+            animation: none;
+        }
+        .card-chamado.visivel {
+            animation: fadeUp 0.4s cubic-bezier(0.34,1.2,0.64,1) forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-chamado:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.13);
+        }
+        .card-chamado:active { transform: scale(0.98); }
+
+        /* ── Badge contador pulsa quando há novos chamados ── */
+        #contadorChamados {
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        #contadorChamados.novo {
+            animation: badgePop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes badgePop {
+            0%   { transform: scale(1.6); }
+            100% { transform: scale(1);   }
+        }
+
+        /* ── Urgente pisca ── */
+        .card-urgente {
+            animation: flashRed 1.2s infinite, fadeUp 0.4s cubic-bezier(0.34,1.2,0.64,1) forwards !important;
+            border-left-color: #dc3545 !important;
+        }
+        @keyframes flashRed {
+            0%   { box-shadow: 0 2px 12px rgba(220,53,69,0.1); }
+            50%  { box-shadow: 0 4px 20px rgba(220,53,69,0.4); }
+            100% { box-shadow: 0 2px 12px rgba(220,53,69,0.1); }
+        }
+
+        /* ── Modal ── */
+        .modal-content { border-radius: 20px; border: none; overflow: hidden; }
+        .modal-header { background: linear-gradient(135deg, #002147, #003a6b); color: white; border: none; }
+        .modal-header .btn-close { filter: invert(1); }
+
+        /* ── Botões do modal ── */
+        .btn-concluir-servico {
+            background: linear-gradient(135deg, #198754, #28a745);
+            color: white; font-weight: bold; border: none;
+            padding: 15px; border-radius: 12px; width: 100%; margin-top: 15px;
+            transition: transform 0.15s, box-shadow 0.2s;
+            position: relative; overflow: hidden;
+            animation: pulseGreen 2.5s infinite;
+        }
+        .btn-concluir-servico:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(25,135,84,0.4); }
+        .btn-concluir-servico:active { transform: scale(0.97); }
+        @keyframes pulseGreen {
+            0%   { box-shadow: 0 0 0 0   rgba(25,135,84,0.5); }
+            70%  { box-shadow: 0 0 0 12px rgba(25,135,84,0);   }
+            100% { box-shadow: 0 0 0 0   rgba(25,135,84,0);    }
+        }
+
+        /* ── Ripple ── */
+        .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            width: 10px; height: 10px;
+            margin-top: -5px; margin-left: -5px;
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes rippleAnim { to { transform: scale(40); opacity: 0; } }
+
+        /* ── Botão GPS ── */
+        #m-gps { transition: transform 0.15s, box-shadow 0.2s; border-radius: 10px; }
+        #m-gps:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,51,102,0.3); }
+
+        /* ── Chat button ── */
+        .btn-chat-mec {
+            border-radius: 10px;
+            transition: transform 0.15s, box-shadow 0.2s;
+            position: relative; overflow: hidden;
+        }
+        .btn-chat-mec:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13,202,240,0.3); }
+
+        /* ── Switches ── */
+        .form-check-input { cursor: pointer; transition: background-color 0.3s; }
+        .form-check-input:checked { background-color: #198754; border-color: #198754; }
+
+        /* ── Imagem preview ── */
+        .img-prev {
+            width: 100%; border-radius: 10px; margin-top: 10px;
+            border: 1px solid #ddd; max-height: 250px; object-fit: cover;
+            transition: transform 0.2s;
+        }
+        .img-prev:hover { transform: scale(1.02); }
+
+        /* ── Skeleton loading ── */
+        .skeleton {
+            border-radius: 8px;
+            background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.2s infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
+        }
+
+        /* ── Estado vazio ── */
+        #estado-vazio {
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        .badge-status { font-size: 0.7rem; }
         .disabled-link { pointer-events: none; opacity: 0.6; }
     </style>
 </head>
@@ -35,7 +151,11 @@
 
 <nav class="navbar navbar-dark mb-4 shadow">
     <div class="container d-flex justify-content-between align-items-center">
-        <strong class="text-white"><i class="fas fa-wrench me-2"></i>MANUTENÇÃO ÁGUIA</strong>
+        <div class="d-flex align-items-center gap-2">
+            <img src="logo.png" alt="Logo"
+                 style="width:36px;height:36px;border-radius:8px;object-fit:cover">
+            <strong class="text-white">MANUTENÇÃO ÁGUIA</strong>
+        </div>
         <span id="nomeMecDisplay" class="text-white small fw-bold">Carregando...</span>
     </div>
 </nav>
@@ -43,30 +163,48 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold mb-0">Chamados em Aberto</h5>
-        <span class="badge bg-primary" id="contadorChamados">0</span>
+        <span class="badge bg-primary fs-6" id="contadorChamados">0</span>
     </div>
-    <div id="listaChamados" class="row"></div>
+
+    <!-- Skeleton enquanto carrega -->
+    <div id="skeleton-lista" class="row">
+        <div class="col-md-6 col-lg-4">
+            <div class="skeleton" style="height:110px"></div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="skeleton" style="height:110px"></div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="skeleton" style="height:110px"></div>
+        </div>
+    </div>
+
+    <div id="listaChamados" class="row" style="display:none"></div>
 </div>
 
+<!-- Modal de atendimento -->
 <div class="modal fade" id="modalMec" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title fw-bold">Atendimento <span id="m-prot" class="text-primary"></span></h5>
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-white">
+                    Atendimento <span id="m-prot" class="opacity-75"></span>
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <!-- Coluna esquerda -->
                     <div class="col-md-6 border-end">
                         <h6><i class="fas fa-info-circle text-muted"></i> DETALHES DO VEÍCULO:</h6>
                         <p class="mb-1"><strong>Ônibus:</strong> <span id="m-bus"></span> | <strong>Placa:</strong> <span id="m-placa"></span></p>
                         <p class="small text-muted mb-3"><strong>Motorista:</strong> <span id="m-driver"></span></p>
-                        
-                        <div class="p-3 bg-light border rounded mb-3">
+
+                        <div class="p-3 bg-light border rounded mb-3" style="border-radius:10px!important">
                             <strong class="text-danger d-block mb-1" id="m-prob"></strong>
-                            <span id="m-desc" class="small text-dark" style="white-space: pre-wrap;"></span>
+                            <span id="m-desc" class="small text-dark" style="white-space:pre-wrap"></span>
                         </div>
-                        
+
                         <div id="m-midia"></div>
 
                         <button class="btn btn-link btn-sm text-danger mt-4 w-100" onclick="excluirChamado()">
@@ -74,16 +212,17 @@
                         </button>
                     </div>
 
+                    <!-- Coluna direita -->
                     <div class="col-md-6">
                         <h6><i class="fas fa-tasks text-muted"></i> AÇÕES DO MECÂNICO:</h6>
-                        
-                        <div class="mb-3 p-2 border rounded bg-white">
+
+                        <div class="mb-3 p-3 border rounded bg-white" style="border-radius:10px!important">
                             <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" id="check1" onchange="setPasso(1)"> 
+                                <input class="form-check-input" type="checkbox" id="check1" onchange="setPasso(1)">
                                 <label class="form-check-label">Confirmar Recebimento</label>
                             </div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="check2" onchange="setPasso(2)"> 
+                                <input class="form-check-input" type="checkbox" id="check2" onchange="setPasso(2)">
                                 <label class="form-check-label">Iniciar Análise Técnica</label>
                             </div>
                         </div>
@@ -92,21 +231,26 @@
                             <i class="fas fa-map-marker-alt me-2"></i>ABRIR NO GOOGLE MAPS
                         </a>
 
-                        <div class="card p-3 mb-3 bg-light border-0">
+                        <div class="card p-3 mb-3 bg-light border-0" style="border-radius:12px">
                             <h6 class="small fw-bold mb-2 text-uppercase">Previsão de Chegada (Minutos):</h6>
                             <div class="input-group">
-                                <input type="number" id="m-tempo" class="form-control" placeholder="Ex: 25">
-                                <button class="btn btn-success fw-bold" onclick="setPrevisao()">ENVIAR</button>
+                                <input type="number" id="m-tempo" class="form-control" placeholder="Ex: 25"
+                                       style="border-radius:8px 0 0 8px">
+                                <button class="btn btn-success fw-bold" onclick="setPrevisao(event)"
+                                        style="border-radius:0 8px 8px 0;position:relative;overflow:hidden">
+                                    ENVIAR
+                                </button>
                             </div>
                         </div>
 
-                        <button class="btn btn-info w-100 text-white fw-bold py-2 mb-3 shadow-sm" onclick="abrirConexao()">
+                        <button class="btn btn-info w-100 text-white fw-bold py-2 mb-3 shadow-sm btn-chat-mec"
+                                onclick="abrirConexao(event)">
                             <i class="fas fa-comments me-2"></i>ABRIR CHAT COM MOTORISTA
                         </button>
 
                         <hr>
 
-                        <button class="btn-concluir-servico shadow" onclick="finalizarServicoMec()">
+                        <button class="btn-concluir-servico shadow" onclick="finalizarServicoMec(event)">
                             <i class="fas fa-check-double me-2"></i> LIBERAR VEÍCULO (CONCLUÍDO)
                         </button>
                         <p class="text-center small text-muted mt-2">O motorista deverá confirmar o reparo no painel dele.</p>
@@ -122,7 +266,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    const firebaseConfig = {
+    firebase.initializeApp({
         apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
         authDomain: "translog-231da.firebaseapp.com",
         projectId: "translog-231da",
@@ -130,133 +274,177 @@
         messagingSenderId: "306116251077",
         appId: "1:306116251077:web:cf9e590b7a14b5ff540fac",
         databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
-    };
-
-    firebase.initializeApp(firebaseConfig);
+    });
     const db = firebase.database();
-    
+
     let idAtivo = "";
+    let totalAnterior = 0;
     const usuarioMec = JSON.parse(localStorage.getItem('usuarioLogado')) || { nome: "Mecânico Logado" };
     document.getElementById('nomeMecDisplay').innerText = usuarioMec.nome;
 
-    // ESCUTAR CHAMADOS EM TEMPO REAL
+    // ─── RIPPLE ──────────────────────────────────────────────────
+    function addRipple(e, btn) {
+        const r = document.createElement('span');
+        r.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        r.style.left = (e.clientX - rect.left) + 'px';
+        r.style.top  = (e.clientY - rect.top)  + 'px';
+        btn.appendChild(r);
+        setTimeout(() => r.remove(), 700);
+    }
+
+    // ─── ESCUTAR CHAMADOS ────────────────────────────────────────
     db.ref('chamados').on('value', snap => {
-        const div = document.getElementById('listaChamados');
+        const lista    = document.getElementById('listaChamados');
+        const skeleton = document.getElementById('skeleton-lista');
         const contador = document.getElementById('contadorChamados');
-        div.innerHTML = "";
-        
-        if(!snap.exists()) {
-            div.innerHTML = '<div class="col-12 text-center text-muted p-5"><i class="fas fa-check-circle fa-3x mb-3"></i><br>Tudo em ordem. Nenhum chamado pendente.</div>';
+
+        // Esconde skeleton na primeira carga
+        skeleton.style.display = 'none';
+        lista.style.display = 'flex';
+        lista.className = 'row';
+        lista.innerHTML = "";
+
+        if (!snap.exists()) {
+            lista.innerHTML = `
+                <div class="col-12 text-center text-muted p-5" id="estado-vazio">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3 d-block"
+                       style="animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)"></i>
+                    Tudo em ordem. Nenhum chamado pendente.
+                </div>`;
             contador.innerText = "0";
+            totalAnterior = 0;
             return;
         }
 
         let total = 0;
         snap.forEach(child => {
             total++;
-            const c = child.val();
-            // Lógica de cores baseada no status
-            let corBorda = 'border-danger'; // Novo/Recebido
-            if(c.status_passo == 3) corBorda = 'border-info'; // A caminho
-            if(c.status_passo == 4) corBorda = 'border-success opacity-75'; // Aguardando Motorista
+            const c   = child.val();
+            const key = child.key;
 
-            div.innerHTML += `
-                <div class="col-md-6 col-lg-4">
-                    <div class="card card-chamado p-3 border-start border-4 ${corBorda}" onclick="gerenciar('${child.key}')">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <strong><i class="fas fa-bus"></i> Carro ${c.numero}</strong>
-                            <span class="badge bg-light text-dark border badge-status">#${c.protocolo}</span>
-                        </div>
-                        <div class="text-danger fw-bold my-1">${c.problema}</div>
-                        <div class="small text-muted">
-                            <i class="fas fa-user-circle"></i> ${c.motorista} <br>
-                            <i class="fas fa-map-marker-alt"></i> ${c.local}
-                            ${c.status_passo == 4 ? '<br><b class="text-success">[ AGUARDANDO MOTORISTA LIBERAR ]</b>' : ''}
-                        </div>
-                        <div class="mt-2 text-end small fw-bold text-primary">DETALHES <i class="fas fa-arrow-right"></i></div>
+            let corBorda = 'border-danger';
+            if (c.status_passo == 3) corBorda = 'border-info';
+            if (c.status_passo == 4) corBorda = 'border-success opacity-75';
+
+            const urgente = c.status_passo == 1 ? 'card-urgente' : '';
+
+            const col = document.createElement('div');
+            col.className = 'col-md-6 col-lg-4';
+            col.innerHTML = `
+                <div class="card card-chamado p-3 border-start border-4 ${corBorda} ${urgente}"
+                     onclick="gerenciar('${key}')">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <strong><i class="fas fa-bus"></i> Carro ${c.numero}</strong>
+                        <span class="badge bg-light text-dark border badge-status">#${c.protocolo}</span>
+                    </div>
+                    <div class="text-danger fw-bold my-1">${c.problema}</div>
+                    <div class="small text-muted">
+                        <i class="fas fa-user-circle"></i> ${c.motorista}<br>
+                        <i class="fas fa-map-marker-alt"></i> ${c.local}
+                        ${c.status_passo == 4 ? '<br><b class="text-success">[ AGUARDANDO MOTORISTA LIBERAR ]</b>' : ''}
+                    </div>
+                    <div class="mt-2 text-end small fw-bold text-primary">
+                        DETALHES <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>`;
+            lista.appendChild(col);
+
+            // Anima cada card com delay escalonado
+            const card = col.querySelector('.card-chamado');
+            const idx  = total - 1;
+            setTimeout(() => card.classList.add('visivel'), idx * 80);
         });
-        contador.innerText = total;
+
+        // Anima contador se aumentou
+        if (total !== totalAnterior) {
+            contador.innerText = total;
+            contador.classList.remove('novo');
+            void contador.offsetWidth;
+            contador.classList.add('novo');
+            totalAnterior = total;
+        }
     });
 
+    // ─── GERENCIAR CHAMADO ───────────────────────────────────────
     async function gerenciar(id) {
         idAtivo = id;
         const snap = await db.ref('chamados/' + id).once('value');
         const c = snap.val();
-        
-        document.getElementById('m-prot').innerText = "#" + c.protocolo;
-        document.getElementById('m-bus').innerText = c.numero;
-        document.getElementById('m-placa').innerText = c.placa;
-        document.getElementById('m-prob').innerText = c.problema;
-        document.getElementById('m-desc').innerText = c.descricao || "Sem detalhes adicionais.";
+
+        document.getElementById('m-prot').innerText   = "#" + c.protocolo;
+        document.getElementById('m-bus').innerText    = c.numero;
+        document.getElementById('m-placa').innerText  = c.placa;
+        document.getElementById('m-prob').innerText   = c.problema;
+        document.getElementById('m-desc').innerText   = c.descricao || "Sem detalhes adicionais.";
         document.getElementById('m-driver').innerText = c.motorista;
-        
+
         const btnGps = document.getElementById('m-gps');
-        if(c.lat && c.lng) {
+        if (c.lat && c.lng) {
             btnGps.href = `https://www.google.com/maps?q=${c.lat},${c.lng}`;
-            btnGps.classList.remove('disabled', 'btn-secondary');
+            btnGps.classList.remove('disabled','btn-secondary');
             btnGps.classList.add('btn-primary');
             btnGps.innerHTML = '<i class="fas fa-map-marker-alt me-2"></i>ABRIR NO GOOGLE MAPS';
         } else {
             btnGps.href = "#";
-            btnGps.classList.add('disabled', 'btn-secondary');
+            btnGps.classList.add('disabled','btn-secondary');
+            btnGps.classList.remove('btn-primary');
             btnGps.innerText = "GPS NÃO ENVIADO";
         }
-        
-        document.getElementById('m-midia').innerHTML = c.midia ? 
-            `<a href="${c.midia}" target="_blank"><img src="${c.midia}" class="img-prev shadow-sm"></a>` : 
-            `<div class="alert alert-light border small text-center mt-2">Nenhuma foto anexada</div>`;
-        
+
+        document.getElementById('m-midia').innerHTML = c.midia
+            ? `<a href="${c.midia}" target="_blank"><img src="${c.midia}" class="img-prev shadow-sm"></a>`
+            : `<div class="alert alert-light border small text-center mt-2">Nenhuma foto anexada</div>`;
+
         document.getElementById('check1').checked = c.status_passo >= 1;
         document.getElementById('check2').checked = c.status_passo >= 2;
-        document.getElementById('m-tempo').value = c.previsao_chegada || "";
+        document.getElementById('m-tempo').value  = c.previsao_chegada || "";
 
         new bootstrap.Modal(document.getElementById('modalMec')).show();
     }
 
-    function setPasso(p) { 
-        db.ref('chamados/' + idAtivo).update({ status_passo: p }); 
-    }
-    
-    function setPrevisao() { 
-        const t = document.getElementById('m-tempo').value;
-        if(!t) return alert("Informe o tempo estimado!");
-        
-        db.ref('chamados/' + idAtivo).update({ 
-            status_passo: 3, 
-            previsao_chegada: t 
-        });
-        alert("Previsão atualizada para " + t + " minutos.");
+    function setPasso(p) {
+        db.ref('chamados/' + idAtivo).update({ status_passo: p });
     }
 
-    async function finalizarServicoMec() {
-        if(confirm("Confirma a conclusão do reparo? O motorista será notificado para confirmar a saída do veículo.")) {
+    function setPrevisao(e) {
+        if (e) addRipple(e, e.currentTarget);
+        const t = document.getElementById('m-tempo').value;
+        if (!t) return alert("Informe o tempo estimado!");
+        db.ref('chamados/' + idAtivo).update({ status_passo: 3, previsao_chegada: t });
+        const btn = e?.currentTarget;
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            btn.style.background = '#146c43';
+            setTimeout(() => { btn.innerHTML = 'ENVIAR'; btn.style.background = ''; }, 2000);
+        }
+    }
+
+    async function finalizarServicoMec(e) {
+        if (e) addRipple(e, e.currentTarget);
+        if (confirm("Confirma a conclusão do reparo? O motorista será notificado para confirmar a saída do veículo.")) {
             try {
                 await db.ref('chamados/' + idAtivo).update({ status_passo: 4 });
                 alert("Status atualizado! Aguardando confirmação final do motorista.");
                 bootstrap.Modal.getInstance(document.getElementById('modalMec')).hide();
-            } catch (e) {
+            } catch(err) {
                 alert("Erro na conexão com o banco.");
             }
         }
     }
 
     function excluirChamado() {
-        if(confirm("Deseja EXCLUIR permanentemente este chamado? Use apenas para erros ou testes.")) {
+        if (confirm("Deseja EXCLUIR permanentemente este chamado? Use apenas para erros ou testes.")) {
             db.ref('chamados/' + idAtivo).remove();
             bootstrap.Modal.getInstance(document.getElementById('modalMec')).hide();
         }
     }
 
-    function abrirConexao() {
-        // Ativa o alerta visual no motorista
+    function abrirConexao(e) {
+        if (e) addRipple(e, e.currentTarget);
         db.ref('chamados/' + idAtivo).update({ chat_aberto_obrigatorio: true });
-        
         const urlChat = `chat_motorista.html?id=${idAtivo}&nome=${encodeURIComponent(usuarioMec.nome)}`;
-        
-        // Se for celular abre na mesma aba, se for PC abre popup
-        if(window.innerWidth < 768) {
+        if (window.innerWidth < 768) {
             window.location.href = urlChat;
         } else {
             window.open(urlChat, 'chat_aguia', 'width=400,height=600,left=100,top=100');

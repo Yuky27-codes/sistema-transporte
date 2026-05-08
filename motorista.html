@@ -8,58 +8,174 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        * { box-sizing: border-box; }
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
-        .header-motorista { background-color: #003366; color: white; padding: 15px; border-radius: 0 0 20px 20px; margin-bottom: 20px; text-align: center; }
-        .card-painel { border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.3s ease; }
-        .hidden { display: none !important; }
-        .secao-bloqueada { opacity: 0.5; pointer-events: none; filter: grayscale(0.5); }
 
-        /* Timeline de Status */
-        .timeline-status { display: flex; justify-content: space-between; margin-top: 20px; position: relative; }
+        /* ── Header ── */
+        .header-motorista {
+            background: linear-gradient(135deg, #003366 0%, #00509d 100%);
+            color: white; padding: 18px 15px 22px;
+            border-radius: 0 0 28px 28px; margin-bottom: 20px;
+            text-align: center; box-shadow: 0 4px 20px rgba(0,51,102,0.3);
+            animation: slideDown 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-60px); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+
+        /* ── Cards com entrada animada ── */
+        .card-painel {
+            border-radius: 16px; border: none;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            opacity: 0; transform: translateY(20px);
+        }
+        .card-painel.visivel {
+            animation: fadeUp 0.45s cubic-bezier(0.34,1.2,0.64,1) forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Inputs ── */
+        .form-control, .form-select {
+            border-radius: 10px; border: 2px solid #e0e0e0;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #003366;
+            box-shadow: 0 0 0 4px rgba(0,51,102,0.1);
+        }
+
+        /* ── Pop na placa ── */
+        @keyframes popIn {
+            0%   { transform: scale(0.7); }
+            100% { transform: scale(1);   }
+        }
+        #placaAutomatica.pop { animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+
+        /* ── Botão Socorro ── */
+        #btnEnviar {
+            border-radius: 14px; font-weight: bold;
+            letter-spacing: 0.5px; position: relative; overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.2s;
+            animation: pulseRing 2.5s infinite;
+        }
+        #btnEnviar:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(220,53,69,0.4);
+        }
+        #btnEnviar:active:not(:disabled) { transform: scale(0.97); }
+        @keyframes pulseRing {
+            0%   { box-shadow: 0 0 0 0   rgba(220,53,69,0.55); }
+            70%  { box-shadow: 0 0 0 14px rgba(220,53,69,0);   }
+            100% { box-shadow: 0 0 0 0   rgba(220,53,69,0);    }
+        }
+
+        /* ── Ripple ── */
+        .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            width: 10px; height: 10px;
+            margin-top: -5px; margin-left: -5px;
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes rippleAnim { to { transform: scale(40); opacity: 0; } }
+
+        /* ── Timeline ── */
+        .timeline-status {
+            display: flex; justify-content: space-between;
+            margin-top: 20px; position: relative;
+        }
         .step { text-align: center; width: 33%; position: relative; z-index: 2; }
-        .step i { width: 40px; height: 40px; border-radius: 50%; background: #ddd; line-height: 40px; color: white; margin-bottom: 5px; }
-        .step.active i { background: #28a745; box-shadow: 0 0 10px rgba(40,167,69,0.5); }
-        .line-progress { position: absolute; top: 20px; left: 15%; width: 70%; height: 2px; background: #ddd; z-index: 1; }
+        .step i {
+            width: 42px; height: 42px; border-radius: 50%;
+            background: #ddd; line-height: 42px; color: white;
+            margin-bottom: 5px; display: inline-block;
+            transition: background 0.4s, box-shadow 0.4s;
+        }
+        .step.active i {
+            background: #28a745;
+            box-shadow: 0 0 0 6px rgba(40,167,69,0.2);
+            animation: stepBounce 0.5s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes stepBounce {
+            0%   { transform: scale(0.6); }
+            100% { transform: scale(1);   }
+        }
+        .line-progress {
+            position: absolute; top: 21px; left: 15%;
+            width: 70%; height: 3px;
+            background: #ddd; z-index: 1; border-radius: 2px; overflow: hidden;
+        }
+        .line-fill {
+            height: 100%; background: #28a745;
+            width: 0%; transition: width 0.6s ease; border-radius: 2px;
+        }
 
-        .btn-panic { height: 60px; font-weight: bold; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        /* ── Chat alert ── */
         .chat-alert { animation: pulse-blue 1.5s infinite; background: #007bff !important; color: white; border: none; }
         @keyframes pulse-blue { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-        
-        /* Estilo Botão Confirmar Retorno */
-        .btn-resolvido { background-color: #198754; color: white; border: none; font-weight: bold; padding: 20px; border-radius: 15px; animation: pulse-green 2s infinite; font-size: 1.1rem; }
-        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(25, 135, 84, 0); } 100% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); } }
+
+        /* ── Botão resolvido ── */
+        .btn-resolvido {
+            background-color: #198754; color: white; border: none;
+            font-weight: bold; padding: 20px; border-radius: 15px;
+            animation: pulseGreen 2s infinite; font-size: 1.1rem;
+            width: 100%; cursor: pointer; transition: transform 0.15s;
+        }
+        .btn-resolvido:active { transform: scale(0.97); }
+        @keyframes pulseGreen {
+            0%   { box-shadow: 0 0 0 0   rgba(25,135,84,0.7); }
+            70%  { box-shadow: 0 0 0 15px rgba(25,135,84,0);  }
+            100% { box-shadow: 0 0 0 0   rgba(25,135,84,0);   }
+        }
+
+        .btn-panic { height: 60px; font-weight: bold; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .hidden { display: none !important; }
+        .secao-bloqueada { opacity: 0.5; pointer-events: none; filter: grayscale(0.5); }
+        #gps-status { font-size: 11px; margin-top: 4px; }
+        #upload-progress { display: none; margin-top: 8px; }
     </style>
 </head>
 <body class="pb-5">
 
-    <div class="header-motorista shadow">
-        <h2 class="mb-0"><i class="fas fa-bus"></i> Águia Conecta</h2>
-        <div id="bemVindo" class="small mt-1">Olá, Motorista</div>
+    <div class="header-motorista">
+        <img src="logo.png" alt="Águia Conecta"
+             style="width:52px;height:52px;border-radius:14px;object-fit:cover;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.25)">
+        <h2 class="mb-0" style="font-size:1.2rem">Águia Conecta</h2>
+        <div id="bemVindo" class="small mt-1" style="opacity:0.85">Olá, Motorista</div>
     </div>
 
     <div class="container">
-        
-        <div class="card card-painel p-3 mb-3 border-start border-primary border-4">
+
+        <div class="card card-painel p-3 mb-3 border-start border-primary border-4" id="card-veiculo">
             <div class="row align-items-center">
                 <div class="col-7">
-                    <label class="small fw-bold text-uppercase text-muted" style="font-size: 0.65rem;">Nº do Ônibus</label>
-                    <input type="number" id="numVeiculoInput" class="form-control form-control-lg fw-bold" placeholder="Ex: 105" oninput="buscarPlaca(this.value)">
+                    <label class="small fw-bold text-uppercase text-muted" style="font-size:.65rem">Nº do Ônibus</label>
+                    <input type="number" id="numVeiculoInput" class="form-control form-control-lg fw-bold"
+                           placeholder="Ex: 105" oninput="buscarPlaca(this.value)">
                 </div>
                 <div class="col-5 text-end">
-                    <small class="text-muted d-block" style="font-size: 0.65rem;">PLACA</small>
+                    <small class="text-muted d-block" style="font-size:.65rem">PLACA</small>
                     <strong id="placaAutomatica" class="text-primary h5">---</strong>
                 </div>
             </div>
+            <div id="gps-status" class="text-muted"><i class="fas fa-circle-notch fa-spin"></i> Aguardando GPS...</div>
         </div>
 
         <hr class="my-3">
 
         <div id="area-formulario" class="secao-bloqueada">
-            
             <div id="menu-problemas">
-                <div class="card card-painel p-3 mb-3">
+
+                <div class="card card-painel p-3 mb-3" id="card-problema">
                     <label class="fw-bold mb-2"><i class="fas fa-tools text-warning"></i> Qual o Problema?</label>
-                    <select id="selectProblema" class="form-select form-select-lg mb-2 shadow-sm" onchange="verificarOutros(this.value)">
+                    <select id="selectProblema" class="form-select form-select-lg mb-2 shadow-sm"
+                            onchange="verificarOutros(this.value)">
                         <option value="">Selecione...</option>
                         <option value="Pneu Furado">Pneu Furado</option>
                         <option value="Aquecimento no Motor">Aquecimento no Motor</option>
@@ -69,62 +185,78 @@
                     </select>
 
                     <div id="area-outros" class="hidden mt-2">
-                        <textarea id="descDetalhada" class="form-control mb-2" rows="2" placeholder="Descreva o problema..."></textarea>
-                        <input type="file" id="midiaInput" class="form-control form-control-sm" accept="image/*,video/*" capture="camera">
+                        <textarea id="descDetalhada" class="form-control mb-2" rows="2"
+                                  placeholder="Descreva o problema..."></textarea>
+                        <div id="btn-camera-nativo" class="hidden">
+                            <button onclick="tirarFotoNativa()" class="btn btn-outline-secondary w-100 mb-2">
+                                <i class="fas fa-camera me-2"></i> Tirar Foto / Escolher da Galeria
+                            </button>
+                            <div id="preview-midia" class="hidden mt-2"></div>
+                        </div>
+                        <div id="input-midia-web">
+                            <input type="file" id="midiaInput" class="form-control form-control-sm" accept="image/*,video/*">
+                        </div>
+                        <div id="upload-progress">
+                            <div class="d-flex align-items-center gap-2 mt-2">
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                <small class="text-muted" id="upload-progress-txt">Enviando imagem...</small>
+                            </div>
+                            <div class="progress mt-1" style="height:4px">
+                                <div id="upload-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card card-painel p-3 mb-4">
-                    <label class="small fw-bold mb-1"><i class="fas fa-map-marked-alt text-danger"></i> Onde você está?</label>
+                <div class="card card-painel p-3 mb-4" id="card-local">
+                    <label class="small fw-bold mb-1">
+                        <i class="fas fa-map-marked-alt text-danger"></i> Onde você está?
+                    </label>
                     <input type="text" id="pontoRef" class="form-control" placeholder="Km, Posto, Referência...">
                 </div>
 
-                <button onclick="enviarSocorro()" id="btnEnviar" class="btn btn-danger btn-lg w-100 fw-bold py-3 shadow">
+                <button onclick="enviarSocorro(event)" id="btnEnviar"
+                        class="btn btn-danger btn-lg w-100 fw-bold py-3 shadow">
                     SOLICITAR SOCORRO <i class="fas fa-paper-plane ms-2"></i>
                 </button>
             </div>
 
             <div id="status-socorro" class="hidden">
-                <div class="card card-painel p-4 text-center border-warning border-2 shadow-lg">
-                    
+                <div class="card card-painel visivel p-4 text-center border-warning border-2 shadow-lg">
                     <div id="painel-acompanhamento">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="badge bg-warning text-dark">Acompanhando Chamado</span>
                             <h6 class="mb-0 fw-bold">Prot: <span id="numProtocolo" class="text-primary">#---</span></h6>
                         </div>
-                        
                         <div class="timeline-status">
-                            <div class="line-progress"></div>
+                            <div class="line-progress"><div class="line-fill" id="lineFill"></div></div>
                             <div class="step" id="step1"><i class="fas fa-check"></i><br><small>Recebido</small></div>
                             <div class="step" id="step2"><i class="fas fa-wrench"></i><br><small>Análise</small></div>
                             <div class="step" id="step3"><i class="fas fa-truck-moving"></i><br><small>A Caminho</small></div>
                         </div>
-
                         <div id="info-previsao" class="mt-4 p-3 bg-light rounded border hidden">
-                            <p class="mb-0 fw-bold text-success"><i class="fas fa-clock"></i> Chegada estimada: <span id="tempoPrevisao">--</span> min</p>
+                            <p class="mb-0 fw-bold text-success">
+                                <i class="fas fa-clock"></i> Chegada estimada:
+                                <span id="tempoPrevisao">--</span> min
+                            </p>
                         </div>
-
                         <hr>
                         <button id="btnChat" onclick="irParaChat()" class="btn btn-secondary w-100 btn-panic hidden mb-2">
                             <i class="fas fa-comments"></i> CONEXÃO ÁGUIA (Chat)
                         </button>
                     </div>
-
                     <div id="painel-conclusao" class="hidden">
                         <div class="text-center py-3">
-                            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                            <i class="fas fa-check-circle text-success" style="font-size:4rem;animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1)"></i>
                             <h4 class="mt-3 fw-bold">Problema Resolvido!</h4>
                             <p class="text-muted">O mecânico finalizou o atendimento. O veículo está pronto para seguir viagem?</p>
-                            
-                            <button onclick="confirmarResolvido()" class="btn-resolvido w-100 shadow">
+                            <button onclick="confirmarResolvido()" class="btn-resolvido shadow">
                                 <i class="fas fa-bus me-2"></i> VEÍCULO REPARADO - SEGUIR
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -132,10 +264,13 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <script>
-        const firebaseConfig = {
+        const CLOUDINARY_CLOUD  = "dtyg9st9f";
+        const CLOUDINARY_PRESET = "ml_default";
+        const CLOUDINARY_URL    = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`;
+
+        firebase.initializeApp({
             apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
             authDomain: "translog-231da.firebaseapp.com",
             projectId: "translog-231da",
@@ -143,175 +278,215 @@
             messagingSenderId: "306116251077",
             appId: "1:306116251077:web:cf9e590b7a14b5ff540fac",
             databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
-        };
-
-        firebase.initializeApp(firebaseConfig);
+        });
         const db = firebase.database();
-        const storage = firebase.storage();
 
         const user = JSON.parse(localStorage.getItem('usuarioLogado'));
-        if(!user) window.location.href = 'index.html';
+        if (!user) window.location.href = 'index.html';
         document.getElementById('bemVindo').innerHTML = `Olá, <b>${user.nome}</b>`;
 
-        let placaDetectada = "";
-        let ultimaPos = { lat: 0, lng: 0 };
+        let placaDetectada = "", ultimaPos = { lat: 0, lng: 0 }, fotoNativaBlob = null;
+        const isApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
-        // Monitoramento contínuo da posição
-        navigator.geolocation.watchPosition(p => {
-            ultimaPos = { lat: p.coords.latitude, lng: p.coords.longitude };
-        }, null, { enableHighAccuracy: true });
+        function animarCards() {
+            ['card-veiculo','card-problema','card-local'].forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el) setTimeout(() => el.classList.add('visivel'), 150 + i * 130);
+            });
+        }
+
+        function addRipple(e, btn) {
+            const r = document.createElement('span');
+            r.className = 'ripple';
+            const rect = btn.getBoundingClientRect();
+            r.style.left = (e.clientX - rect.left) + 'px';
+            r.style.top  = (e.clientY - rect.top)  + 'px';
+            btn.appendChild(r);
+            setTimeout(() => r.remove(), 700);
+        }
+
+        async function inicializar() {
+            animarCards();
+            if (isApp) {
+                document.getElementById('btn-camera-nativo').classList.remove('hidden');
+                document.getElementById('input-midia-web').classList.add('hidden');
+                try {
+                    await Capacitor.Plugins.Geolocation.requestPermissions();
+                    await Capacitor.Plugins.Camera.requestPermissions();
+                } catch(e) {}
+            }
+            iniciarGPS();
+        }
+
+        async function iniciarGPS() {
+            const el = document.getElementById('gps-status');
+            const ok  = '<i class="fas fa-circle text-success"></i> GPS ativo';
+            const err = '<i class="fas fa-exclamation-triangle text-warning"></i> GPS sem permissão';
+            if (isApp) {
+                try {
+                    const { Geolocation } = Capacitor.Plugins;
+                    const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+                    ultimaPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    el.innerHTML = ok; el.className = 'text-success small';
+                    Geolocation.watchPosition({ enableHighAccuracy: true }, p => {
+                        if (p) ultimaPos = { lat: p.coords.latitude, lng: p.coords.longitude };
+                    });
+                } catch(e) { el.innerHTML = err; el.className = 'text-warning small'; }
+            } else {
+                navigator.geolocation.watchPosition(
+                    p => { ultimaPos = { lat: p.coords.latitude, lng: p.coords.longitude }; el.innerHTML = ok; el.className = 'text-success small'; },
+                    () => { el.innerHTML = err; el.className = 'text-warning small'; },
+                    { enableHighAccuracy: true }
+                );
+            }
+        }
+
+        async function tirarFotoNativa() {
+            try {
+                const foto = await Capacitor.Plugins.Camera.getPhoto({ quality: 80, allowEditing: false, resultType: 'dataUrl', source: 'PROMPT' });
+                fotoNativaBlob = await (await fetch(foto.dataUrl)).blob();
+                const preview = document.getElementById('preview-midia');
+                preview.innerHTML = `<img src="${foto.dataUrl}" class="img-fluid rounded" style="max-height:200px">
+                    <p class="small text-success mt-1"><i class="fas fa-check"></i> Foto selecionada</p>`;
+                preview.classList.remove('hidden');
+            } catch(e) { if (!e.message?.includes('cancelled')) alert("Erro ao acessar câmera."); }
+        }
+
+        function uploadCloudinary(blob, nome) {
+            return new Promise((resolve, reject) => {
+                const progressDiv = document.getElementById('upload-progress');
+                const bar = document.getElementById('upload-bar');
+                const txt = document.getElementById('upload-progress-txt');
+                progressDiv.style.display = 'block'; bar.style.width = '5%'; txt.innerText = 'Conectando...';
+                const fd = new FormData();
+                fd.append('file', blob, nome); fd.append('upload_preset', CLOUDINARY_PRESET);
+                const xhr = new XMLHttpRequest();
+                xhr.upload.onprogress = e => { if (e.lengthComputable) { const p = Math.round(e.loaded/e.total*100); bar.style.width=p+'%'; txt.innerText=`Enviando... ${p}%`; } };
+                xhr.onload = () => { progressDiv.style.display='none'; xhr.status===200 ? resolve(JSON.parse(xhr.responseText).secure_url) : reject(new Error('Erro '+xhr.status)); };
+                xhr.onerror = () => { progressDiv.style.display='none'; reject(new Error('Sem conexão')); };
+                xhr.open('POST', CLOUDINARY_URL); xhr.send(fd);
+            });
+        }
 
         async function buscarPlaca(num) {
             const areaForm = document.getElementById('area-formulario');
-            const placaTxt = document.getElementById('placaAutomatica');
-            if(num.length < 2) { 
-                placaTxt.innerText = "---"; 
-                areaForm.classList.add('secao-bloqueada');
-                return; 
-            }
+            const placaEl  = document.getElementById('placaAutomatica');
+            if (num.length < 2) { placaEl.innerText="---"; areaForm.classList.add('secao-bloqueada'); return; }
             const snap = await db.ref('frota/' + num).once('value');
-            if(snap.exists()) {
+            if (snap.exists()) {
                 placaDetectada = snap.val().placa;
-                placaTxt.innerText = placaDetectada;
+                placaEl.innerText = placaDetectada;
+                placaEl.classList.remove('pop');
+                void placaEl.offsetWidth;
+                placaEl.classList.add('pop');
                 areaForm.classList.remove('secao-bloqueada');
-            } else {
-                placaTxt.innerText = "S/ Reg.";
-                areaForm.classList.add('secao-bloqueada');
-            }
+            } else { placaEl.innerText="S/ Reg."; areaForm.classList.add('secao-bloqueada'); }
         }
 
         function verificarOutros(val) {
             const area = document.getElementById('area-outros');
-            val === 'OUTROS' ? area.classList.remove('hidden') : area.classList.add('hidden');
+            if (val === 'OUTROS') {
+                area.classList.remove('hidden');
+                area.style.opacity='0'; area.style.transform='translateY(8px)';
+                requestAnimationFrame(() => { area.style.transition='opacity 0.3s,transform 0.3s'; area.style.opacity='1'; area.style.transform='translateY(0)'; });
+            } else { area.classList.add('hidden'); }
         }
 
-        async function enviarSocorro() {
-            const prob = document.getElementById('selectProblema').value;
-            const ref = document.getElementById('pontoRef').value;
-            const desc = document.getElementById('descDetalhada').value;
-            const fileInput = document.getElementById('midiaInput');
-            const file = fileInput ? fileInput.files[0] : null;
+        async function enviarSocorro(e) {
             const btn = document.getElementById('btnEnviar');
-
+            if (e) addRipple(e, btn);
+            const prob = document.getElementById('selectProblema').value;
+            const ref  = document.getElementById('pontoRef').value;
+            const desc = document.getElementById('descDetalhada').value;
             if (!prob || !ref) return alert("Selecione o problema e informe o local!");
             if (prob === 'OUTROS' && !desc.trim()) return alert("Descreva o problema!");
-
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Enviando Chamado...';
-
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enviando...';
             try {
                 let midiaUrl = "";
-                if (file) {
-                    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Subindo Imagem...';
-                    const storageRef = storage.ref(`ocorrencias/${Date.now()}_${file.name}`);
-                    const snapshot = await storageRef.put(file);
-                    midiaUrl = await snapshot.ref.getDownloadURL();
-                }
-
+                if (isApp && fotoNativaBlob) { midiaUrl = await uploadCloudinary(fotoNativaBlob, `ocorrencia_${Date.now()}.jpg`); }
+                else { const file = document.getElementById('midiaInput')?.files[0]; if (file) midiaUrl = await uploadCloudinary(file, file.name); }
                 const protocolo = "SOC-" + Math.floor(1000 + Math.random() * 9000);
-                const novoChamado = {
-                    protocolo: protocolo,
-                    numero: document.getElementById('numVeiculoInput').value,
-                    placa: placaDetectada || "N/A",
-                    problema: prob,
-                    descricao: (prob === 'OUTROS') ? desc : prob,
-                    midia: midiaUrl,
-                    local: ref,
-                    motorista: user.nome,
-                    status_passo: 1,
-                    lat: ultimaPos.lat,
-                    lng: ultimaPos.lng,
+                await db.ref('chamados/' + protocolo).set({
+                    protocolo, numero: document.getElementById('numVeiculoInput').value,
+                    placa: placaDetectada || "N/A", problema: prob,
+                    descricao: prob==='OUTROS'?desc:prob, midia: midiaUrl, local: ref,
+                    motorista: user.nome, status_passo: 1,
+                    lat: ultimaPos.lat, lng: ultimaPos.lng,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
-                };
-
-                await db.ref('chamados/' + protocolo).set(novoChamado);
+                });
+                btn.innerHTML = '<i class="fas fa-check me-2"></i>Chamado Enviado!';
+                btn.style.background = '#198754';
                 localStorage.setItem('protocoloAtivo', protocolo);
-                monitorarChamado();
-            } catch (error) {
-                console.error(error);
-                alert("Erro ao enviar. Verifique sua conexão.");
-                btn.disabled = false;
-                btn.innerText = "SOLICITAR SOCORRO";
+                fotoNativaBlob = null;
+                setTimeout(() => monitorarChamado(), 800);
+            } catch(err) {
+                alert("Erro ao enviar: " + err.message);
+                btn.disabled=false; btn.style.background='';
+                btn.innerHTML='SOLICITAR SOCORRO <i class="fas fa-paper-plane ms-2"></i>';
             }
         }
 
         function monitorarChamado() {
             const prot = localStorage.getItem('protocoloAtivo');
-            if(!prot) return;
-
+            if (!prot) return;
             document.getElementById('menu-problemas').classList.add('hidden');
             document.getElementById('status-socorro').classList.remove('hidden');
             document.getElementById('numProtocolo').innerText = "#" + prot;
             document.getElementById('area-formulario').classList.remove('secao-bloqueada');
-
             db.ref('chamados/' + prot).on('value', snap => {
                 const c = snap.val();
-                if(!c) {
-                    resetarTela();
-                    return;
-                }
-
-                if(c.status_passo === 4) {
+                if (!c) { resetarTela(); return; }
+                if (c.status_passo === 4) {
                     document.getElementById('painel-acompanhamento').classList.add('hidden');
                     document.getElementById('painel-conclusao').classList.remove('hidden');
                 } else {
                     document.getElementById('painel-acompanhamento').classList.remove('hidden');
                     document.getElementById('painel-conclusao').classList.add('hidden');
-                    
-                    if(c.status_passo >= 1) document.getElementById('step1').classList.add('active');
-                    if(c.status_passo >= 2) document.getElementById('step2').classList.add('active');
-                    if(c.status_passo >= 3) {
+                    const pct = {1:'0%', 2:'50%', 3:'100%'};
+                    document.getElementById('lineFill').style.width = pct[c.status_passo] || '0%';
+                    if (c.status_passo >= 1) document.getElementById('step1').classList.add('active');
+                    if (c.status_passo >= 2) document.getElementById('step2').classList.add('active');
+                    if (c.status_passo >= 3) {
                         document.getElementById('step3').classList.add('active');
                         document.getElementById('info-previsao').classList.remove('hidden');
                         document.getElementById('tempoPrevisao').innerText = c.previsao_chegada || "--";
                     }
                 }
-
-                if(c.chat_aberto_obrigatorio === true) {
+                if (c.chat_aberto_obrigatorio === true) {
                     document.getElementById('som-campainha').play();
                     const btnChat = document.getElementById('btnChat');
-                    btnChat.classList.remove('hidden');
-                    btnChat.classList.add('chat-alert');
+                    btnChat.classList.remove('hidden'); btnChat.classList.add('chat-alert');
                 }
             });
         }
 
         async function confirmarResolvido() {
             const prot = localStorage.getItem('protocoloAtivo');
-            if(!prot) return;
-
-            try {
-                await db.ref('chamados/' + prot).remove();
-                await db.ref('chats/' + prot).remove();
-                alert("Ótima viagem! O chamado foi encerrado.");
-                resetarTela();
-            } catch (error) {
-                alert("Erro ao finalizar chamado.");
-            }
+            if (!prot) return;
+            try { await db.ref('chamados/'+prot).remove(); await db.ref('chats/'+prot).remove(); alert("Ótima viagem!"); resetarTela(); }
+            catch(e) { alert("Erro ao finalizar chamado."); }
         }
 
         function resetarTela() {
-            localStorage.removeItem('protocoloAtivo');
+            localStorage.removeItem('protocoloAtivo'); fotoNativaBlob = null;
             document.getElementById('status-socorro').classList.add('hidden');
             document.getElementById('menu-problemas').classList.remove('hidden');
             document.getElementById('numVeiculoInput').value = "";
             document.getElementById('placaAutomatica').innerText = "---";
             document.getElementById('area-formulario').classList.add('secao-bloqueada');
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('lineFill').style.width = '0%';
             document.getElementById('info-previsao').classList.add('hidden');
             document.getElementById('btnEnviar').disabled = false;
-            document.getElementById('btnEnviar').innerText = "SOLICITAR SOCORRO";
+            document.getElementById('btnEnviar').style.background = '';
+            document.getElementById('btnEnviar').innerHTML = 'SOLICITAR SOCORRO <i class="fas fa-paper-plane ms-2"></i>';
+            document.getElementById('preview-midia').classList.add('hidden');
         }
 
-        function irParaChat() {
-            const prot = localStorage.getItem('protocoloAtivo');
-            window.location.href = `chat_motorista.html?id=${prot}`;
-        }
+        function irParaChat() { window.location.href = `chat_motorista.html?id=${localStorage.getItem('protocoloAtivo')}`; }
 
-        window.onload = () => {
-            const protAtivo = localStorage.getItem('protocoloAtivo');
-            if(protAtivo) monitorarChamado();
-        };
+        window.onload = () => { inicializar(); if (localStorage.getItem('protocoloAtivo')) monitorarChamado(); };
     </script>
 </body>
 </html>

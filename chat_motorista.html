@@ -8,38 +8,195 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        body { background-color: #e5ddd5; height: 100vh; display: flex; flex-direction: column; margin: 0; overflow: hidden; font-family: sans-serif; }
-        
-        .chat-header { background: #003366; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 10; }
-        
-        #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
-        
-        /* Estilização das Bolhas */
-        .message { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 14.5px; line-height: 1.4; position: relative; word-wrap: break-word; }
-        
-        /* Mensagem enviada por VOCÊ (Verde / Direita) */
-        .sent { background: #dcf8c6; align-self: flex-end; border-top-right-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
-        
-        /* Mensagem recebida do OUTRO (Branca / Esquerda) */
-        .received { background: white; align-self: flex-start; border-top-left-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
-        
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: #e5ddd5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #003366 0%, #00509d 100%);
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+            z-index: 10;
+            animation: slideDown 0.4s cubic-bezier(0.34,1.2,0.64,1) forwards;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+
+        #chat-window {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-bottom: 20px;
+        }
+        #chat-window::-webkit-scrollbar { width: 4px; }
+        #chat-window::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
+
+        .message {
+            max-width: 85%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 14.5px;
+            line-height: 1.4;
+            position: relative;
+            word-wrap: break-word;
+            animation: msgEntrada 0.25s cubic-bezier(0.34,1.2,0.64,1) forwards;
+        }
+        @keyframes msgEntrada {
+            from { opacity: 0; transform: translateY(10px) scale(0.95); }
+            to   { opacity: 1; transform: translateY(0)    scale(1);    }
+        }
+        .sent     { background: #dcf8c6; align-self: flex-end;  border-top-right-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+        .received { background: white;   align-self: flex-start; border-top-left-radius: 2px;  box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+
         .sender-name { font-size: 10px; font-weight: bold; margin-bottom: 2px; display: block; text-transform: uppercase; }
-        .msg-time { font-size: 9px; opacity: 0.6; float: right; margin-top: 5px; margin-left: 10px; }
-        
+        .msg-time    { font-size: 9px; opacity: 0.6; float: right; margin-top: 5px; margin-left: 10px; }
         .msg-img, .msg-video { max-width: 100%; border-radius: 8px; margin-top: 5px; cursor: pointer; }
         audio { height: 35px; margin-top: 5px; width: 100%; max-width: 240px; }
 
-        .input-area { background: #f0f0f0; padding: 10px 15px; display: flex; gap: 8px; border-top: 1px solid #ddd; align-items: center; }
-        #msgInput { border-radius: 25px; border: 1px solid #ccc; padding: 10px 18px; flex: 1; outline: none; font-size: 15px; }
-        
-        .btn-action { font-size: 20px; color: #555; cursor: pointer; padding: 5px; transition: 0.2s; border: none; background: none; }
+        .input-area {
+            background: #f0f0f0;
+            padding: 10px 15px;
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #ddd;
+            align-items: center;
+        }
+        #msgInput {
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            padding: 10px 18px;
+            flex: 1;
+            outline: none;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+        #msgInput:focus { border-color: #003366; }
+
+        .btn-action {
+            font-size: 20px; color: #555; cursor: pointer;
+            padding: 5px; transition: 0.2s; border: none; background: none;
+        }
         .btn-action:active { color: #003366; transform: scale(0.9); }
-        
-        .btn-send { background: #003366; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        .btn-send {
+            background: #003366; color: white; border: none;
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            flex-shrink: 0;
+        }
         .btn-send:active { transform: scale(0.9); }
 
-        .recording { color: #d9534f !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        /* ── Área de gravação estilo WhatsApp ── */
+        #gravacao-area {
+            display: none;
+            background: #f0f0f0;
+            border-top: 1px solid #ddd;
+            padding: 12px 15px;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #btn-cancelar-audio {
+            width: 42px; height: 42px; border-radius: 50%;
+            background: #ff4444; color: white; border: none;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0;
+            transition: transform 0.15s;
+            box-shadow: 0 2px 6px rgba(255,68,68,0.4);
+        }
+        #btn-cancelar-audio:active { transform: scale(0.9); }
+
+        .audio-visualizer-wrap {
+            flex: 1;
+            background: white;
+            border-radius: 25px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        #tempo-gravacao {
+            font-size: 13px;
+            color: #d9534f;
+            font-family: monospace;
+            font-weight: bold;
+            flex-shrink: 0;
+            min-width: 38px;
+        }
+
+        .dot-rec {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #d9534f; flex-shrink: 0;
+            animation: dotBlink 1s infinite;
+        }
+        @keyframes dotBlink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
+
+        #audio-canvas {
+            flex: 1;
+            height: 36px;
+            display: block;
+        }
+
+        #btn-enviar-audio {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: #25d366; color: white; border: none;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+            transition: transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(37,211,102,0.5);
+            animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        #btn-enviar-audio:active { transform: scale(0.9); }
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        #btn-audio.gravando {
+            color: #d9534f !important;
+            animation: micPulse 0.8s infinite;
+        }
+        @keyframes micPulse {
+            0%   { transform: scale(1);    }
+            50%  { transform: scale(1.15); }
+            100% { transform: scale(1);    }
+        }
+
+        #upload-status {
+            display: none;
+            position: fixed;
+            bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white; font-size: 12px;
+            padding: 6px 16px; border-radius: 20px;
+            z-index: 100;
+        }
+
         .hidden { display: none; }
     </style>
 </head>
@@ -47,115 +204,154 @@
 
     <div class="chat-header">
         <div class="d-flex align-items-center">
-            <button onclick="sairDoChat()" class="btn btn-link text-white p-0 me-3"><i class="fas fa-arrow-left"></i></button>
-            <i class="fas fa-headset me-2"></i>
+            <button onclick="sairDoChat()" class="btn btn-link text-white p-0 me-3">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <img src="logo.png" alt="" style="width:34px;height:34px;border-radius:8px;object-fit:cover;margin-right:10px">
             <div>
-                <strong style="font-size: 14px;">CONEXÃO ÁGUIA</strong><br>
-                <small id="status-protocolo" style="font-size: 11px; opacity: 0.8;">Protocolo: ---</small>
+                <strong style="font-size:14px">CONEXÃO ÁGUIA</strong><br>
+                <small id="status-protocolo" style="font-size:11px;opacity:0.8">Protocolo: ---</small>
             </div>
         </div>
     </div>
 
     <div id="chat-window"></div>
 
-    <div class="input-area">
-        <label for="file-input" class="btn-action">
-            <i class="fas fa-paperclip"></i>
+    <div id="upload-status"><i class="fas fa-spinner fa-spin me-2"></i>Enviando...</div>
+
+    <div class="input-area" id="input-normal">
+        <label for="file-input" class="btn-action" title="Anexar">
+            <i class="fas fa-paperclip" id="icon-clip"></i>
         </label>
         <input type="file" id="file-input" class="hidden" accept="image/*,video/*" onchange="uploadMidia(this)">
 
         <input type="text" id="msgInput" placeholder="Mensagem" autocomplete="off">
 
-        <button id="btn-audio" class="btn-action" 
-                onmousedown="iniciarGravacao()" onmouseup="pararGravacao()" 
-                ontouchstart="iniciarGravacao()" ontouchend="pararGravacao()">
+        <button id="btn-audio" class="btn-action" onclick="toggleGravacao()">
             <i class="fas fa-microphone"></i>
         </button>
 
-        <button class="btn-send" onclick="enviarMensagem()"><i class="fas fa-paper-plane"></i></button>
+        <button class="btn-send" onclick="enviarMensagem()">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <div id="gravacao-area">
+        <button id="btn-cancelar-audio" onclick="cancelarGravacao()" title="Cancelar">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="audio-visualizer-wrap">
+            <div class="dot-rec"></div>
+            <span id="tempo-gravacao">0:00</span>
+            <canvas id="audio-canvas"></canvas>
+        </div>
+
+        <button id="btn-enviar-audio" onclick="enviarGravacao()" title="Enviar áudio">
+            <i class="fas fa-paper-plane"></i>
+        </button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <script>
-        const firebaseConfig = {
+        const CLOUDINARY_CLOUD  = "dtyg9st9f";
+        const CLOUDINARY_PRESET = "ml_default";
+        const CLOUDINARY_URL    = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`;
+
+        firebase.initializeApp({
             apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
             authDomain: "translog-231da.firebaseapp.com",
             projectId: "translog-231da",
-            storageBucket: "translog-231da.appspot.com",
+            storageBucket: "translog-231da.firebasestorage.app",
             messagingSenderId: "306116251077",
             appId: "1:306116251077:web:cf9e590b7a14b5ff540fac",
             databaseURL: "https://translog-231da-default-rtdb.firebaseio.com/"
-        };
-        firebase.initializeApp(firebaseConfig);
+        });
         const db = firebase.database();
-        const storage = firebase.storage();
 
-        // --- CONFIGURAÇÃO DO USUÁRIO ---
-        const urlParams = new URLSearchParams(window.location.search);
-        const protocolo = urlParams.get('id');
+        const urlParams   = new URLSearchParams(window.location.search);
+        const protocolo   = urlParams.get('id');
         const storageUser = JSON.parse(localStorage.getItem('usuarioLogado')) || {};
-
-        // Identificador único (Matrícula > Nome formatado)
-        const meuId = (storageUser.matricula || storageUser.cpf || urlParams.get('nome') || "user").toString().replace(/\s+/g, '_').toLowerCase();
-        const meuNome = storageUser.nome || urlParams.get('nome') || "Usuário";
+        const meuId       = (storageUser.matricula || storageUser.cpf || urlParams.get('nome') || "user")
+                              .toString().replace(/\s+/g, '_').toLowerCase();
+        const meuNome     = storageUser.nome || urlParams.get('nome') || "Usuário";
 
         document.getElementById('status-protocolo').innerText = "Protocolo: #" + (protocolo || "---");
 
-        let mediaRecorder;
-        let audioChunks = [];
+        const isApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
-        // --- 1. ESCUTAR MENSAGENS ---
-        if(protocolo) {
-            db.ref('chats/' + protocolo).on('value', snap => {
+        let mediaRecorder = null;
+        let audioChunks   = [];
+        let micOk         = false;
+        let audioStream   = null;
+        let audioContext  = null;
+        let analyser      = null;
+        let animFrameId   = null;
+        let timerInterval = null;
+        let segundos      = 0;
+        let gravando      = false;
+
+        // ─── INIT ────────────────────────────────────────────────────
+        async function inicializar() {
+            if (isApp) {
+                try {
+                    const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    s.getTracks().forEach(t => t.stop());
+                    micOk = true;
+                } catch(e) { micOk = false; }
+            }
+        }
+
+        // ─── TOGGLE — chamado pelo botão de microfone ─────────────────
+        // Primeira vez: inicia gravação
+        // Se já estiver gravando: envia (igual ao WhatsApp)
+        function toggleGravacao() {
+            if (gravando) {
+                enviarGravacao();
+            } else {
+                iniciarGravacao();
+            }
+        }
+
+        // ─── MENSAGENS ────────────────────────────────────────────────
+        if (protocolo) {
+            db.ref('chats/' + protocolo).on('child_added', snap => {
+                const m    = snap.val();
+                const isMe = m.senderId === meuId;
+                const hora = m.timestamp
+                    ? new Date(m.timestamp).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
+                    : '--:--';
+
+                let conteudo = m.text || "";
+                if (m.type === 'image') conteudo = `<a href="${m.url}" target="_blank"><img src="${m.url}" class="msg-img"></a>`;
+                if (m.type === 'video') conteudo = `<video src="${m.url}" controls class="msg-video"></video>`;
+                if (m.type === 'audio') conteudo = `<audio src="${m.url}" controls></audio>`;
+
                 const chatWindow = document.getElementById('chat-window');
-                chatWindow.innerHTML = ""; 
-                
-                snap.forEach(child => {
-                    const m = child.val();
-                    
-                    // LÓGICA CRÍTICA: Verifica se o ID do remetente no Firebase é igual ao MEU ID logado
-                    const isMe = (m.senderId === meuId);
-                    const nomeExibicao = isMe ? "Você" : (m.senderName || "Mecânico/Motorista");
-                    
-                    const hora = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '--:--';
-                    
-                    let conteudo = m.text || "";
-                    if (m.type === 'image') {
-                        conteudo = `<a href="${m.url}" target="_blank"><img src="${m.url}" class="msg-img"></a>`;
-                    } else if (m.type === 'video') {
-                        conteudo = `<video src="${m.url}" controls class="msg-video"></video>`;
-                    } else if (m.type === 'audio') {
-                        conteudo = `<audio src="${m.url}" controls></audio>`;
-                    }
-
-                    const div = document.createElement('div');
-                    div.className = `message ${isMe ? 'sent' : 'received'} animate__animated animate__fadeInUp animate__faster`;
-                    div.innerHTML = `
-                        <span class="sender-name" style="color: ${isMe ? '#075e54' : '#003366'}">
-                            ${nomeExibicao}
-                        </span>
-                        ${conteudo}
-                        <span class="msg-time">${hora}</span>
-                    `;
-                    chatWindow.appendChild(div);
-                });
+                const div = document.createElement('div');
+                div.className = `message ${isMe ? 'sent' : 'received'}`;
+                div.innerHTML = `
+                    <span class="sender-name" style="color:${isMe ? '#075e54' : '#003366'}">
+                        ${isMe ? 'Você' : (m.senderName || 'Conexão Águia')}
+                    </span>
+                    ${conteudo}
+                    <span class="msg-time">${hora}</span>
+                `;
+                chatWindow.appendChild(div);
                 chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
             });
         }
 
-        // --- 2. ENVIAR TEXTO ---
+        // ─── ENVIAR TEXTO ─────────────────────────────────────────────
         function enviarMensagem() {
             const input = document.getElementById('msgInput');
             const texto = input.value.trim();
-            if(texto !== "" && protocolo) {
+            if (texto && protocolo) {
                 db.ref('chats/' + protocolo).push({
-                    senderId: meuId,
-                    senderName: meuNome,
-                    text: texto,
-                    type: 'text',
+                    senderId: meuId, senderName: meuNome,
+                    text: texto, type: 'text',
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
                 input.value = "";
@@ -163,77 +359,221 @@
             }
         }
 
-        // --- 3. UPLOAD DE MÍDIA ---
+        // ─── CLOUDINARY ──────────────────────────────────────────────
+        function uploadCloudinary(blob, nome) {
+            return new Promise((resolve, reject) => {
+                const fd = new FormData();
+                fd.append('file', blob, nome);
+                fd.append('upload_preset', CLOUDINARY_PRESET);
+                const xhr = new XMLHttpRequest();
+                xhr.onload  = () => xhr.status === 200
+                    ? resolve(JSON.parse(xhr.responseText).secure_url)
+                    : reject(new Error('Erro ' + xhr.status));
+                xhr.onerror = () => reject(new Error('Sem conexão'));
+                xhr.open('POST', CLOUDINARY_URL);
+                xhr.send(fd);
+            });
+        }
+
+        // ─── UPLOAD MÍDIA ────────────────────────────────────────────
         async function uploadMidia(input) {
             const file = input.files[0];
             if (!file || !protocolo) return;
-
-            const icon = document.querySelector('.fa-paperclip');
-            icon.className = "fas fa-spinner fa-spin";
-
+            const icon   = document.getElementById('icon-clip');
+            const status = document.getElementById('upload-status');
+            icon.className       = "fas fa-spinner fa-spin";
+            status.style.display = 'block';
             try {
-                const fileRef = storage.ref(`chats/${protocolo}/${Date.now()}_${file.name}`);
-                await fileRef.put(file);
-                const url = await fileRef.getDownloadURL();
-
+                const url = await uploadCloudinary(file, file.name);
                 db.ref('chats/' + protocolo).push({
-                    senderId: meuId,
-                    senderName: meuNome,
+                    senderId: meuId, senderName: meuNome,
                     type: file.type.startsWith('image') ? 'image' : 'video',
-                    url: url,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                    url, timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
-            } catch (e) {
+            } catch(e) {
                 alert("Erro ao enviar arquivo.");
             }
-            icon.className = "fas fa-paperclip";
-            input.value = "";
+            icon.className       = "fas fa-paperclip";
+            status.style.display = 'none';
+            input.value          = "";
         }
 
-        // --- 4. GRAVAÇÃO DE ÁUDIO ---
+        // ════════════════════════════════════════════════
+        //  GRAVAÇÃO DE ÁUDIO
+        // ════════════════════════════════════════════════
+
         async function iniciarGravacao() {
+            if (gravando) return;
+
+            // Pede permissão se necessário
+            if (isApp && !micOk) {
+                await inicializar();
+                if (!micOk) {
+                    alert("Microfone bloqueado.\n\nVá em: Configurações > Apps > Águia Conecta > Permissões > Microfone");
+                    return;
+                }
+            }
+
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
+                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                gravando    = true;
 
+                const mimeType = ['audio/webm;codecs=opus','audio/webm','audio/ogg']
+                    .find(t => MediaRecorder.isTypeSupported(t)) || '';
+
+                mediaRecorder = new MediaRecorder(audioStream, mimeType ? { mimeType } : {});
+                audioChunks   = [];
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                mediaRecorder.onstop = async () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const fileRef = storage.ref(`chats/${protocolo}/audio_${Date.now()}.webm`);
-                    
-                    const snapshot = await fileRef.put(audioBlob);
-                    const url = await snapshot.ref.getDownloadURL();
-
-                    db.ref('chats/' + protocolo).push({
-                        senderId: meuId,
-                        senderName: meuNome,
-                        type: 'audio',
-                        url: url,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    });
-                };
-
                 mediaRecorder.start();
-                document.getElementById('btn-audio').classList.add('recording');
-            } catch (err) {
-                alert("Erro ao acessar microfone.");
+
+                // Mostra UI de gravação
+                document.getElementById('input-normal').style.display  = 'none';
+                document.getElementById('gravacao-area').style.display = 'flex';
+                document.getElementById('btn-audio').classList.add('gravando');
+
+                // Temporizador
+                segundos = 0;
+                atualizarTempo();
+                timerInterval = setInterval(atualizarTempo, 1000);
+
+                // Visualizador
+                iniciarVisualizador(audioStream);
+
+            } catch(err) {
+                gravando = false;
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    alert("Microfone bloqueado.\n\nVá em: Configurações > Apps > Águia Conecta > Permissões > Microfone");
+                } else {
+                    alert("Erro ao acessar microfone: " + err.message);
+                }
             }
         }
 
-        function pararGravacao() {
-            if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                mediaRecorder.stop();
-                document.getElementById('btn-audio').classList.remove('recording');
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        function atualizarTempo() {
+            segundos++;
+            const m = Math.floor(segundos / 60);
+            const s = segundos % 60;
+            document.getElementById('tempo-gravacao').innerText =
+                `${m}:${s.toString().padStart(2,'0')}`;
+        }
+
+        function iniciarVisualizador(stream) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser     = audioContext.createAnalyser();
+            analyser.fftSize = 128;
+
+            const source = audioContext.createMediaStreamSource(stream);
+            source.connect(analyser);
+
+            const canvas  = document.getElementById('audio-canvas');
+            const ctx     = canvas.getContext('2d');
+            const bufLen  = analyser.frequencyBinCount;
+            const dataArr = new Uint8Array(bufLen);
+
+            function desenhar() {
+                if (!gravando) return;
+                animFrameId = requestAnimationFrame(desenhar);
+
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+
+                analyser.getByteFrequencyData(dataArr);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const barCount = 28;
+                const step     = Math.floor(bufLen / barCount);
+                const barW     = (canvas.width / barCount) * 0.6;
+                const gap      = (canvas.width / barCount) * 0.4;
+                const midY     = canvas.height / 2;
+
+                for (let i = 0; i < barCount; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < step; j++) sum += dataArr[i * step + j];
+                    const avg  = sum / step;
+                    const barH = Math.max(3, (avg / 255) * (canvas.height * 0.85));
+                    const x    = i * (barW + gap);
+
+                    const grad = ctx.createLinearGradient(0, midY - barH, 0, midY + barH);
+                    grad.addColorStop(0,   '#25d366');
+                    grad.addColorStop(0.5, '#128c7e');
+                    grad.addColorStop(1,   '#25d366');
+
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.roundRect
+                        ? ctx.roundRect(x, midY - barH / 2, barW, barH, barW / 2)
+                        : ctx.rect(x, midY - barH / 2, barW, barH);
+                    ctx.fill();
+                }
             }
+            desenhar();
+        }
+
+        function pararVisualizador() {
+            gravando = false;
+            if (animFrameId)  { cancelAnimationFrame(animFrameId); animFrameId = null; }
+            if (audioContext) { audioContext.close(); audioContext = null; }
+            clearInterval(timerInterval);
+        }
+
+        function fecharUIGravacao() {
+            document.getElementById('gravacao-area').style.display = 'none';
+            document.getElementById('input-normal').style.display  = 'flex';
+            document.getElementById('btn-audio').classList.remove('gravando');
+            document.getElementById('tempo-gravacao').innerText    = '0:00';
+            const canvas = document.getElementById('audio-canvas');
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        async function enviarGravacao() {
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') return;
+
+            pararVisualizador();
+
+            await new Promise(resolve => {
+                mediaRecorder.onstop = resolve;
+                mediaRecorder.stop();
+            });
+            audioStream.getTracks().forEach(t => t.stop());
+
+            fecharUIGravacao();
+
+            if (!protocolo || audioChunks.length === 0) return;
+
+            const mimeType = mediaRecorder.mimeType || 'audio/webm';
+            const ext      = mimeType.includes('ogg') ? 'ogg' : 'webm';
+            const blob     = new Blob(audioChunks, { type: mimeType });
+
+            const status = document.getElementById('upload-status');
+            status.style.display = 'block';
+            try {
+                const url = await uploadCloudinary(blob, `audio_${Date.now()}.${ext}`);
+                db.ref('chats/' + protocolo).push({
+                    senderId: meuId, senderName: meuNome,
+                    type: 'audio', url,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            } catch(err) {
+                alert("Erro ao enviar áudio.");
+            }
+            status.style.display = 'none';
+        }
+
+        function cancelarGravacao() {
+            pararVisualizador();
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+            if (audioStream) audioStream.getTracks().forEach(t => t.stop());
+            audioChunks = [];
+            fecharUIGravacao();
         }
 
         function sairDoChat() { window.history.back(); }
 
-        document.getElementById('msgInput').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') enviarMensagem();
+        document.getElementById('msgInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') enviarMensagem();
         });
+
+        inicializar();
     </script>
 </body>
 </html>
