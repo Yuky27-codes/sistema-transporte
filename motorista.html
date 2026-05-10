@@ -11,7 +11,6 @@
         * { box-sizing: border-box; }
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
 
-        /* ── Header ── */
         .header-motorista {
             background: linear-gradient(135deg, #003366 0%, #00509d 100%);
             color: white; padding: 18px 15px 22px;
@@ -24,48 +23,33 @@
             to   { transform: translateY(0);     opacity: 1; }
         }
 
-        /* ── Cards com entrada animada ── */
         .card-painel {
             border-radius: 16px; border: none;
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
             transition: transform 0.2s, box-shadow 0.2s;
             opacity: 0; transform: translateY(20px);
         }
-        .card-painel.visivel {
-            animation: fadeUp 0.45s cubic-bezier(0.34,1.2,0.64,1) forwards;
-        }
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .card-painel.visivel { animation: fadeUp 0.45s cubic-bezier(0.34,1.2,0.64,1) forwards; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* ── Inputs ── */
         .form-control, .form-select {
             border-radius: 10px; border: 2px solid #e0e0e0;
             transition: border-color 0.25s, box-shadow 0.25s;
         }
         .form-control:focus, .form-select:focus {
-            border-color: #003366;
-            box-shadow: 0 0 0 4px rgba(0,51,102,0.1);
+            border-color: #003366; box-shadow: 0 0 0 4px rgba(0,51,102,0.1);
         }
 
-        /* ── Pop na placa ── */
-        @keyframes popIn {
-            0%   { transform: scale(0.7); }
-            100% { transform: scale(1);   }
-        }
+        @keyframes popIn { 0% { transform: scale(0.7); } 100% { transform: scale(1); } }
         #placaAutomatica.pop { animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
 
-        /* ── Botão Socorro ── */
         #btnEnviar {
             border-radius: 14px; font-weight: bold;
             letter-spacing: 0.5px; position: relative; overflow: hidden;
             transition: transform 0.15s, box-shadow 0.2s;
             animation: pulseRing 2.5s infinite;
         }
-        #btnEnviar:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(220,53,69,0.4);
-        }
+        #btnEnviar:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(220,53,69,0.4); }
         #btnEnviar:active:not(:disabled) { transform: scale(0.97); }
         @keyframes pulseRing {
             0%   { box-shadow: 0 0 0 0   rgba(220,53,69,0.55); }
@@ -73,23 +57,15 @@
             100% { box-shadow: 0 0 0 0   rgba(220,53,69,0);    }
         }
 
-        /* ── Ripple ── */
         .ripple {
             position: absolute; border-radius: 50%;
             background: rgba(255,255,255,0.35);
-            width: 10px; height: 10px;
-            margin-top: -5px; margin-left: -5px;
-            transform: scale(0);
-            animation: rippleAnim 0.6s linear;
-            pointer-events: none;
+            width: 10px; height: 10px; margin-top: -5px; margin-left: -5px;
+            transform: scale(0); animation: rippleAnim 0.6s linear; pointer-events: none;
         }
         @keyframes rippleAnim { to { transform: scale(40); opacity: 0; } }
 
-        /* ── Timeline ── */
-        .timeline-status {
-            display: flex; justify-content: space-between;
-            margin-top: 20px; position: relative;
-        }
+        .timeline-status { display: flex; justify-content: space-between; margin-top: 20px; position: relative; }
         .step { text-align: center; width: 33%; position: relative; z-index: 2; }
         .step i {
             width: 42px; height: 42px; border-radius: 50%;
@@ -98,29 +74,19 @@
             transition: background 0.4s, box-shadow 0.4s;
         }
         .step.active i {
-            background: #28a745;
-            box-shadow: 0 0 0 6px rgba(40,167,69,0.2);
+            background: #28a745; box-shadow: 0 0 0 6px rgba(40,167,69,0.2);
             animation: stepBounce 0.5s cubic-bezier(0.34,1.56,0.64,1);
         }
-        @keyframes stepBounce {
-            0%   { transform: scale(0.6); }
-            100% { transform: scale(1);   }
-        }
+        @keyframes stepBounce { 0% { transform: scale(0.6); } 100% { transform: scale(1); } }
         .line-progress {
             position: absolute; top: 21px; left: 15%;
-            width: 70%; height: 3px;
-            background: #ddd; z-index: 1; border-radius: 2px; overflow: hidden;
+            width: 70%; height: 3px; background: #ddd; z-index: 1; border-radius: 2px; overflow: hidden;
         }
-        .line-fill {
-            height: 100%; background: #28a745;
-            width: 0%; transition: width 0.6s ease; border-radius: 2px;
-        }
+        .line-fill { height: 100%; background: #28a745; width: 0%; transition: width 0.6s ease; border-radius: 2px; }
 
-        /* ── Chat alert ── */
         .chat-alert { animation: pulse-blue 1.5s infinite; background: #007bff !important; color: white; border: none; }
         @keyframes pulse-blue { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        /* ── Botão resolvido ── */
         .btn-resolvido {
             background-color: #198754; color: white; border: none;
             font-weight: bold; padding: 20px; border-radius: 15px;
@@ -134,6 +100,16 @@
             100% { box-shadow: 0 0 0 0   rgba(25,135,84,0);   }
         }
 
+        /* Status de conexão */
+        #status-conexao {
+            position: fixed; top: 10px; right: 10px;
+            z-index: 999; font-size: 11px; font-weight: 600;
+            padding: 4px 12px; border-radius: 20px;
+            transition: all 0.4s;
+        }
+        .conexao-online  { background: #d4edda; color: #155724; border: 1px solid #28a745; }
+        .conexao-offline { background: #f8d7da; color: #721c24; border: 1px solid #dc3545; }
+
         .btn-panic { height: 60px; font-weight: bold; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .hidden { display: none !important; }
         .secao-bloqueada { opacity: 0.5; pointer-events: none; filter: grayscale(0.5); }
@@ -142,6 +118,12 @@
     </style>
 </head>
 <body class="pb-5">
+
+    <!-- Badge de conexão fixo -->
+    <div id="status-conexao" class="conexao-offline">
+        <i class="fas fa-circle me-1" style="font-size:7px"></i>
+        <span id="status-conexao-txt">Verificando...</span>
+    </div>
 
     <div class="header-motorista">
         <img src="logo.png" alt="Águia Conecta"
@@ -164,7 +146,9 @@
                     <strong id="placaAutomatica" class="text-primary h5">---</strong>
                 </div>
             </div>
-            <div id="gps-status" class="text-muted"><i class="fas fa-circle-notch fa-spin"></i> Aguardando GPS...</div>
+            <div id="gps-status" class="text-muted mt-1">
+                <i class="fas fa-circle-notch fa-spin"></i> Aguardando GPS...
+            </div>
         </div>
 
         <hr class="my-3">
@@ -266,10 +250,12 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
+        // ─── CLOUDINARY ──────────────────────────────────────────────
         const CLOUDINARY_CLOUD  = "dtyg9st9f";
         const CLOUDINARY_PRESET = "ml_default";
         const CLOUDINARY_URL    = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`;
 
+        // ─── FIREBASE ────────────────────────────────────────────────
         firebase.initializeApp({
             apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
             authDomain: "translog-231da.firebaseapp.com",
@@ -285,9 +271,113 @@
         if (!user) window.location.href = 'index.html';
         document.getElementById('bemVindo').innerHTML = `Olá, <b>${user.nome}</b>`;
 
-        let placaDetectada = "", ultimaPos = { lat: 0, lng: 0 }, fotoNativaBlob = null;
+        let placaDetectada  = "";
+        let ultimaPos       = { lat: 0, lng: 0 };
+        let fotoNativaBlob  = null;
+        let numVeiculoAtual = null;
+        let heartbeatTimer  = null;
+        let watchId         = null;
         const isApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
+        // ════════════════════════════════════════════════
+        //  STATUS DE CONEXÃO
+        // ════════════════════════════════════════════════
+        function setConexao(online) {
+            const badge = document.getElementById('status-conexao');
+            const txt   = document.getElementById('status-conexao-txt');
+            badge.className = online ? 'conexao-online' : 'conexao-offline';
+            txt.innerText   = online ? 'Online' : 'Sem conexão';
+        }
+
+        window.addEventListener('online',  () => { setConexao(true);  iniciarHeartbeat(); });
+        window.addEventListener('offline', () => { setConexao(false); pararHeartbeat();   });
+
+        // ════════════════════════════════════════════════
+        //  HEARTBEAT — envia sinal de vida + GPS a cada 20s
+        // ════════════════════════════════════════════════
+        function iniciarHeartbeat() {
+            if (!numVeiculoAtual) return;
+            pararHeartbeat();
+
+            const ref = db.ref('heartbeats/' + numVeiculoAtual);
+
+            // Registrar desconexão automática no Firebase
+            ref.onDisconnect().update({
+                online:    false,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+
+            function enviarBatimento() {
+                if (!numVeiculoAtual) return;
+                ref.update({
+                    online:       true,
+                    timestamp:    firebase.database.ServerValue.TIMESTAMP,
+                    lat:          ultimaPos.lat,
+                    lng:          ultimaPos.lng,
+                    motorista:    user.nome,
+                    matricula:    user.matricula || '',
+                    numVeiculo:   numVeiculoAtual
+                });
+            }
+
+            enviarBatimento(); // imediato
+            heartbeatTimer = setInterval(enviarBatimento, 20000); // a cada 20s
+            setConexao(true);
+        }
+
+        function pararHeartbeat() {
+            if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
+        }
+
+        // ════════════════════════════════════════════════
+        //  GPS CONTÍNUO
+        // ════════════════════════════════════════════════
+        async function iniciarGPSContinuo() {
+            const el  = document.getElementById('gps-status');
+            const ok  = '<i class="fas fa-circle text-success"></i> GPS ativo — enviando localização';
+            const err = '<i class="fas fa-exclamation-triangle text-warning"></i> GPS sem permissão';
+
+            const onPos = (pos) => {
+                ultimaPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                el.innerHTML = ok;
+                el.className = 'text-success small';
+
+                // Atualiza heartbeat com nova posição imediatamente
+                if (numVeiculoAtual) {
+                    db.ref('heartbeats/' + numVeiculoAtual).update({
+                        lat: ultimaPos.lat,
+                        lng: ultimaPos.lng,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP,
+                        online: true
+                    });
+                }
+            };
+
+            const onErr = () => {
+                el.innerHTML = err;
+                el.className = 'text-warning small';
+            };
+
+            const opts = { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 };
+
+            if (isApp) {
+                try {
+                    await Capacitor.Plugins.Geolocation.requestPermissions();
+                    watchId = await Capacitor.Plugins.Geolocation.watchPosition(opts, (pos, e) => {
+                        if (pos) onPos({ coords: pos.coords });
+                        else onErr();
+                    });
+                } catch(e) { onErr(); }
+            } else {
+                if (navigator.geolocation) {
+                    watchId = navigator.geolocation.watchPosition(onPos, onErr, opts);
+                }
+            }
+        }
+
+        // ════════════════════════════════════════════════
+        //  ANIMAÇÕES DE ENTRADA
+        // ════════════════════════════════════════════════
         function animarCards() {
             ['card-veiculo','card-problema','card-local'].forEach((id, i) => {
                 const el = document.getElementById(id);
@@ -305,45 +395,28 @@
             setTimeout(() => r.remove(), 700);
         }
 
+        // ════════════════════════════════════════════════
+        //  INICIALIZAÇÃO
+        // ════════════════════════════════════════════════
         async function inicializar() {
             animarCards();
             if (isApp) {
                 document.getElementById('btn-camera-nativo').classList.remove('hidden');
                 document.getElementById('input-midia-web').classList.add('hidden');
-                try {
-                    await Capacitor.Plugins.Geolocation.requestPermissions();
-                    await Capacitor.Plugins.Camera.requestPermissions();
-                } catch(e) {}
+                try { await Capacitor.Plugins.Camera.requestPermissions(); } catch(e) {}
             }
-            iniciarGPS();
+            await iniciarGPSContinuo();
+            setConexao(navigator.onLine);
         }
 
-        async function iniciarGPS() {
-            const el = document.getElementById('gps-status');
-            const ok  = '<i class="fas fa-circle text-success"></i> GPS ativo';
-            const err = '<i class="fas fa-exclamation-triangle text-warning"></i> GPS sem permissão';
-            if (isApp) {
-                try {
-                    const { Geolocation } = Capacitor.Plugins;
-                    const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
-                    ultimaPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                    el.innerHTML = ok; el.className = 'text-success small';
-                    Geolocation.watchPosition({ enableHighAccuracy: true }, p => {
-                        if (p) ultimaPos = { lat: p.coords.latitude, lng: p.coords.longitude };
-                    });
-                } catch(e) { el.innerHTML = err; el.className = 'text-warning small'; }
-            } else {
-                navigator.geolocation.watchPosition(
-                    p => { ultimaPos = { lat: p.coords.latitude, lng: p.coords.longitude }; el.innerHTML = ok; el.className = 'text-success small'; },
-                    () => { el.innerHTML = err; el.className = 'text-warning small'; },
-                    { enableHighAccuracy: true }
-                );
-            }
-        }
-
+        // ════════════════════════════════════════════════
+        //  CÂMERA NATIVA
+        // ════════════════════════════════════════════════
         async function tirarFotoNativa() {
             try {
-                const foto = await Capacitor.Plugins.Camera.getPhoto({ quality: 80, allowEditing: false, resultType: 'dataUrl', source: 'PROMPT' });
+                const foto = await Capacitor.Plugins.Camera.getPhoto({
+                    quality: 80, allowEditing: false, resultType: 'dataUrl', source: 'PROMPT'
+                });
                 fotoNativaBlob = await (await fetch(foto.dataUrl)).blob();
                 const preview = document.getElementById('preview-midia');
                 preview.innerHTML = `<img src="${foto.dataUrl}" class="img-fluid rounded" style="max-height:200px">
@@ -352,6 +425,9 @@
             } catch(e) { if (!e.message?.includes('cancelled')) alert("Erro ao acessar câmera."); }
         }
 
+        // ════════════════════════════════════════════════
+        //  UPLOAD CLOUDINARY
+        // ════════════════════════════════════════════════
         function uploadCloudinary(blob, nome) {
             return new Promise((resolve, reject) => {
                 const progressDiv = document.getElementById('upload-progress');
@@ -368,19 +444,42 @@
             });
         }
 
+        // ════════════════════════════════════════════════
+        //  BUSCAR PLACA — inicia heartbeat ao encontrar veículo
+        // ════════════════════════════════════════════════
         async function buscarPlaca(num) {
             const areaForm = document.getElementById('area-formulario');
             const placaEl  = document.getElementById('placaAutomatica');
-            if (num.length < 2) { placaEl.innerText="---"; areaForm.classList.add('secao-bloqueada'); return; }
+            if (num.length < 2) {
+                placaEl.innerText = "---";
+                areaForm.classList.add('secao-bloqueada');
+                numVeiculoAtual = null;
+                pararHeartbeat();
+                return;
+            }
             const snap = await db.ref('frota/' + num).once('value');
             if (snap.exists()) {
-                placaDetectada = snap.val().placa;
+                placaDetectada  = snap.val().placa;
+                numVeiculoAtual = num;
                 placaEl.innerText = placaDetectada;
                 placaEl.classList.remove('pop');
                 void placaEl.offsetWidth;
                 placaEl.classList.add('pop');
                 areaForm.classList.remove('secao-bloqueada');
-            } else { placaEl.innerText="S/ Reg."; areaForm.classList.add('secao-bloqueada'); }
+
+                // Atualiza frota com motorista atual
+                db.ref('frota/' + num).update({
+                    motoristaAtual: user.nome,
+                    matriculaAtual: user.matricula || '',
+                    status: 'Em Operação'
+                });
+
+                iniciarHeartbeat();
+            } else {
+                placaEl.innerText = "S/ Reg.";
+                areaForm.classList.add('secao-bloqueada');
+                numVeiculoAtual = null;
+            }
         }
 
         function verificarOutros(val) {
@@ -392,6 +491,9 @@
             } else { area.classList.add('hidden'); }
         }
 
+        // ════════════════════════════════════════════════
+        //  ENVIAR SOCORRO
+        // ════════════════════════════════════════════════
         async function enviarSocorro(e) {
             const btn = document.getElementById('btnEnviar');
             if (e) addRipple(e, btn);
@@ -404,17 +506,35 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enviando...';
             try {
                 let midiaUrl = "";
-                if (isApp && fotoNativaBlob) { midiaUrl = await uploadCloudinary(fotoNativaBlob, `ocorrencia_${Date.now()}.jpg`); }
-                else { const file = document.getElementById('midiaInput')?.files[0]; if (file) midiaUrl = await uploadCloudinary(file, file.name); }
+                if (isApp && fotoNativaBlob) {
+                    midiaUrl = await uploadCloudinary(fotoNativaBlob, `ocorrencia_${Date.now()}.jpg`);
+                } else {
+                    const file = document.getElementById('midiaInput')?.files[0];
+                    if (file) midiaUrl = await uploadCloudinary(file, file.name);
+                }
                 const protocolo = "SOC-" + Math.floor(1000 + Math.random() * 9000);
-                await db.ref('chamados/' + protocolo).set({
-                    protocolo, numero: document.getElementById('numVeiculoInput').value,
-                    placa: placaDetectada || "N/A", problema: prob,
-                    descricao: prob==='OUTROS'?desc:prob, midia: midiaUrl, local: ref,
-                    motorista: user.nome, status_passo: 1,
-                    lat: ultimaPos.lat, lng: ultimaPos.lng,
+                const dadosChamado = {
+                    protocolo,
+                    numero:    numVeiculoAtual || document.getElementById('numVeiculoInput').value,
+                    placa:     placaDetectada || "N/A",
+                    problema:  prob,
+                    descricao: prob === 'OUTROS' ? desc : prob,
+                    midia:     midiaUrl,
+                    local:     ref,
+                    motorista: user.nome,
+                    matricula_motorista: user.matricula || '',
+                    status_passo: 1,
+                    lat:       ultimaPos.lat,
+                    lng:       ultimaPos.lng,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
+                };
+                await db.ref('chamados/' + protocolo).set(dadosChamado);
+
+                // Atualiza status do veículo
+                if (numVeiculoAtual) {
+                    db.ref('frota/' + numVeiculoAtual).update({ status: 'Quebrado' });
+                }
+
                 btn.innerHTML = '<i class="fas fa-check me-2"></i>Chamado Enviado!';
                 btn.style.background = '#198754';
                 localStorage.setItem('protocoloAtivo', protocolo);
@@ -427,6 +547,9 @@
             }
         }
 
+        // ════════════════════════════════════════════════
+        //  MONITORAR CHAMADO
+        // ════════════════════════════════════════════════
         function monitorarChamado() {
             const prot = localStorage.getItem('protocoloAtivo');
             if (!prot) return;
@@ -434,6 +557,7 @@
             document.getElementById('status-socorro').classList.remove('hidden');
             document.getElementById('numProtocolo').innerText = "#" + prot;
             document.getElementById('area-formulario').classList.remove('secao-bloqueada');
+
             db.ref('chamados/' + prot).on('value', snap => {
                 const c = snap.val();
                 if (!c) { resetarTela(); return; }
@@ -461,15 +585,42 @@
             });
         }
 
+        // ════════════════════════════════════════════════
+        //  CONFIRMAR RESOLVIDO — salva no histórico
+        // ════════════════════════════════════════════════
         async function confirmarResolvido() {
             const prot = localStorage.getItem('protocoloAtivo');
             if (!prot) return;
-            try { await db.ref('chamados/'+prot).remove(); await db.ref('chats/'+prot).remove(); alert("Ótima viagem!"); resetarTela(); }
-            catch(e) { alert("Erro ao finalizar chamado."); }
+            try {
+                // Busca dados do chamado para salvar no histórico
+                const snapChamado = await db.ref('chamados/' + prot).once('value');
+                const c = snapChamado.val();
+
+                if (c) {
+                    // Salva no histórico para relatórios
+                    await db.ref('historico').push({
+                        ...c,
+                        finalizado_em: firebase.database.ServerValue.TIMESTAMP,
+                        finalizado_por: 'motorista'
+                    });
+                }
+
+                await db.ref('chamados/' + prot).remove();
+                await db.ref('chats/' + prot).remove();
+
+                // Restaura status do veículo
+                if (numVeiculoAtual) {
+                    db.ref('frota/' + numVeiculoAtual).update({ status: 'Em Operação' });
+                }
+
+                alert("Ótima viagem! O chamado foi encerrado.");
+                resetarTela();
+            } catch(e) { alert("Erro ao finalizar chamado."); }
         }
 
         function resetarTela() {
-            localStorage.removeItem('protocoloAtivo'); fotoNativaBlob = null;
+            localStorage.removeItem('protocoloAtivo');
+            fotoNativaBlob = null;
             document.getElementById('status-socorro').classList.add('hidden');
             document.getElementById('menu-problemas').classList.remove('hidden');
             document.getElementById('numVeiculoInput').value = "";
@@ -484,9 +635,21 @@
             document.getElementById('preview-midia').classList.add('hidden');
         }
 
-        function irParaChat() { window.location.href = `chat_motorista.html?id=${localStorage.getItem('protocoloAtivo')}`; }
+        function irParaChat() {
+            window.location.href = `chat_motorista.html?id=${localStorage.getItem('protocoloAtivo')}`;
+        }
 
-        window.onload = () => { inicializar(); if (localStorage.getItem('protocoloAtivo')) monitorarChamado(); };
+        window.onload = () => {
+            inicializar();
+            if (localStorage.getItem('protocoloAtivo')) monitorarChamado();
+        };
+
+        // Mantém heartbeat ao fechar/reabrir o app
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && numVeiculoAtual) {
+                iniciarHeartbeat();
+            }
+        });
     </script>
 </body>
 </html>
