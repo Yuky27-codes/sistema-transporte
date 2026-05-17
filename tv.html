@@ -43,7 +43,6 @@
             to   { transform: scale(1);   opacity: 1; }
         }
 
-        /* ── Relógio ── */
         .clock {
             font-size: 1.6rem;
             font-weight: bold;
@@ -52,11 +51,7 @@
             text-shadow: 0 0 10px rgba(0,180,255,0.4);
         }
 
-        /* ── Badge online ── */
-        #status-audio {
-            font-size: 11px;
-            transition: all 0.3s;
-        }
+        #status-audio { font-size: 11px; transition: all 0.3s; }
 
         /* ── Grid ── */
         .grid-chamados {
@@ -68,17 +63,13 @@
             overflow-y: auto;
         }
 
-        /* ── Card TV ── */
+        /* ── Card TV — Emergência (vermelho) ── */
         .card-tv {
-            background: linear-gradient(160deg, #003366 0%, #002244 100%);
             border-radius: 18px;
             padding: 25px;
-            border: 2px solid #00509d;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-
-            /* Entrada animada */
             opacity: 0;
             transform: translateY(20px) scale(0.97);
             animation: cardEntrada 0.5s cubic-bezier(0.34,1.2,0.64,1) forwards;
@@ -87,16 +78,36 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* ── Urgente ── */
-        .urgente {
+        /* Emergência — vermelho piscante */
+        .card-emergencia {
+            background: linear-gradient(160deg, #003366 0%, #002244 100%);
             border: 3px solid #ff2222 !important;
             animation: cardEntrada 0.5s cubic-bezier(0.34,1.2,0.64,1) forwards,
                        flashRed 1s infinite;
         }
         @keyframes flashRed {
-            0%   { background: linear-gradient(160deg, #003366 0%, #002244 100%); box-shadow: 0 0 0   rgba(255,0,0,0.3); }
+            0%   { background: linear-gradient(160deg, #003366 0%, #002244 100%); box-shadow: 0 0 0 rgba(255,0,0,0.3); }
             50%  { background: linear-gradient(160deg, #6b0000 0%, #3d0000 100%); box-shadow: 0 0 30px rgba(255,0,0,0.5); }
-            100% { background: linear-gradient(160deg, #003366 0%, #002244 100%); box-shadow: 0 0 0   rgba(255,0,0,0.3); }
+            100% { background: linear-gradient(160deg, #003366 0%, #002244 100%); box-shadow: 0 0 0 rgba(255,0,0,0.3); }
+        }
+
+        /* Em atendimento — azul normal */
+        .card-atendimento {
+            background: linear-gradient(160deg, #003366 0%, #002244 100%);
+            border: 2px solid #00509d;
+        }
+
+        /* ── Card TV — Aviso Preventivo (amarelo) ── */
+        .card-aviso-tv {
+            background: linear-gradient(160deg, #3d2e00 0%, #2a1f00 100%);
+            border: 2px solid #ffc107 !important;
+            animation: cardEntrada 0.5s cubic-bezier(0.34,1.2,0.64,1) forwards,
+                       pulseYellow 2.5s infinite;
+        }
+        @keyframes pulseYellow {
+            0%   { box-shadow: 0 0 0 0   rgba(255,193,7,0.4); }
+            50%  { box-shadow: 0 0 20px  rgba(255,193,7,0.3); }
+            100% { box-shadow: 0 0 0 0   rgba(255,193,7,0.4); }
         }
 
         /* ── Número do ônibus ── */
@@ -109,6 +120,14 @@
             text-shadow: 0 4px 16px rgba(0,80,157,0.6);
             animation: numberPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
         }
+        .bus-number-aviso {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #ffc107;
+            line-height: 1;
+            margin: 10px 0;
+            animation: numberPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+        }
         @keyframes numberPop {
             from { transform: scale(0.7); opacity: 0; }
             to   { transform: scale(1);   opacity: 1; }
@@ -116,74 +135,80 @@
 
         /* ── Placa ── */
         .placa-badge {
-            background: white;
-            color: black;
-            padding: 5px 15px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-family: monospace;
-            font-size: 1.1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            background: white; color: black;
+            padding: 5px 15px; border-radius: 6px;
+            font-weight: bold; font-family: monospace;
+            font-size: 1.1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .placa-badge-aviso {
+            background: #ffc107; color: #3d2e00;
+            padding: 4px 12px; border-radius: 6px;
+            font-weight: bold; font-family: monospace; font-size: 1rem;
         }
 
         /* ── Problema ── */
         .problema-title {
-            font-size: 1.8rem;
-            font-weight: bold;
+            font-size: 1.8rem; font-weight: bold;
             text-shadow: 0 2px 8px rgba(220,53,69,0.4);
+            animation: fadeIn 0.4s ease 0.3s both;
+        }
+        .aviso-tipo {
+            font-size: 1.4rem; font-weight: bold; color: #ffc107;
             animation: fadeIn 0.4s ease 0.3s both;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(6px); }
-            to   { opacity: 1; transform: translateY(0);   }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* ── Status badge ── */
-        .status-badge {
-            display: inline-block;
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-weight: 500;
-            margin-top: 6px;
-        }
+        /* ── Status badges ── */
+        .status-badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; margin-top: 6px; }
         .status-1 { background: rgba(220,53,69,0.2);  color: #ff6b6b; border: 1px solid rgba(220,53,69,0.4); }
         .status-2 { background: rgba(255,193,7,0.2);  color: #ffd166; border: 1px solid rgba(255,193,7,0.4); }
         .status-3 { background: rgba(13,202,240,0.2); color: #56cfe1; border: 1px solid rgba(13,202,240,0.4); }
         .status-4 { background: rgba(25,135,84,0.2);  color: #6fcf97; border: 1px solid rgba(25,135,84,0.4); }
+        .status-aviso { background: rgba(255,193,7,0.15); color: #ffd166; border: 1px solid rgba(255,193,7,0.3); }
+
+        /* ── Legenda ── */
+        .tv-legenda {
+            position: fixed; bottom: 12px; right: 20px;
+            display: flex; gap: 16px; font-size: 11px;
+            z-index: 10; opacity: 0.7;
+        }
+        .legenda-item { display: flex; align-items: center; gap: 5px; }
+        .legenda-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* ── Seção separadora ── */
+        .secao-header {
+            grid-column: 1 / -1;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .secao-emergencia { background: rgba(220,53,69,0.15); color: #ff6b6b; border: 1px solid rgba(220,53,69,0.3); }
+        .secao-avisos     { background: rgba(255,193,7,0.15); color: #ffd166; border: 1px solid rgba(255,193,7,0.3); }
 
         /* ── Estado vazio ── */
-        #estado-vazio {
-            animation: fadeIn 0.8s ease forwards;
-        }
-        #estado-vazio .fa-check-circle {
-            animation: numberPop 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
-        }
+        #estado-vazio { animation: fadeIn 0.8s ease forwards; }
 
-        /* ── Scrollbar estilizada ── */
+        /* ── Scrollbar ── */
         .grid-chamados::-webkit-scrollbar { width: 6px; }
         .grid-chamados::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
         .grid-chamados::-webkit-scrollbar-thumb { background: rgba(0,80,157,0.5); border-radius: 3px; }
 
-        /* ── Partículas de fundo ── */
-        .bg-particle {
-            position: fixed;
-            border-radius: 50%;
-            background: rgba(0,80,157,0.08);
-            pointer-events: none;
-            animation: floatUp linear infinite;
-        }
-        @keyframes floatUp {
-            from { transform: translateY(100vh) scale(0); opacity: 0; }
-            10%  { opacity: 1; }
-            90%  { opacity: 1; }
-            to   { transform: translateY(-100px) scale(1); opacity: 0; }
-        }
+        /* ── Partículas ── */
+        .bg-particle { position: fixed; border-radius: 50%; background: rgba(0,80,157,0.08); pointer-events: none; animation: floatUp linear infinite; }
+        @keyframes floatUp { from { transform: translateY(100vh) scale(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } to { transform: translateY(-100px) scale(1); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <!-- Partículas de fundo -->
     <div id="particles" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0"></div>
 
     <div class="tv-header" style="position:relative;z-index:1">
@@ -191,9 +216,7 @@
             <img src="logo.png" alt="Águia Conecta" class="header-logo me-3">
             <div>
                 <h1 class="mb-0 fw-bold" style="font-size:1.8rem">ÁGUIA CONECTA</h1>
-                <span class="text-uppercase small" style="opacity:0.7">
-                    Painel de Monitoramento de Manutenção
-                </span>
+                <span class="text-uppercase small" style="opacity:0.7">Painel de Monitoramento de Manutenção</span>
             </div>
         </div>
         <div class="text-end">
@@ -207,6 +230,22 @@
 
     <div id="container-chamados" class="grid-chamados" style="position:relative;z-index:1"></div>
 
+    <!-- Legenda de cores -->
+    <div class="tv-legenda">
+        <div class="legenda-item">
+            <div class="legenda-dot" style="background:#ff2222;box-shadow:0 0 6px rgba(255,0,0,0.5)"></div>
+            <span>Emergência</span>
+        </div>
+        <div class="legenda-item">
+            <div class="legenda-dot" style="background:#ffc107;box-shadow:0 0 6px rgba(255,193,7,0.5)"></div>
+            <span>Aviso Preventivo</span>
+        </div>
+        <div class="legenda-item">
+            <div class="legenda-dot" style="background:#00509d"></div>
+            <span>Em Atendimento</span>
+        </div>
+    </div>
+
     <audio id="alarme-sonoro" loop>
         <source src="https://assets.mixkit.co/active_storage/sfx/951/951-preview.mp3" type="audio/mpeg">
     </audio>
@@ -215,7 +254,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // ─── PARTÍCULAS ───────────────────────────────────────────────
+        // ─── PARTÍCULAS ─────────────────────────────────────────────
         const particlesEl = document.getElementById('particles');
         for (let i = 0; i < 12; i++) {
             const p = document.createElement('div');
@@ -225,7 +264,7 @@
             particlesEl.appendChild(p);
         }
 
-        // ─── FIREBASE ─────────────────────────────────────────────────
+        // ─── FIREBASE ────────────────────────────────────────────────
         firebase.initializeApp({
             apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
             authDomain: "translog-231da.firebaseapp.com",
@@ -237,16 +276,14 @@
         });
         const db = firebase.database();
 
-        const somAlarme  = document.getElementById('alarme-sonoro');
-        const statusEl   = document.getElementById('status-audio');
-        let somLiberado  = false;
+        const somAlarme = document.getElementById('alarme-sonoro');
+        const statusEl  = document.getElementById('status-audio');
+        let somLiberado = false;
 
-        // ─── RELÓGIO ──────────────────────────────────────────────────
         setInterval(() => {
             document.getElementById('relogio').innerText = new Date().toLocaleTimeString();
         }, 1000);
 
-        // ─── RÓTULOS DE STATUS ────────────────────────────────────────
         const statusLabel = {
             1: { txt: 'Aguardando Mecânico', cls: 'status-1' },
             2: { txt: 'Em Análise',          cls: 'status-2' },
@@ -254,62 +291,135 @@
             4: { txt: 'Aguard. Motorista',   cls: 'status-4' },
         };
 
-        // ─── ESCUTAR CHAMADOS ─────────────────────────────────────────
-        db.ref('chamados').on('value', snapshot => {
+        // ─── ESCUTAR CHAMADOS E AVISOS ────────────────────────────────
+        function renderizarTudo(chamados, avisos) {
             const container = document.getElementById('container-chamados');
             container.innerHTML = "";
-            let temUrgente = false;
-            let total = 0;
 
-            snapshot.forEach(child => {
-                const c = child.val();
+            let totalEmergencias = 0;
+            let totalAvisos      = 0;
+            let temUrgente       = false;
+            let idx              = 0;
+
+            // ── Separador Emergências ──
+            const chamadosList = [];
+            Object.entries(chamados).forEach(([key, c]) => {
                 if (c.status === 'Resolvido') return;
-
-                total++;
-                const isPendente = (c.status_passo === 1);
-                if (isPendente) temUrgente = true;
-
-                const st = statusLabel[c.status_passo] || { txt: 'Em atendimento', cls: 'status-2' };
-
-                const card = document.createElement('div');
-                card.className = `card-tv ${isPendente ? 'urgente' : ''}`;
-                card.style.animationDelay = `${(total - 1) * 80}ms`;
-                card.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-warning text-dark fw-bold">PROT: ${c.protocolo}</span>
-                        <span class="placa-badge">${c.placa}</span>
-                    </div>
-                    <div class="text-center flex-grow-1 d-flex flex-column justify-content-center">
-                        <div class="small text-uppercase" style="opacity:0.6;letter-spacing:2px">Ônibus</div>
-                        <div class="bus-number-display">${c.numero}</div>
-                        <div class="problema-title text-danger">${c.problema}</div>
-                        <span class="status-badge ${st.cls}">${st.txt}</span>
-                    </div>
-                    <div class="border-top pt-3 mt-3 d-flex justify-content-between small" style="opacity:0.75;border-color:rgba(255,255,255,0.1)!important">
-                        <span><i class="fas fa-user me-1"></i>${c.motorista}</span>
-                        <span><i class="fas fa-map-marker-alt me-1"></i>${c.local}</span>
-                    </div>`;
-                container.appendChild(card);
+                chamadosList.push({ key, ...c });
+                if (c.status_passo === 1) temUrgente = true;
+                totalEmergencias++;
             });
 
+            // ── Separador Avisos ──
+            const avisosList = [];
+            Object.entries(avisos).forEach(([key, a]) => {
+                if (a.status === 'ativo') { avisosList.push({ key, ...a }); totalAvisos++; }
+            });
+
+            // ── Renderiza emergências ──
+            if (chamadosList.length > 0) {
+                const hdr = document.createElement('div');
+                hdr.className = 'secao-header secao-emergencia';
+                hdr.innerHTML = `<i class="fas fa-exclamation-triangle"></i> OCORRÊNCIAS ATIVAS (${chamadosList.length})`;
+                container.appendChild(hdr);
+
+                chamadosList.forEach(c => {
+                    const isPendente = c.status_passo === 1;
+                    const st = statusLabel[c.status_passo] || { txt: 'Em atendimento', cls: 'status-2' };
+                    const card = document.createElement('div');
+                    card.className = `card-tv ${isPendente ? 'card-emergencia' : 'card-atendimento'}`;
+                    card.style.animationDelay = `${idx * 80}ms`;
+                    card.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-warning text-dark fw-bold">PROT: ${c.protocolo}</span>
+                            <span class="placa-badge">${c.placa}</span>
+                        </div>
+                        <div class="text-center flex-grow-1 d-flex flex-column justify-content-center">
+                            <div class="small text-uppercase" style="opacity:0.6;letter-spacing:2px">Ônibus</div>
+                            <div class="bus-number-display">${c.numero}</div>
+                            <div class="problema-title text-danger">${c.problema}</div>
+                            <span class="status-badge ${st.cls}">${st.txt}</span>
+                        </div>
+                        <div class="border-top pt-3 mt-3 d-flex justify-content-between small" style="opacity:0.75;border-color:rgba(255,255,255,0.1)!important">
+                            <span><i class="fas fa-user me-1"></i>${c.motorista}</span>
+                            <span><i class="fas fa-map-marker-alt me-1"></i>${c.local}</span>
+                        </div>`;
+                    container.appendChild(card);
+                    idx++;
+                });
+            }
+
+            // ── Renderiza avisos preventivos ──
+            if (avisosList.length > 0) {
+                const hdr = document.createElement('div');
+                hdr.className = 'secao-header secao-avisos';
+                hdr.innerHTML = `<i class="fas fa-bell"></i> AVISOS PREVENTIVOS (${avisosList.length})`;
+                container.appendChild(hdr);
+
+                avisosList.forEach(a => {
+                    const hora = a.timestamp
+                        ? new Date(a.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+                        : '---';
+                    const card = document.createElement('div');
+                    card.className = 'card-tv card-aviso-tv';
+                    card.style.animationDelay = `${idx * 80}ms`;
+                    card.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-warning text-dark fw-bold">
+                                <i class="fas fa-bell me-1"></i>PREVENTIVO
+                            </span>
+                            <span class="placa-badge-aviso">${a.placa||'---'}</span>
+                        </div>
+                        <div class="text-center flex-grow-1 d-flex flex-column justify-content-center">
+                            <div class="small text-uppercase" style="opacity:0.6;letter-spacing:2px;color:#ffc107">Ônibus</div>
+                            <div class="bus-number-aviso">${a.numero}</div>
+                            <div class="aviso-tipo"><i class="fas fa-exclamation-circle me-2"></i>${a.tipo}</div>
+                            <span class="status-badge status-aviso mt-2">Aguardando vistoria</span>
+                        </div>
+                        <div class="border-top pt-3 mt-3" style="border-color:rgba(255,193,7,0.2)!important">
+                            <p class="small mb-1" style="color:#ffd166;opacity:0.9">${a.descricao}</p>
+                            <div class="d-flex justify-content-between small" style="opacity:0.7">
+                                <span><i class="fas fa-user me-1"></i>${a.motorista}</span>
+                                <span><i class="fas fa-clock me-1"></i>${hora}</span>
+                            </div>
+                        </div>`;
+                    container.appendChild(card);
+                    idx++;
+                });
+            }
+
             // ── Tela vazia ──
-            if (total === 0) {
+            if (totalEmergencias === 0 && totalAvisos === 0) {
                 container.innerHTML = `
                     <div id="estado-vazio" class="d-flex flex-column align-items-center justify-content-center"
                          style="grid-column:1/-1;min-height:60vh;opacity:0.5">
                         <i class="fas fa-check-circle text-success mb-4" style="font-size:5rem"></i>
                         <h2 class="fw-bold">TUDO LIMPO</h2>
-                        <p class="opacity-75">Nenhuma ocorrência ativa no momento.</p>
+                        <p class="opacity-75">Nenhuma ocorrência ou aviso ativo no momento.</p>
                     </div>`;
             }
 
-            // ── Som de alerta ──
+            // ── Som de alerta apenas para emergências ──
             if (temUrgente && somLiberado) {
                 somAlarme.play().catch(() => {});
                 setTimeout(() => pararSom(), 120000);
             } else {
                 pararSom();
             }
+        }
+
+        // ─── LISTENER COMBINADO ───────────────────────────────────────
+        let dadosChamados = {};
+        let dadosAvisos   = {};
+
+        db.ref('chamados').on('value', snap => {
+            dadosChamados = snap.val() || {};
+            renderizarTudo(dadosChamados, dadosAvisos);
+        });
+
+        db.ref('avisos').on('value', snap => {
+            dadosAvisos = snap.val() || {};
+            renderizarTudo(dadosChamados, dadosAvisos);
         });
 
         function pararSom() {
@@ -317,15 +427,11 @@
             somAlarme.currentTime = 0;
         }
 
-        // ─── LIBERAR ÁUDIO COM CLIQUE ────────────────────────────────
         document.body.addEventListener('click', () => {
             somLiberado = true;
             statusEl.innerText  = 'ÁUDIO OK';
             statusEl.className  = 'badge bg-info text-uppercase';
-            setTimeout(() => {
-                statusEl.innerText = 'Online';
-                statusEl.className = 'badge bg-success text-uppercase';
-            }, 2000);
+            setTimeout(() => { statusEl.innerText = 'Online'; statusEl.className = 'badge bg-success text-uppercase'; }, 2000);
         }, { once: true });
     </script>
 </body>

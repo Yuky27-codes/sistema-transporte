@@ -57,6 +57,54 @@
             100% { box-shadow: 0 0 0 0   rgba(220,53,69,0);    }
         }
 
+        /* ── Botão Aviso Preventivo ── */
+        #btnAviso {
+            border-radius: 14px; font-weight: bold;
+            letter-spacing: 0.5px; position: relative; overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.2s;
+            animation: pulseYellow 2.5s infinite;
+            border: none;
+        }
+        #btnAviso:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,193,7,0.5); }
+        #btnAviso:active:not(:disabled) { transform: scale(0.97); }
+        @keyframes pulseYellow {
+            0%   { box-shadow: 0 0 0 0   rgba(255,193,7,0.6); }
+            70%  { box-shadow: 0 0 0 14px rgba(255,193,7,0);  }
+            100% { box-shadow: 0 0 0 0   rgba(255,193,7,0);   }
+        }
+
+        /* ── Card Aviso Prévio ── */
+        .card-aviso {
+            border-radius: 16px; border: none;
+            background: linear-gradient(135deg, #fffde7 0%, #fff8e1 100%);
+            box-shadow: 0 4px 16px rgba(255,193,7,0.2);
+            border-left: 5px solid #ffc107 !important;
+            opacity: 0; transform: translateY(20px);
+        }
+        .card-aviso.visivel { animation: fadeUp 0.45s cubic-bezier(0.34,1.2,0.64,1) forwards; }
+
+        /* ── Divisor entre seções ── */
+        .secao-divider {
+            display: flex; align-items: center; gap: 12px;
+            margin: 24px 0 16px;
+        }
+        .secao-divider::before, .secao-divider::after {
+            content: ''; flex: 1; height: 1px; background: #e0e0e0;
+        }
+        .secao-divider span {
+            font-size: 11px; font-weight: 600; color: #999;
+            letter-spacing: 0.08em; white-space: nowrap;
+        }
+
+        /* ── Avisos enviados (lista) ── */
+        .aviso-enviado {
+            background: #fffde7; border-radius: 12px;
+            border-left: 4px solid #ffc107;
+            padding: 10px 14px; margin-bottom: 8px;
+            font-size: 13px;
+            animation: fadeUp 0.3s ease forwards;
+        }
+
         .ripple {
             position: absolute; border-radius: 50%;
             background: rgba(255,255,255,0.35);
@@ -100,12 +148,10 @@
             100% { box-shadow: 0 0 0 0   rgba(25,135,84,0);   }
         }
 
-        /* Status de conexão */
         #status-conexao {
             position: fixed; top: 10px; right: 10px;
             z-index: 999; font-size: 11px; font-weight: 600;
-            padding: 4px 12px; border-radius: 20px;
-            transition: all 0.4s;
+            padding: 4px 12px; border-radius: 20px; transition: all 0.4s;
         }
         .conexao-online  { background: #d4edda; color: #155724; border: 1px solid #28a745; }
         .conexao-offline { background: #f8d7da; color: #721c24; border: 1px solid #dc3545; }
@@ -119,7 +165,6 @@
 </head>
 <body class="pb-5">
 
-    <!-- Badge de conexão fixo -->
     <div id="status-conexao" class="conexao-offline">
         <i class="fas fa-circle me-1" style="font-size:7px"></i>
         <span id="status-conexao-txt">Verificando...</span>
@@ -134,6 +179,7 @@
 
     <div class="container">
 
+        <!-- Card número do ônibus -->
         <div class="card card-painel p-3 mb-3 border-start border-primary border-4" id="card-veiculo">
             <div class="row align-items-center">
                 <div class="col-7">
@@ -156,6 +202,7 @@
         <div id="area-formulario" class="secao-bloqueada">
             <div id="menu-problemas">
 
+                <!-- ════ SEÇÃO SOCORRO ════ -->
                 <div class="card card-painel p-3 mb-3" id="card-problema">
                     <label class="fw-bold mb-2"><i class="fas fa-tools text-warning"></i> Qual o Problema?</label>
                     <select id="selectProblema" class="form-select form-select-lg mb-2 shadow-sm"
@@ -167,7 +214,6 @@
                         <option value="Falta de Combustível">Falta de Combustível</option>
                         <option value="OUTROS">OUTROS...</option>
                     </select>
-
                     <div id="area-outros" class="hidden mt-2">
                         <textarea id="descDetalhada" class="form-control mb-2" rows="2"
                                   placeholder="Descreva o problema..."></textarea>
@@ -192,7 +238,7 @@
                     </div>
                 </div>
 
-                <div class="card card-painel p-3 mb-4" id="card-local">
+                <div class="card card-painel p-3 mb-3" id="card-local">
                     <label class="small fw-bold mb-1">
                         <i class="fas fa-map-marked-alt text-danger"></i> Onde você está?
                     </label>
@@ -200,11 +246,64 @@
                 </div>
 
                 <button onclick="enviarSocorro(event)" id="btnEnviar"
-                        class="btn btn-danger btn-lg w-100 fw-bold py-3 shadow">
-                    SOLICITAR SOCORRO <i class="fas fa-paper-plane ms-2"></i>
+                        class="btn btn-danger btn-lg w-100 fw-bold py-3 shadow mb-2">
+                    <i class="fas fa-exclamation-triangle me-2"></i>SOLICITAR SOCORRO
                 </button>
+
+                <!-- ════ DIVISOR ════ -->
+                <div class="secao-divider">
+                    <span>OU ENVIE UM AVISO PREVENTIVO</span>
+                </div>
+
+                <!-- ════ SEÇÃO AVISO PRÉVIO ════ -->
+                <div class="card card-aviso p-3 mb-3" id="card-aviso">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="fas fa-exclamation-circle text-warning" style="font-size:1.3rem"></i>
+                        <div>
+                            <div class="fw-bold" style="color:#856404">Aviso Preventivo</div>
+                            <div class="small text-muted">Informe a manutenção sobre algo suspeito</div>
+                        </div>
+                    </div>
+
+                    <label class="small fw-bold mb-1" style="color:#856404">Tipo de Anomalia</label>
+                    <select id="tipoAviso" class="form-select mb-2">
+                        <option value="">Selecione o tipo...</option>
+                        <option value="Barulho Suspeito">🔊 Barulho Suspeito</option>
+                        <option value="Vibração Anormal">📳 Vibração Anormal</option>
+                        <option value="Fumaça Leve">💨 Fumaça Leve</option>
+                        <option value="Cheiro Estranho">👃 Cheiro Estranho</option>
+                        <option value="Luz de Alerta Acesa">💡 Luz de Alerta Acesa</option>
+                        <option value="Freio com Ruído">🛑 Freio com Ruído</option>
+                        <option value="Perda de Potência">⚡ Perda de Potência</option>
+                        <option value="Outro">⚠️ Outro</option>
+                    </select>
+
+                    <label class="small fw-bold mb-1" style="color:#856404">Descrição</label>
+                    <textarea id="descAviso" class="form-control mb-2" rows="2"
+                              placeholder="Ex: Escutei um barulho metálico na roda traseira esquerda ao frear..."></textarea>
+
+                    <label class="small fw-bold mb-1" style="color:#856404">Local / Referência</label>
+                    <input type="text" id="localAviso" class="form-control mb-3"
+                           placeholder="Km, Posto, Cruzamento...">
+
+                    <button onclick="enviarAviso(event)" id="btnAviso"
+                            class="btn btn-warning w-100 fw-bold py-2" style="color:#5a3e00">
+                        <i class="fas fa-bell me-2"></i>ENVIAR ALERTA PREVENTIVO
+                    </button>
+                </div>
+
+                <!-- Lista de avisos enviados nessa sessão -->
+                <div id="lista-avisos-enviados" class="hidden">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fas fa-history text-muted"></i>
+                        <span class="small fw-bold text-muted">AVISOS ENVIADOS NESTA SESSÃO</span>
+                    </div>
+                    <div id="avisos-lista"></div>
+                </div>
+
             </div>
 
+            <!-- Status de socorro em andamento -->
             <div id="status-socorro" class="hidden">
                 <div class="card card-painel visivel p-4 text-center border-warning border-2 shadow-lg">
                     <div id="painel-acompanhamento">
@@ -231,7 +330,7 @@
                     </div>
                     <div id="painel-conclusao" class="hidden">
                         <div class="text-center py-3">
-                            <i class="fas fa-check-circle text-success" style="font-size:4rem;animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1)"></i>
+                            <i class="fas fa-check-circle text-success" style="font-size:4rem"></i>
                             <h4 class="mt-3 fw-bold">Problema Resolvido!</h4>
                             <p class="text-muted">O mecânico finalizou o atendimento. O veículo está pronto para seguir viagem?</p>
                             <button onclick="confirmarResolvido()" class="btn-resolvido shadow">
@@ -241,6 +340,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -250,12 +350,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        // ─── CLOUDINARY ──────────────────────────────────────────────
         const CLOUDINARY_CLOUD  = "dtyg9st9f";
         const CLOUDINARY_PRESET = "ml_default";
         const CLOUDINARY_URL    = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`;
 
-        // ─── FIREBASE ────────────────────────────────────────────────
         firebase.initializeApp({
             apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
             authDomain: "translog-231da.firebaseapp.com",
@@ -279,112 +377,67 @@
         let watchId         = null;
         const isApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
-        // ════════════════════════════════════════════════
-        //  STATUS DE CONEXÃO
-        // ════════════════════════════════════════════════
+        // ════ CONEXÃO ════
         function setConexao(online) {
             const badge = document.getElementById('status-conexao');
             const txt   = document.getElementById('status-conexao-txt');
-            badge.className = online ? 'conexao-online' : 'conexao-offline';
+            badge.className = 'conexao-' + (online ? 'online' : 'offline');
             txt.innerText   = online ? 'Online' : 'Sem conexão';
         }
-
         window.addEventListener('online',  () => { setConexao(true);  iniciarHeartbeat(); });
         window.addEventListener('offline', () => { setConexao(false); pararHeartbeat();   });
 
-        // ════════════════════════════════════════════════
-        //  HEARTBEAT — envia sinal de vida + GPS a cada 20s
-        // ════════════════════════════════════════════════
+        // ════ HEARTBEAT ════
         function iniciarHeartbeat() {
             if (!numVeiculoAtual) return;
             pararHeartbeat();
-
             const ref = db.ref('heartbeats/' + numVeiculoAtual);
-
-            // Registrar desconexão automática no Firebase
-            ref.onDisconnect().update({
-                online:    false,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-
+            ref.onDisconnect().update({ online: false, timestamp: firebase.database.ServerValue.TIMESTAMP });
             function enviarBatimento() {
                 if (!numVeiculoAtual) return;
-                ref.update({
-                    online:       true,
-                    timestamp:    firebase.database.ServerValue.TIMESTAMP,
-                    lat:          ultimaPos.lat,
-                    lng:          ultimaPos.lng,
-                    motorista:    user.nome,
-                    matricula:    user.matricula || '',
-                    numVeiculo:   numVeiculoAtual
-                });
+                ref.update({ online: true, timestamp: firebase.database.ServerValue.TIMESTAMP, lat: ultimaPos.lat, lng: ultimaPos.lng, motorista: user.nome, matricula: user.matricula || '', numVeiculo: numVeiculoAtual });
             }
-
-            enviarBatimento(); // imediato
-            heartbeatTimer = setInterval(enviarBatimento, 20000); // a cada 20s
+            enviarBatimento();
+            heartbeatTimer = setInterval(enviarBatimento, 20000);
             setConexao(true);
         }
-
         function pararHeartbeat() {
             if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
         }
 
-        // ════════════════════════════════════════════════
-        //  GPS CONTÍNUO
-        // ════════════════════════════════════════════════
+        // ════ GPS CONTÍNUO ════
         async function iniciarGPSContinuo() {
             const el  = document.getElementById('gps-status');
             const ok  = '<i class="fas fa-circle text-success"></i> GPS ativo — enviando localização';
             const err = '<i class="fas fa-exclamation-triangle text-warning"></i> GPS sem permissão';
-
             const onPos = (pos) => {
                 ultimaPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                el.innerHTML = ok;
-                el.className = 'text-success small';
-
-                // Atualiza heartbeat com nova posição imediatamente
+                el.innerHTML = ok; el.className = 'text-success small';
                 if (numVeiculoAtual) {
-                    db.ref('heartbeats/' + numVeiculoAtual).update({
-                        lat: ultimaPos.lat,
-                        lng: ultimaPos.lng,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        online: true
-                    });
+                    db.ref('heartbeats/' + numVeiculoAtual).update({ lat: ultimaPos.lat, lng: ultimaPos.lng, timestamp: firebase.database.ServerValue.TIMESTAMP, online: true });
                 }
             };
-
-            const onErr = () => {
-                el.innerHTML = err;
-                el.className = 'text-warning small';
-            };
-
+            const onErr = () => { el.innerHTML = err; el.className = 'text-warning small'; };
             const opts = { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 };
-
             if (isApp) {
                 try {
                     await Capacitor.Plugins.Geolocation.requestPermissions();
                     watchId = await Capacitor.Plugins.Geolocation.watchPosition(opts, (pos, e) => {
-                        if (pos) onPos({ coords: pos.coords });
-                        else onErr();
+                        if (pos) onPos({ coords: pos.coords }); else onErr();
                     });
                 } catch(e) { onErr(); }
             } else {
-                if (navigator.geolocation) {
-                    watchId = navigator.geolocation.watchPosition(onPos, onErr, opts);
-                }
+                if (navigator.geolocation) watchId = navigator.geolocation.watchPosition(onPos, onErr, opts);
             }
         }
 
-        // ════════════════════════════════════════════════
-        //  ANIMAÇÕES DE ENTRADA
-        // ════════════════════════════════════════════════
+        // ════ ANIMAÇÕES ════
         function animarCards() {
-            ['card-veiculo','card-problema','card-local'].forEach((id, i) => {
+            ['card-veiculo','card-problema','card-local','card-aviso'].forEach((id, i) => {
                 const el = document.getElementById(id);
-                if (el) setTimeout(() => el.classList.add('visivel'), 150 + i * 130);
+                if (el) setTimeout(() => el.classList.add('visivel'), 150 + i * 100);
             });
         }
-
         function addRipple(e, btn) {
             const r = document.createElement('span');
             r.className = 'ripple';
@@ -395,9 +448,7 @@
             setTimeout(() => r.remove(), 700);
         }
 
-        // ════════════════════════════════════════════════
-        //  INICIALIZAÇÃO
-        // ════════════════════════════════════════════════
+        // ════ INICIALIZAÇÃO ════
         async function inicializar() {
             animarCards();
             if (isApp) {
@@ -409,25 +460,18 @@
             setConexao(navigator.onLine);
         }
 
-        // ════════════════════════════════════════════════
-        //  CÂMERA NATIVA
-        // ════════════════════════════════════════════════
+        // ════ CÂMERA ════
         async function tirarFotoNativa() {
             try {
-                const foto = await Capacitor.Plugins.Camera.getPhoto({
-                    quality: 80, allowEditing: false, resultType: 'dataUrl', source: 'PROMPT'
-                });
+                const foto = await Capacitor.Plugins.Camera.getPhoto({ quality: 80, allowEditing: false, resultType: 'dataUrl', source: 'PROMPT' });
                 fotoNativaBlob = await (await fetch(foto.dataUrl)).blob();
                 const preview = document.getElementById('preview-midia');
-                preview.innerHTML = `<img src="${foto.dataUrl}" class="img-fluid rounded" style="max-height:200px">
-                    <p class="small text-success mt-1"><i class="fas fa-check"></i> Foto selecionada</p>`;
+                preview.innerHTML = `<img src="${foto.dataUrl}" class="img-fluid rounded" style="max-height:200px"><p class="small text-success mt-1"><i class="fas fa-check"></i> Foto selecionada</p>`;
                 preview.classList.remove('hidden');
             } catch(e) { if (!e.message?.includes('cancelled')) alert("Erro ao acessar câmera."); }
         }
 
-        // ════════════════════════════════════════════════
-        //  UPLOAD CLOUDINARY
-        // ════════════════════════════════════════════════
+        // ════ UPLOAD CLOUDINARY ════
         function uploadCloudinary(blob, nome) {
             return new Promise((resolve, reject) => {
                 const progressDiv = document.getElementById('upload-progress');
@@ -444,41 +488,26 @@
             });
         }
 
-        // ════════════════════════════════════════════════
-        //  BUSCAR PLACA — inicia heartbeat ao encontrar veículo
-        // ════════════════════════════════════════════════
+        // ════ BUSCAR PLACA ════
         async function buscarPlaca(num) {
             const areaForm = document.getElementById('area-formulario');
             const placaEl  = document.getElementById('placaAutomatica');
             if (num.length < 2) {
-                placaEl.innerText = "---";
-                areaForm.classList.add('secao-bloqueada');
-                numVeiculoAtual = null;
-                pararHeartbeat();
-                return;
+                placaEl.innerText = "---"; areaForm.classList.add('secao-bloqueada');
+                numVeiculoAtual = null; pararHeartbeat(); return;
             }
             const snap = await db.ref('frota/' + num).once('value');
             if (snap.exists()) {
                 placaDetectada  = snap.val().placa;
                 numVeiculoAtual = num;
                 placaEl.innerText = placaDetectada;
-                placaEl.classList.remove('pop');
-                void placaEl.offsetWidth;
-                placaEl.classList.add('pop');
+                placaEl.classList.remove('pop'); void placaEl.offsetWidth; placaEl.classList.add('pop');
                 areaForm.classList.remove('secao-bloqueada');
-
-                // Atualiza frota com motorista atual
-                db.ref('frota/' + num).update({
-                    motoristaAtual: user.nome,
-                    matriculaAtual: user.matricula || '',
-                    status: 'Em Operação'
-                });
-
+                db.ref('frota/' + num).update({ motoristaAtual: user.nome, matriculaAtual: user.matricula || '', status: 'Em Operação' });
                 iniciarHeartbeat();
+                carregarAvisosDoVeiculo();
             } else {
-                placaEl.innerText = "S/ Reg.";
-                areaForm.classList.add('secao-bloqueada');
-                numVeiculoAtual = null;
+                placaEl.innerText = "S/ Reg."; areaForm.classList.add('secao-bloqueada'); numVeiculoAtual = null;
             }
         }
 
@@ -492,8 +521,119 @@
         }
 
         // ════════════════════════════════════════════════
-        //  ENVIAR SOCORRO
+        //  ENVIAR AVISO PREVENTIVO
         // ════════════════════════════════════════════════
+        async function enviarAviso(e) {
+            const btn  = document.getElementById('btnAviso');
+            if (e) addRipple(e, btn);
+
+            const tipo  = document.getElementById('tipoAviso').value;
+            const desc  = document.getElementById('descAviso').value.trim();
+            const local = document.getElementById('localAviso').value.trim();
+
+            if (!tipo)  return alert("Selecione o tipo de anomalia.");
+            if (!desc)  return alert("Descreva a anomalia observada.");
+            if (!local) return alert("Informe o local ou referência.");
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enviando aviso...';
+
+            try {
+                const id = "AVI-" + Math.floor(1000 + Math.random() * 9000);
+                const aviso = {
+                    id,
+                    numero:    numVeiculoAtual,
+                    placa:     placaDetectada || "N/A",
+                    motorista: user.nome,
+                    matricula: user.matricula || '',
+                    tipo,
+                    descricao: desc,
+                    local,
+                    lat:       ultimaPos.lat,
+                    lng:       ultimaPos.lng,
+                    status:    'ativo',   // ativo | ciente | manutencao
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
+
+                await db.ref('avisos/' + id).set(aviso);
+
+                // Feedback visual de sucesso
+                btn.innerHTML = '<i class="fas fa-check me-2"></i>Aviso Enviado!';
+                btn.style.background = '#28a745';
+                btn.style.color = 'white';
+
+                // Adiciona à lista local de avisos enviados
+                adicionarAvisoNaLista(id, tipo, desc, local);
+
+                // Limpa os campos
+                document.getElementById('tipoAviso').value = '';
+                document.getElementById('descAviso').value = '';
+                document.getElementById('localAviso').value = '';
+
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.style.background = '';
+                    btn.style.color = '#5a3e00';
+                    btn.innerHTML = '<i class="fas fa-bell me-2"></i>ENVIAR ALERTA PREVENTIVO';
+                }, 2500);
+
+            } catch(err) {
+                alert("Erro ao enviar aviso: " + err.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-bell me-2"></i>ENVIAR ALERTA PREVENTIVO';
+            }
+        }
+
+        function adicionarAvisoNaLista(id, tipo, desc, local) {
+            const listaWrap = document.getElementById('lista-avisos-enviados');
+            const lista     = document.getElementById('avisos-lista');
+            listaWrap.classList.remove('hidden');
+
+            const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const div  = document.createElement('div');
+            div.className = 'aviso-enviado';
+            div.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="badge bg-warning text-dark mb-1">${tipo}</span>
+                        <div class="small">${desc}</div>
+                        <div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${local}</div>
+                    </div>
+                    <small class="text-muted">${hora}</small>
+                </div>`;
+            lista.prepend(div);
+        }
+
+        function carregarAvisosDoVeiculo() {
+            if (!numVeiculoAtual) return;
+            // Mostra avisos ativos desse veículo na sessão atual
+            db.ref('avisos').orderByChild('numero').equalTo(numVeiculoAtual).once('value', snap => {
+                if (!snap.exists()) return;
+                const lista = document.getElementById('avisos-lista');
+                const listaWrap = document.getElementById('lista-avisos-enviados');
+                lista.innerHTML = '';
+                snap.forEach(child => {
+                    const a = child.val();
+                    if (a.status !== 'ativo') return;
+                    const hora = a.timestamp ? new Date(a.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '--:--';
+                    const div = document.createElement('div');
+                    div.className = 'aviso-enviado';
+                    div.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <span class="badge bg-warning text-dark mb-1">${a.tipo}</span>
+                                <div class="small">${a.descricao}</div>
+                                <div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${a.local}</div>
+                            </div>
+                            <small class="text-muted">${hora}</small>
+                        </div>`;
+                    lista.appendChild(div);
+                });
+                if (lista.innerHTML !== '') listaWrap.classList.remove('hidden');
+            });
+        }
+
+        // ════ ENVIAR SOCORRO ════
         async function enviarSocorro(e) {
             const btn = document.getElementById('btnEnviar');
             if (e) addRipple(e, btn);
@@ -513,28 +653,16 @@
                     if (file) midiaUrl = await uploadCloudinary(file, file.name);
                 }
                 const protocolo = "SOC-" + Math.floor(1000 + Math.random() * 9000);
-                const dadosChamado = {
-                    protocolo,
-                    numero:    numVeiculoAtual || document.getElementById('numVeiculoInput').value,
-                    placa:     placaDetectada || "N/A",
-                    problema:  prob,
+                await db.ref('chamados/' + protocolo).set({
+                    protocolo, numero: numVeiculoAtual || document.getElementById('numVeiculoInput').value,
+                    placa: placaDetectada || "N/A", problema: prob,
                     descricao: prob === 'OUTROS' ? desc : prob,
-                    midia:     midiaUrl,
-                    local:     ref,
-                    motorista: user.nome,
+                    midia: midiaUrl, local: ref, motorista: user.nome,
                     matricula_motorista: user.matricula || '',
-                    status_passo: 1,
-                    lat:       ultimaPos.lat,
-                    lng:       ultimaPos.lng,
+                    status_passo: 1, lat: ultimaPos.lat, lng: ultimaPos.lng,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
-                };
-                await db.ref('chamados/' + protocolo).set(dadosChamado);
-
-                // Atualiza status do veículo
-                if (numVeiculoAtual) {
-                    db.ref('frota/' + numVeiculoAtual).update({ status: 'Quebrado' });
-                }
-
+                });
+                if (numVeiculoAtual) db.ref('frota/' + numVeiculoAtual).update({ status: 'Quebrado' });
                 btn.innerHTML = '<i class="fas fa-check me-2"></i>Chamado Enviado!';
                 btn.style.background = '#198754';
                 localStorage.setItem('protocoloAtivo', protocolo);
@@ -543,13 +671,11 @@
             } catch(err) {
                 alert("Erro ao enviar: " + err.message);
                 btn.disabled=false; btn.style.background='';
-                btn.innerHTML='SOLICITAR SOCORRO <i class="fas fa-paper-plane ms-2"></i>';
+                btn.innerHTML='<i class="fas fa-exclamation-triangle me-2"></i>SOLICITAR SOCORRO';
             }
         }
 
-        // ════════════════════════════════════════════════
-        //  MONITORAR CHAMADO
-        // ════════════════════════════════════════════════
+        // ════ MONITORAR CHAMADO ════
         function monitorarChamado() {
             const prot = localStorage.getItem('protocoloAtivo');
             if (!prot) return;
@@ -557,7 +683,6 @@
             document.getElementById('status-socorro').classList.remove('hidden');
             document.getElementById('numProtocolo').innerText = "#" + prot;
             document.getElementById('area-formulario').classList.remove('secao-bloqueada');
-
             db.ref('chamados/' + prot).on('value', snap => {
                 const c = snap.val();
                 if (!c) { resetarTela(); return; }
@@ -585,34 +710,19 @@
             });
         }
 
-        // ════════════════════════════════════════════════
-        //  CONFIRMAR RESOLVIDO — salva no histórico
-        // ════════════════════════════════════════════════
+        // ════ CONFIRMAR RESOLVIDO ════
         async function confirmarResolvido() {
             const prot = localStorage.getItem('protocoloAtivo');
             if (!prot) return;
             try {
-                // Busca dados do chamado para salvar no histórico
                 const snapChamado = await db.ref('chamados/' + prot).once('value');
                 const c = snapChamado.val();
-
                 if (c) {
-                    // Salva no histórico para relatórios
-                    await db.ref('historico').push({
-                        ...c,
-                        finalizado_em: firebase.database.ServerValue.TIMESTAMP,
-                        finalizado_por: 'motorista'
-                    });
+                    await db.ref('historico').push({ ...c, finalizado_em: firebase.database.ServerValue.TIMESTAMP, finalizado_por: 'motorista' });
                 }
-
                 await db.ref('chamados/' + prot).remove();
                 await db.ref('chats/' + prot).remove();
-
-                // Restaura status do veículo
-                if (numVeiculoAtual) {
-                    db.ref('frota/' + numVeiculoAtual).update({ status: 'Em Operação' });
-                }
-
+                if (numVeiculoAtual) db.ref('frota/' + numVeiculoAtual).update({ status: 'Em Operação' });
                 alert("Ótima viagem! O chamado foi encerrado.");
                 resetarTela();
             } catch(e) { alert("Erro ao finalizar chamado."); }
@@ -631,7 +741,7 @@
             document.getElementById('info-previsao').classList.add('hidden');
             document.getElementById('btnEnviar').disabled = false;
             document.getElementById('btnEnviar').style.background = '';
-            document.getElementById('btnEnviar').innerHTML = 'SOLICITAR SOCORRO <i class="fas fa-paper-plane ms-2"></i>';
+            document.getElementById('btnEnviar').innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>SOLICITAR SOCORRO';
             document.getElementById('preview-midia').classList.add('hidden');
         }
 
@@ -644,11 +754,8 @@
             if (localStorage.getItem('protocoloAtivo')) monitorarChamado();
         };
 
-        // Mantém heartbeat ao fechar/reabrir o app
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && numVeiculoAtual) {
-                iniciarHeartbeat();
-            }
+            if (document.visibilityState === 'visible' && numVeiculoAtual) iniciarHeartbeat();
         });
     </script>
 </body>

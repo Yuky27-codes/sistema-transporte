@@ -11,211 +11,173 @@
         * { box-sizing: border-box; }
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
 
-        /* ── Navbar ── */
         .navbar {
             background: linear-gradient(135deg, #002147 0%, #003a6b 100%) !important;
             border-bottom: 3px solid #001530;
             animation: slideDown 0.5s cubic-bezier(0.34,1.2,0.64,1) forwards;
         }
-        @keyframes slideDown {
-            from { transform: translateY(-60px); opacity: 0; }
-            to   { transform: translateY(0);     opacity: 1; }
-        }
+        @keyframes slideDown { from { transform: translateY(-60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* ── Tabs ── */
+        .tab-nav { background: white; border-bottom: 2px solid #e0e0e0; padding: 0 16px; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .tab-nav .nav-link { color: #666; border-radius: 0; border-bottom: 3px solid transparent; margin-bottom: -2px; padding: 12px 16px; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+        .tab-nav .nav-link:hover { color: #003366; }
+        .tab-nav .nav-link.active { color: #003366; border-bottom-color: #003366; }
+        .tab-nav .nav-link .badge { font-size: 10px; }
 
         /* ── Cards de chamado ── */
-        .card-chamado {
-            border-radius: 14px; border: none;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            margin-bottom: 15px; cursor: pointer;
-            background: white;
-            transition: transform 0.2s, box-shadow 0.2s;
-            opacity: 0; transform: translateY(16px);
-            animation: none;
-        }
-        .card-chamado.visivel {
-            animation: fadeUp 0.4s cubic-bezier(0.34,1.2,0.64,1) forwards;
-        }
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .card-chamado:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.13);
-        }
+        .card-chamado { border-radius: 14px; border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 15px; cursor: pointer; background: white; transition: transform 0.2s, box-shadow 0.2s; opacity: 0; transform: translateY(16px); }
+        .card-chamado.visivel { animation: fadeUp 0.4s cubic-bezier(0.34,1.2,0.64,1) forwards; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        .card-chamado:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.13); }
         .card-chamado:active { transform: scale(0.98); }
 
-        /* ── Badge contador pulsa quando há novos chamados ── */
-        #contadorChamados {
-            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        #contadorChamados.novo {
-            animation: badgePop 0.4s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        @keyframes badgePop {
-            0%   { transform: scale(1.6); }
-            100% { transform: scale(1);   }
-        }
+        #contadorChamados.novo { animation: badgePop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes badgePop { 0% { transform: scale(1.6); } 100% { transform: scale(1); } }
 
-        /* ── Urgente pisca ── */
-        .card-urgente {
-            animation: flashRed 1.2s infinite, fadeUp 0.4s cubic-bezier(0.34,1.2,0.64,1) forwards !important;
-            border-left-color: #dc3545 !important;
+        .card-urgente { animation: flashRed 1.2s infinite, fadeUp 0.4s cubic-bezier(0.34,1.2,0.64,1) forwards !important; border-left-color: #dc3545 !important; }
+        @keyframes flashRed { 0% { box-shadow: 0 2px 12px rgba(220,53,69,0.1); } 50% { box-shadow: 0 4px 20px rgba(220,53,69,0.4); } 100% { box-shadow: 0 2px 12px rgba(220,53,69,0.1); } }
+
+        /* ── Cards de aviso preventivo ── */
+        .card-aviso-mec {
+            border-radius: 14px; border: none;
+            background: linear-gradient(135deg, #fffde7, #fff8e1);
+            box-shadow: 0 2px 12px rgba(255,193,7,0.15);
+            border-left: 5px solid #ffc107 !important;
+            margin-bottom: 12px; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            opacity: 0; transform: translateY(12px);
         }
-        @keyframes flashRed {
-            0%   { box-shadow: 0 2px 12px rgba(220,53,69,0.1); }
-            50%  { box-shadow: 0 4px 20px rgba(220,53,69,0.4); }
-            100% { box-shadow: 0 2px 12px rgba(220,53,69,0.1); }
-        }
+        .card-aviso-mec.visivel { animation: fadeUp 0.4s cubic-bezier(0.34,1.2,0.64,1) forwards; }
+        .card-aviso-mec:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(255,193,7,0.3); }
+        .card-aviso-mec.card-manut { border-left-color: #dc3545 !important; background: linear-gradient(135deg, #fff5f5, #ffe0e0) !important; }
+
+        /* ── Skeleton ── */
+        .skeleton { border-radius: 8px; background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; margin-bottom: 12px; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
         /* ── Modal ── */
         .modal-content { border-radius: 20px; border: none; overflow: hidden; }
         .modal-header { background: linear-gradient(135deg, #002147, #003a6b); color: white; border: none; }
         .modal-header .btn-close { filter: invert(1); }
 
-        /* ── Botões do modal ── */
-        .btn-concluir-servico {
-            background: linear-gradient(135deg, #198754, #28a745);
-            color: white; font-weight: bold; border: none;
-            padding: 15px; border-radius: 12px; width: 100%; margin-top: 15px;
-            transition: transform 0.15s, box-shadow 0.2s;
-            position: relative; overflow: hidden;
-            animation: pulseGreen 2.5s infinite;
-        }
+        /* ── Modal aviso ── */
+        .modal-header-aviso { background: linear-gradient(135deg, #856404, #b8860b); color: white; border: none; }
+
+        .btn-concluir-servico { background: linear-gradient(135deg, #198754, #28a745); color: white; font-weight: bold; border: none; padding: 15px; border-radius: 12px; width: 100%; margin-top: 15px; transition: transform 0.15s, box-shadow 0.2s; position: relative; overflow: hidden; animation: pulseGreen 2.5s infinite; }
         .btn-concluir-servico:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(25,135,84,0.4); }
         .btn-concluir-servico:active { transform: scale(0.97); }
-        @keyframes pulseGreen {
-            0%   { box-shadow: 0 0 0 0   rgba(25,135,84,0.5); }
-            70%  { box-shadow: 0 0 0 12px rgba(25,135,84,0);   }
-            100% { box-shadow: 0 0 0 0   rgba(25,135,84,0);    }
-        }
+        @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(25,135,84,0.5); } 70% { box-shadow: 0 0 0 12px rgba(25,135,84,0); } 100% { box-shadow: 0 0 0 0 rgba(25,135,84,0); } }
 
-        /* ── Ripple ── */
-        .ripple {
-            position: absolute; border-radius: 50%;
-            background: rgba(255,255,255,0.35);
-            width: 10px; height: 10px;
-            margin-top: -5px; margin-left: -5px;
-            transform: scale(0);
-            animation: rippleAnim 0.6s linear;
-            pointer-events: none;
-        }
+        .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.35); width: 10px; height: 10px; margin-top: -5px; margin-left: -5px; transform: scale(0); animation: rippleAnim 0.6s linear; pointer-events: none; }
         @keyframes rippleAnim { to { transform: scale(40); opacity: 0; } }
 
-        /* ── Botão GPS ── */
         #m-gps { transition: transform 0.15s, box-shadow 0.2s; border-radius: 10px; }
         #m-gps:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,51,102,0.3); }
-
-        /* ── Chat button ── */
-        .btn-chat-mec {
-            border-radius: 10px;
-            transition: transform 0.15s, box-shadow 0.2s;
-            position: relative; overflow: hidden;
-        }
+        .btn-chat-mec { border-radius: 10px; transition: transform 0.15s, box-shadow 0.2s; position: relative; overflow: hidden; }
         .btn-chat-mec:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13,202,240,0.3); }
-
-        /* ── Switches ── */
         .form-check-input { cursor: pointer; transition: background-color 0.3s; }
         .form-check-input:checked { background-color: #198754; border-color: #198754; }
-
-        /* ── Imagem preview ── */
-        .img-prev {
-            width: 100%; border-radius: 10px; margin-top: 10px;
-            border: 1px solid #ddd; max-height: 250px; object-fit: cover;
-            transition: transform 0.2s;
-        }
+        .img-prev { width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid #ddd; max-height: 250px; object-fit: cover; transition: transform 0.2s; }
         .img-prev:hover { transform: scale(1.02); }
-
-        /* ── Skeleton loading ── */
-        .skeleton {
-            border-radius: 8px;
-            background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.2s infinite;
-            margin-bottom: 12px;
-        }
-        @keyframes shimmer {
-            0%   { background-position: -200% 0; }
-            100% { background-position:  200% 0; }
-        }
-
-        /* ── Estado vazio ── */
-        #estado-vazio {
-            animation: fadeUp 0.5s ease forwards;
-        }
-
         .badge-status { font-size: 0.7rem; }
-        .disabled-link { pointer-events: none; opacity: 0.6; }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-dark mb-4 shadow">
+<nav class="navbar navbar-dark shadow">
     <div class="container d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2">
-            <img src="logo.png" alt="Logo"
-                 style="width:36px;height:36px;border-radius:8px;object-fit:cover">
+            <img src="logo.png" alt="Logo" style="width:36px;height:36px;border-radius:8px;object-fit:cover">
             <strong class="text-white">MANUTENÇÃO ÁGUIA</strong>
         </div>
         <span id="nomeMecDisplay" class="text-white small fw-bold">Carregando...</span>
     </div>
 </nav>
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold mb-0">Chamados em Aberto</h5>
-        <span class="badge bg-primary fs-6" id="contadorChamados">0</span>
-    </div>
-
-    <!-- Skeleton enquanto carrega -->
-    <div id="skeleton-lista" class="row">
-        <div class="col-md-6 col-lg-4">
-            <div class="skeleton" style="height:110px"></div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="skeleton" style="height:110px"></div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="skeleton" style="height:110px"></div>
-        </div>
-    </div>
-
-    <div id="listaChamados" class="row" style="display:none"></div>
+<!-- Tabs de navegação -->
+<div class="tab-nav">
+    <ul class="nav nav-tabs border-0" id="mecTabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#tab-chamados">
+                <i class="fas fa-exclamation-triangle text-danger me-1"></i>
+                Chamados
+                <span class="badge bg-danger ms-1" id="contadorChamados">0</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#tab-avisos">
+                <i class="fas fa-bell text-warning me-1"></i>
+                Avisos Preventivos
+                <span class="badge bg-warning text-dark ms-1" id="contadorAvisos" style="display:none">0</span>
+            </a>
+        </li>
+    </ul>
 </div>
 
-<!-- Modal de atendimento -->
+<div class="container py-3">
+    <div class="tab-content">
+
+        <!-- ══ ABA CHAMADOS ══ -->
+        <div class="tab-pane fade show active" id="tab-chamados">
+            <div id="skeleton-lista" class="row mt-2">
+                <div class="col-md-6 col-lg-4"><div class="skeleton" style="height:110px"></div></div>
+                <div class="col-md-6 col-lg-4"><div class="skeleton" style="height:110px"></div></div>
+                <div class="col-md-6 col-lg-4"><div class="skeleton" style="height:110px"></div></div>
+            </div>
+            <div id="listaChamados" class="row" style="display:none"></div>
+        </div>
+
+        <!-- ══ ABA AVISOS PREVENTIVOS ══ -->
+        <div class="tab-pane fade" id="tab-avisos">
+            <div class="d-flex justify-content-between align-items-center my-3">
+                <h6 class="fw-bold mb-0" style="color:#856404">
+                    <i class="fas fa-bell text-warning me-2"></i>Ônibus com Anomalias Reportadas
+                </h6>
+                <span class="badge bg-warning text-dark" id="countAvisosAtivos">0 ativos</span>
+            </div>
+
+            <!-- Info explicativa -->
+            <div class="alert alert-warning py-2 px-3 mb-3" style="border-radius:12px;font-size:13px">
+                <i class="fas fa-info-circle me-2"></i>
+                Avisos enviados pelos motoristas sobre anomalias suspeitas. Avalie e marque a ação necessária.
+            </div>
+
+            <div id="skeleton-avisos" class="row">
+                <div class="col-md-6 col-lg-4"><div class="skeleton" style="height:130px"></div></div>
+                <div class="col-md-6 col-lg-4"><div class="skeleton" style="height:130px"></div></div>
+            </div>
+            <div id="listaAvisos" class="row" style="display:none"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal atendimento chamado -->
 <div class="modal fade" id="modalMec" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold text-white">
-                    Atendimento <span id="m-prot" class="opacity-75"></span>
-                </h5>
+                <h5 class="modal-title fw-bold text-white">Atendimento <span id="m-prot" class="opacity-75"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <!-- Coluna esquerda -->
                     <div class="col-md-6 border-end">
                         <h6><i class="fas fa-info-circle text-muted"></i> DETALHES DO VEÍCULO:</h6>
                         <p class="mb-1"><strong>Ônibus:</strong> <span id="m-bus"></span> | <strong>Placa:</strong> <span id="m-placa"></span></p>
                         <p class="small text-muted mb-3"><strong>Motorista:</strong> <span id="m-driver"></span></p>
-
                         <div class="p-3 bg-light border rounded mb-3" style="border-radius:10px!important">
                             <strong class="text-danger d-block mb-1" id="m-prob"></strong>
                             <span id="m-desc" class="small text-dark" style="white-space:pre-wrap"></span>
                         </div>
-
                         <div id="m-midia"></div>
-
                         <button class="btn btn-link btn-sm text-danger mt-4 w-100" onclick="excluirChamado()">
                             <i class="fas fa-trash"></i> Cancelar Solicitação (Erro/Teste)
                         </button>
                     </div>
-
-                    <!-- Coluna direita -->
                     <div class="col-md-6">
                         <h6><i class="fas fa-tasks text-muted"></i> AÇÕES DO MECÂNICO:</h6>
-
                         <div class="mb-3 p-3 border rounded bg-white" style="border-radius:10px!important">
                             <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" id="check1" onchange="setPasso(1)">
@@ -226,35 +188,65 @@
                                 <label class="form-check-label">Iniciar Análise Técnica</label>
                             </div>
                         </div>
-
                         <a id="m-gps" href="#" target="_blank" class="btn btn-primary w-100 mb-3 shadow-sm">
                             <i class="fas fa-map-marker-alt me-2"></i>ABRIR NO GOOGLE MAPS
                         </a>
-
                         <div class="card p-3 mb-3 bg-light border-0" style="border-radius:12px">
                             <h6 class="small fw-bold mb-2 text-uppercase">Previsão de Chegada (Minutos):</h6>
                             <div class="input-group">
-                                <input type="number" id="m-tempo" class="form-control" placeholder="Ex: 25"
-                                       style="border-radius:8px 0 0 8px">
-                                <button class="btn btn-success fw-bold" onclick="setPrevisao(event)"
-                                        style="border-radius:0 8px 8px 0;position:relative;overflow:hidden">
-                                    ENVIAR
-                                </button>
+                                <input type="number" id="m-tempo" class="form-control" placeholder="Ex: 25" style="border-radius:8px 0 0 8px">
+                                <button class="btn btn-success fw-bold" onclick="setPrevisao(event)" style="border-radius:0 8px 8px 0;position:relative;overflow:hidden">ENVIAR</button>
                             </div>
                         </div>
-
-                        <button class="btn btn-info w-100 text-white fw-bold py-2 mb-3 shadow-sm btn-chat-mec"
-                                onclick="abrirConexao(event)">
+                        <button class="btn btn-info w-100 text-white fw-bold py-2 mb-3 shadow-sm btn-chat-mec" onclick="abrirConexao(event)">
                             <i class="fas fa-comments me-2"></i>ABRIR CHAT COM MOTORISTA
                         </button>
-
                         <hr>
-
                         <button class="btn-concluir-servico shadow" onclick="finalizarServicoMec(event)">
                             <i class="fas fa-check-double me-2"></i> LIBERAR VEÍCULO (CONCLUÍDO)
                         </button>
                         <p class="text-center small text-muted mt-2">O motorista deverá confirmar o reparo no painel dele.</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal detalhes aviso -->
+<div class="modal fade" id="modalAviso" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius:20px;overflow:hidden">
+            <div class="modal-header modal-header-aviso">
+                <h5 class="modal-title fw-bold text-white">
+                    <i class="fas fa-bell me-2"></i>Aviso Preventivo — Ônibus <span id="av-bus"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="p-3 rounded mb-3" style="background:#fffde7;border-left:4px solid #ffc107">
+                    <div class="mb-2"><strong>Tipo:</strong> <span id="av-tipo" class="badge bg-warning text-dark"></span></div>
+                    <div class="mb-2"><strong>Descrição:</strong><br><span id="av-desc" class="small"></span></div>
+                    <div class="mb-2"><strong>Local:</strong> <span id="av-local" class="small text-muted"></span></div>
+                    <div class="mb-2"><strong>Motorista:</strong> <span id="av-motorista"></span></div>
+                    <div><strong>Placa:</strong> <span id="av-placa" class="badge bg-light text-dark border" style="font-family:monospace"></span></div>
+                </div>
+
+                <h6 class="fw-bold mb-2">Ação do Mecânico:</h6>
+                <div class="mb-3">
+                    <textarea id="av-observacao" class="form-control" rows="3" placeholder="Descreva o que foi verificado ou o que será feito..."></textarea>
+                </div>
+
+                <div class="d-flex gap-2 flex-column">
+                    <button onclick="responderAviso('ciente')" class="btn btn-info text-white fw-bold">
+                        <i class="fas fa-eye me-2"></i>Verifiquei — Ônibus em condições normais
+                    </button>
+                    <button onclick="responderAviso('manutencao')" class="btn btn-danger fw-bold">
+                        <i class="fas fa-tools me-2"></i>Requer Manutenção — Agendar revisão
+                    </button>
+                    <button onclick="responderAviso('monitorando')" class="btn btn-warning fw-bold text-dark">
+                        <i class="fas fa-eye me-2"></i>Monitorando — Vou acompanhar a situação
+                    </button>
                 </div>
             </div>
         </div>
@@ -277,12 +269,12 @@
     });
     const db = firebase.database();
 
-    let idAtivo = "";
+    let idAtivo      = "";
+    let avisoAtivo   = "";
     let totalAnterior = 0;
     const usuarioMec = JSON.parse(localStorage.getItem('usuarioLogado')) || { nome: "Mecânico Logado" };
     document.getElementById('nomeMecDisplay').innerText = usuarioMec.nome;
 
-    // ─── RIPPLE ──────────────────────────────────────────────────
     function addRipple(e, btn) {
         const r = document.createElement('span');
         r.className = 'ripple';
@@ -293,47 +285,36 @@
         setTimeout(() => r.remove(), 700);
     }
 
-    // ─── ESCUTAR CHAMADOS ────────────────────────────────────────
+    // ════ CHAMADOS ════
     db.ref('chamados').on('value', snap => {
         const lista    = document.getElementById('listaChamados');
         const skeleton = document.getElementById('skeleton-lista');
         const contador = document.getElementById('contadorChamados');
-
-        // Esconde skeleton na primeira carga
         skeleton.style.display = 'none';
         lista.style.display = 'flex';
         lista.className = 'row';
         lista.innerHTML = "";
 
         if (!snap.exists()) {
-            lista.innerHTML = `
-                <div class="col-12 text-center text-muted p-5" id="estado-vazio">
-                    <i class="fas fa-check-circle fa-3x text-success mb-3 d-block"
-                       style="animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)"></i>
-                    Tudo em ordem. Nenhum chamado pendente.
-                </div>`;
-            contador.innerText = "0";
-            totalAnterior = 0;
-            return;
+            lista.innerHTML = `<div class="col-12 text-center text-muted p-5" id="estado-vazio">
+                <i class="fas fa-check-circle fa-3x text-success mb-3 d-block"></i>
+                Tudo em ordem. Nenhum chamado pendente.</div>`;
+            contador.innerText = "0"; totalAnterior = 0; return;
         }
 
         let total = 0;
         snap.forEach(child => {
             total++;
-            const c   = child.val();
-            const key = child.key;
-
+            const c = child.val(); const key = child.key;
             let corBorda = 'border-danger';
             if (c.status_passo == 3) corBorda = 'border-info';
             if (c.status_passo == 4) corBorda = 'border-success opacity-75';
-
             const urgente = c.status_passo == 1 ? 'card-urgente' : '';
 
             const col = document.createElement('div');
             col.className = 'col-md-6 col-lg-4';
             col.innerHTML = `
-                <div class="card card-chamado p-3 border-start border-4 ${corBorda} ${urgente}"
-                     onclick="gerenciar('${key}')">
+                <div class="card card-chamado p-3 border-start border-4 ${corBorda} ${urgente}" onclick="gerenciar('${key}')">
                     <div class="d-flex justify-content-between align-items-start">
                         <strong><i class="fas fa-bus"></i> Carro ${c.numero}</strong>
                         <span class="badge bg-light text-dark border badge-status">#${c.protocolo}</span>
@@ -344,34 +325,123 @@
                         <i class="fas fa-map-marker-alt"></i> ${c.local}
                         ${c.status_passo == 4 ? '<br><b class="text-success">[ AGUARDANDO MOTORISTA LIBERAR ]</b>' : ''}
                     </div>
-                    <div class="mt-2 text-end small fw-bold text-primary">
-                        DETALHES <i class="fas fa-arrow-right"></i>
-                    </div>
+                    <div class="mt-2 text-end small fw-bold text-primary">DETALHES <i class="fas fa-arrow-right"></i></div>
                 </div>`;
             lista.appendChild(col);
-
-            // Anima cada card com delay escalonado
-            const card = col.querySelector('.card-chamado');
-            const idx  = total - 1;
-            setTimeout(() => card.classList.add('visivel'), idx * 80);
+            setTimeout(() => col.querySelector('.card-chamado').classList.add('visivel'), (total-1)*80);
         });
 
-        // Anima contador se aumentou
         if (total !== totalAnterior) {
             contador.innerText = total;
-            contador.classList.remove('novo');
-            void contador.offsetWidth;
-            contador.classList.add('novo');
+            contador.classList.remove('novo'); void contador.offsetWidth; contador.classList.add('novo');
             totalAnterior = total;
         }
     });
 
-    // ─── GERENCIAR CHAMADO ───────────────────────────────────────
+    // ════ AVISOS PREVENTIVOS ════
+    db.ref('avisos').on('value', snap => {
+        const lista    = document.getElementById('listaAvisos');
+        const skeleton = document.getElementById('skeleton-avisos');
+        const contador = document.getElementById('contadorAvisos');
+        const countEl  = document.getElementById('countAvisosAtivos');
+
+        skeleton.style.display = 'none';
+        lista.style.display = 'flex';
+        lista.className = 'row';
+        lista.innerHTML = "";
+
+        let totalAtivos = 0;
+        let idx = 0;
+
+        if (!snap.exists()) {
+            lista.innerHTML = `<div class="col-12 text-center text-muted p-5">
+                <i class="fas fa-bell-slash fa-3x mb-3 d-block text-muted"></i>
+                Nenhum aviso preventivo no momento.</div>`;
+            contador.style.display = 'none';
+            countEl.innerText = '0 ativos';
+            return;
+        }
+
+        snap.forEach(child => {
+            const a = child.val(); const key = child.key;
+            if (a.status === 'ativo') totalAtivos++;
+
+            const hora = a.timestamp
+                ? new Date(a.timestamp).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+                : '---';
+
+            const statusInfo = {
+                ativo:       { badge: '<span class="badge bg-warning text-dark">Aguardando vistoria</span>', cls: '' },
+                ciente:      { badge: '<span class="badge bg-info text-dark">Verificado — Normal</span>', cls: '' },
+                manutencao:  { badge: '<span class="badge bg-danger">Requer Manutenção</span>', cls: 'card-manut' },
+                monitorando: { badge: '<span class="badge bg-secondary">Monitorando</span>', cls: '' },
+            }[a.status] || { badge: '', cls: '' };
+
+            const col = document.createElement('div');
+            col.className = 'col-md-6 col-lg-4';
+            col.innerHTML = `
+                <div class="card-aviso-mec p-3 ${statusInfo.cls}" onclick="abrirAviso('${key}')">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <strong style="font-size:1rem;color:#003366">Ônibus ${a.numero}</strong>
+                            <span class="badge bg-light text-dark border ms-2" style="font-family:monospace;font-size:10px">${a.placa||'---'}</span>
+                        </div>
+                        ${statusInfo.badge}
+                    </div>
+                    <span class="badge bg-warning text-dark mb-2">${a.tipo}</span>
+                    <p class="small mb-1" style="color:#5a3e00">${a.descricao}</p>
+                    <div class="small text-muted mb-1"><i class="fas fa-user me-1"></i>${a.motorista}</div>
+                    <div class="small text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>${a.local||'---'}</div>
+                    <div class="small text-muted"><i class="fas fa-clock me-1"></i>${hora}</div>
+                    ${a.observacao_mec ? `<div class="mt-2 p-2 bg-white rounded small"><i class="fas fa-comment-alt me-1 text-primary"></i>${a.observacao_mec}</div>` : ''}
+                </div>`;
+            lista.appendChild(col);
+            setTimeout(() => col.querySelector('.card-aviso-mec').classList.add('visivel'), idx*80);
+            idx++;
+        });
+
+        countEl.innerText = totalAtivos + ' ativos';
+        if (totalAtivos > 0) { contador.style.display='inline'; contador.innerText=totalAtivos; }
+        else { contador.style.display='none'; }
+
+        if (lista.innerHTML === '') {
+            lista.innerHTML = `<div class="col-12 text-center text-muted p-5">
+                <i class="fas fa-bell-slash fa-3x mb-3 d-block"></i>Nenhum aviso no momento.</div>`;
+        }
+    });
+
+    // ════ ABRIR MODAL AVISO ════
+    function abrirAviso(id) {
+        avisoAtivo = id;
+        db.ref('avisos/' + id).once('value', snap => {
+            const a = snap.val();
+            document.getElementById('av-bus').innerText      = a.numero;
+            document.getElementById('av-tipo').innerText     = a.tipo;
+            document.getElementById('av-desc').innerText     = a.descricao;
+            document.getElementById('av-local').innerText    = a.local || '---';
+            document.getElementById('av-motorista').innerText = a.motorista;
+            document.getElementById('av-placa').innerText    = a.placa || '---';
+            document.getElementById('av-observacao').value   = a.observacao_mec || '';
+            new bootstrap.Modal(document.getElementById('modalAviso')).show();
+        });
+    }
+
+    function responderAviso(novoStatus) {
+        const obs = document.getElementById('av-observacao').value.trim();
+        db.ref('avisos/' + avisoAtivo).update({
+            status: novoStatus,
+            observacao_mec: obs,
+            respondido_por: usuarioMec.nome,
+            respondido_em: firebase.database.ServerValue.TIMESTAMP
+        });
+        bootstrap.Modal.getInstance(document.getElementById('modalAviso')).hide();
+    }
+
+    // ════ GERENCIAR CHAMADO ════
     async function gerenciar(id) {
         idAtivo = id;
         const snap = await db.ref('chamados/' + id).once('value');
         const c = snap.val();
-
         document.getElementById('m-prot').innerText   = "#" + c.protocolo;
         document.getElementById('m-bus').innerText    = c.numero;
         document.getElementById('m-placa').innerText  = c.placa;
@@ -382,13 +452,10 @@
         const btnGps = document.getElementById('m-gps');
         if (c.lat && c.lng) {
             btnGps.href = `https://www.google.com/maps?q=${c.lat},${c.lng}`;
-            btnGps.classList.remove('disabled','btn-secondary');
-            btnGps.classList.add('btn-primary');
+            btnGps.classList.remove('disabled','btn-secondary'); btnGps.classList.add('btn-primary');
             btnGps.innerHTML = '<i class="fas fa-map-marker-alt me-2"></i>ABRIR NO GOOGLE MAPS';
         } else {
-            btnGps.href = "#";
-            btnGps.classList.add('disabled','btn-secondary');
-            btnGps.classList.remove('btn-primary');
+            btnGps.href = "#"; btnGps.classList.add('disabled','btn-secondary'); btnGps.classList.remove('btn-primary');
             btnGps.innerText = "GPS NÃO ENVIADO";
         }
 
@@ -399,13 +466,10 @@
         document.getElementById('check1').checked = c.status_passo >= 1;
         document.getElementById('check2').checked = c.status_passo >= 2;
         document.getElementById('m-tempo').value  = c.previsao_chegada || "";
-
         new bootstrap.Modal(document.getElementById('modalMec')).show();
     }
 
-    function setPasso(p) {
-        db.ref('chamados/' + idAtivo).update({ status_passo: p });
-    }
+    function setPasso(p) { db.ref('chamados/' + idAtivo).update({ status_passo: p }); }
 
     function setPrevisao(e) {
         if (e) addRipple(e, e.currentTarget);
@@ -413,28 +477,25 @@
         if (!t) return alert("Informe o tempo estimado!");
         db.ref('chamados/' + idAtivo).update({ status_passo: 3, previsao_chegada: t });
         const btn = e?.currentTarget;
-        if (btn) {
-            btn.innerHTML = '<i class="fas fa-check"></i>';
-            btn.style.background = '#146c43';
-            setTimeout(() => { btn.innerHTML = 'ENVIAR'; btn.style.background = ''; }, 2000);
-        }
+        if (btn) { btn.innerHTML='<i class="fas fa-check"></i>'; btn.style.background='#146c43'; setTimeout(()=>{ btn.innerHTML='ENVIAR'; btn.style.background=''; },2000); }
     }
 
     async function finalizarServicoMec(e) {
         if (e) addRipple(e, e.currentTarget);
-        if (confirm("Confirma a conclusão do reparo? O motorista será notificado para confirmar a saída do veículo.")) {
+        if (confirm("Confirma a conclusão do reparo? O motorista será notificado.")) {
             try {
-                await db.ref('chamados/' + idAtivo).update({ status_passo: 4 });
+                await db.ref('chamados/' + idAtivo).update({
+                    status_passo: 4,
+                    mecanico_responsavel: usuarioMec.nome
+                });
                 alert("Status atualizado! Aguardando confirmação final do motorista.");
                 bootstrap.Modal.getInstance(document.getElementById('modalMec')).hide();
-            } catch(err) {
-                alert("Erro na conexão com o banco.");
-            }
+            } catch(err) { alert("Erro na conexão com o banco."); }
         }
     }
 
     function excluirChamado() {
-        if (confirm("Deseja EXCLUIR permanentemente este chamado? Use apenas para erros ou testes.")) {
+        if (confirm("Deseja EXCLUIR permanentemente este chamado?")) {
             db.ref('chamados/' + idAtivo).remove();
             bootstrap.Modal.getInstance(document.getElementById('modalMec')).hide();
         }
@@ -444,11 +505,8 @@
         if (e) addRipple(e, e.currentTarget);
         db.ref('chamados/' + idAtivo).update({ chat_aberto_obrigatorio: true });
         const urlChat = `chat_motorista.html?id=${idAtivo}&nome=${encodeURIComponent(usuarioMec.nome)}`;
-        if (window.innerWidth < 768) {
-            window.location.href = urlChat;
-        } else {
-            window.open(urlChat, 'chat_aguia', 'width=400,height=600,left=100,top=100');
-        }
+        if (window.innerWidth < 768) window.location.href = urlChat;
+        else window.open(urlChat, 'chat_aguia', 'width=400,height=600,left=100,top=100');
     }
 </script>
 </body>

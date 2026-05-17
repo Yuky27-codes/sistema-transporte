@@ -11,7 +11,6 @@
         * { box-sizing: border-box; }
         body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; margin: 0; }
 
-        /* ── Sidebar ── */
         .sidebar {
             background: linear-gradient(180deg, #001f4d 0%, #003366 60%, #00509d 100%);
             color: white; min-height: 100vh; padding: 20px 15px;
@@ -19,18 +18,12 @@
             box-shadow: 4px 0 20px rgba(0,0,0,0.2);
         }
         .sidebar-logo { width: 52px; height: 52px; border-radius: 14px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .nav-link {
-            color: rgba(255,255,255,0.75); border-radius: 10px;
-            margin-bottom: 4px; padding: 9px 12px;
-            transition: background 0.2s, color 0.2s; font-size: 13.5px;
-        }
+        .nav-link { color: rgba(255,255,255,0.75); border-radius: 10px; margin-bottom: 4px; padding: 9px 12px; transition: background 0.2s, color 0.2s; font-size: 13.5px; }
         .nav-link:hover { background: rgba(255,255,255,0.12); color: white; }
         .nav-link.active { background: #ffc107 !important; color: #003366 !important; font-weight: 700; }
 
-        /* ── Main ── */
         .main-content { margin-left: 220px; padding: 28px; }
 
-        /* ── Cards ── */
         .card-stat {
             border-radius: 16px; border: none;
             box-shadow: 0 4px 16px rgba(0,0,0,0.07);
@@ -43,53 +36,48 @@
         .card-stat h2 { font-size: 2rem; font-weight: 700; margin: 0; }
         .card-stat small { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: #888; }
 
-        .table-container {
-            background: white; border-radius: 16px;
-            padding: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.07);
-            margin-bottom: 24px;
-        }
+        .table-container { background: white; border-radius: 16px; padding: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); margin-bottom: 24px; }
         .secao-titulo { border-left: 5px solid #003366; padding-left: 14px; margin-bottom: 18px; color: #003366; font-weight: 700; font-size: 1.1rem; }
 
-        /* ── Alertas ── */
         .emergencia-anim { animation: pulseRed 2s infinite; border: 2px solid #dc3545 !important; }
-        @keyframes pulseRed {
-            0%   { box-shadow: 0 0 0 0   rgba(220,53,69,0.6); }
-            70%  { box-shadow: 0 0 0 12px rgba(220,53,69,0);   }
-            100% { box-shadow: 0 0 0 0   rgba(220,53,69,0);    }
-        }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(220,53,69,0.6); } 70% { box-shadow: 0 0 0 12px rgba(220,53,69,0); } 100% { box-shadow: 0 0 0 0 rgba(220,53,69,0); } }
         .animate-flash { animation: flash 1s infinite; }
         @keyframes flash { 50% { opacity: 0.3; } }
 
-        /* ── Mapa ── */
+        /* ── Aviso preventivo ── */
+        .aviso-anim { animation: pulseYellow 2.5s infinite; border: 2px solid #ffc107 !important; }
+        @keyframes pulseYellow { 0% { box-shadow: 0 0 0 0 rgba(255,193,7,0.5); } 70% { box-shadow: 0 0 0 12px rgba(255,193,7,0); } 100% { box-shadow: 0 0 0 0 rgba(255,193,7,0); } }
+
+        .card-aviso-central {
+            border-radius: 14px; border: none;
+            background: linear-gradient(135deg, #fffde7, #fff8e1);
+            box-shadow: 0 2px 12px rgba(255,193,7,0.2);
+            border-left: 5px solid #ffc107 !important;
+            margin-bottom: 12px;
+            opacity: 0; transform: translateY(12px);
+        }
+        .card-aviso-central.visivel { animation: fadeUp 0.35s ease forwards; }
+        .card-aviso-central:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,193,7,0.3); transition: all 0.2s; }
+
         #mapa-google { width: 100%; height: 500px; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
         #mapa-rastreamento { width: 100%; height: 420px; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
 
-        /* ── Rastreamento cards ── */
-        .card-rastreamento {
-            border-radius: 14px; border: none;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            margin-bottom: 12px; background: white;
-            transition: transform 0.2s, box-shadow 0.2s;
-            opacity: 0; transform: translateY(12px);
-        }
+        .card-rastreamento { border-radius: 14px; border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 12px; background: white; transition: transform 0.2s, box-shadow 0.2s; opacity: 0; transform: translateY(12px); }
         .card-rastreamento.visivel { animation: fadeUp 0.35s ease forwards; }
         .card-rastreamento:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
         .online-dot  { width: 10px; height: 10px; border-radius: 50%; background: #28a745; display: inline-block; box-shadow: 0 0 6px rgba(40,167,69,0.6); animation: blink 2s infinite; }
         .offline-dot { width: 10px; height: 10px; border-radius: 50%; background: #aaa; display: inline-block; }
         @keyframes blink { 50% { opacity: 0.4; } }
 
-        /* ── Inputs ── */
         .form-control, .form-select { border-radius: 10px; border: 2px solid #e0e0e0; transition: border-color 0.2s, box-shadow 0.2s; }
         .form-control:focus, .form-select:focus { border-color: #003366; box-shadow: 0 0 0 3px rgba(0,51,102,0.1); }
         .btn { border-radius: 10px; transition: transform 0.15s, box-shadow 0.15s; }
         .btn:hover { transform: translateY(-1px); }
         .btn:active { transform: scale(0.97); }
 
-        /* ── Relatório impressão ── */
         @media print {
             .sidebar, .no-print, nav, button, .btn { display: none !important; }
             .main-content { margin-left: 0 !important; padding: 10px !important; }
-            .card-relatorio-print { border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin-bottom: 16px; break-inside: avoid; }
             .print-header { text-align: center; margin-bottom: 24px; border-bottom: 2px solid #003366; padding-bottom: 16px; }
         }
 
@@ -98,6 +86,9 @@
         .table tbody tr:hover { background: #f8f9ff; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #c0c8d8; border-radius: 3px; }
+
+        /* Badge contador sidebar */
+        .badge-sidebar { font-size: 10px; padding: 2px 6px; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -114,6 +105,12 @@
       <hr style="border-color:rgba(255,255,255,0.15)">
       <ul class="nav nav-pills flex-column" id="pills-tab">
         <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#aba-monitoramento"><i class="fas fa-tv me-2"></i>Monitoramento</a></li>
+        <li class="nav-item">
+          <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="pill" href="#aba-avisos">
+            <span><i class="fas fa-bell me-2"></i>Avisos Preventivos</span>
+            <span class="badge bg-warning text-dark badge-sidebar" id="badge-avisos-sidebar" style="display:none">0</span>
+          </a>
+        </li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#aba-rastreamento" onclick="iniciarRastreamento()"><i class="fas fa-satellite-dish me-2"></i>Rastreamento GPS</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#aba-motoristas"><i class="fas fa-user-tie me-2"></i>Motoristas</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#aba-equipes"><i class="fas fa-wrench me-2"></i>Bases e Mecânicos</a></li>
@@ -134,34 +131,42 @@
             <span id="relogio-central" class="badge bg-dark fs-6" style="font-family:monospace"></span>
           </div>
 
-          <!-- Cards resumo -->
+          <!-- Cards resumo — inclui avisos preventivos -->
           <div class="row g-3 mb-4">
             <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#fff0f0"><i class="fas fa-exclamation-triangle text-danger"></i></div><div><small>OCORRÊNCIAS</small><h2 id="countAlertas" style="color:#dc3545">0</h2></div></div></div></div>
-            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.1s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#e8f5e9"><i class="fas fa-bus text-success"></i></div><div><small>FROTA ATIVA</small><h2 id="countFrota" style="color:#28a745">0</h2></div></div></div></div>
-            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.2s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#e3f2fd"><i class="fas fa-wifi text-primary"></i></div><div><small>ONLINE AGORA</small><h2 id="countOnline" style="color:#0d6efd">0</h2></div></div></div></div>
-            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.3s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#fff8e1"><i class="fas fa-user-tie text-warning"></i></div><div><small>MOTORISTAS</small><h2 id="countMotoristas" style="color:#ffc107">0</h2></div></div></div></div>
-            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.4s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#f3e5f5"><i class="fas fa-warehouse" style="color:#9c27b0"></i></div><div><small>BASES</small><h2 id="countBases" style="color:#9c27b0">0</h2></div></div></div></div>
-            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.5s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#fce4ec"><i class="fas fa-tools" style="color:#e91e63"></i></div><div><small>MANUTENÇÃO</small><h2 id="countManutencao" style="color:#e91e63">0</h2></div></div></div></div>
+            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.08s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#fffde7"><i class="fas fa-bell text-warning"></i></div><div><small>AVISOS PREV.</small><h2 id="countAvisosCard" style="color:#f57c00">0</h2></div></div></div></div>
+            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.16s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#e8f5e9"><i class="fas fa-bus text-success"></i></div><div><small>FROTA ATIVA</small><h2 id="countFrota" style="color:#28a745">0</h2></div></div></div></div>
+            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.24s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#e3f2fd"><i class="fas fa-wifi text-primary"></i></div><div><small>ONLINE AGORA</small><h2 id="countOnline" style="color:#0d6efd">0</h2></div></div></div></div>
+            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.32s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#fff8e1"><i class="fas fa-user-tie text-warning"></i></div><div><small>MOTORISTAS</small><h2 id="countMotoristas" style="color:#ffc107">0</h2></div></div></div></div>
+            <div class="col-6 col-md-2"><div class="card-stat h-100" style="animation-delay:0.4s"><div class="d-flex align-items-center gap-3"><div class="stat-icon" style="background:#fce4ec"><i class="fas fa-tools" style="color:#e91e63"></i></div><div><small>MANUTENÇÃO</small><h2 id="countManutencao" style="color:#e91e63">0</h2></div></div></div></div>
           </div>
 
-          <!-- Alertas -->
+          <!-- Avisos preventivos ativos (resumo no monitoramento) -->
+          <div class="table-container aviso-anim mb-4" id="containerAvisos" style="display:none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0" style="color:#856404"><i class="fas fa-bell me-2"></i>AVISOS PREVENTIVOS ATIVOS</h5>
+              <a href="#aba-avisos" data-bs-toggle="pill" class="btn btn-sm btn-warning text-dark fw-bold no-print">Ver todos</a>
+            </div>
+            <div id="listaAvisosResumo" class="row"></div>
+          </div>
+
+          <!-- Alertas emergência -->
           <div class="table-container emergencia-anim mb-4" id="containerAlertas" style="display:none">
             <h5 class="text-danger fw-bold mb-3"><i class="fas fa-exclamation-triangle me-2"></i>ALERTAS AGUARDANDO SOCORRO</h5>
             <div id="listaAlertas" class="row"></div>
           </div>
 
-          <!-- Mapa Google Maps -->
+          <!-- Mapa -->
           <div class="table-container mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h5 class="mb-0 fw-bold"><i class="fas fa-map-marked-alt me-2 text-primary"></i>Mapa da Frota em Tempo Real</h5>
-              <div class="d-flex gap-2 align-items-center">
-                <span class="badge bg-success"><i class="fas fa-circle me-1" style="font-size:7px"></i>Ao vivo</span>
-              </div>
+              <span class="badge bg-success"><i class="fas fa-circle me-1" style="font-size:7px"></i>Ao vivo</span>
             </div>
             <div id="mapa-google"></div>
             <div class="mt-2 d-flex gap-3 flex-wrap" style="font-size:12px">
               <span><span style="display:inline-block;width:12px;height:12px;background:#dc3545;border-radius:50%"></span> Ocorrência</span>
-              <span><span style="display:inline-block;width:12px;height:12px;background:#28a745;border-radius:50%"></span> Online / Em operação</span>
+              <span><span style="display:inline-block;width:12px;height:12px;background:#ffc107;border-radius:50%"></span> Aviso Preventivo</span>
+              <span><span style="display:inline-block;width:12px;height:12px;background:#28a745;border-radius:50%"></span> Online</span>
               <span><span style="display:inline-block;width:12px;height:12px;background:#6c757d;border-radius:50%"></span> Offline</span>
             </div>
           </div>
@@ -180,20 +185,52 @@
           </div>
         </div>
 
+        <!-- ══ AVISOS PREVENTIVOS ══ -->
+        <div class="tab-pane fade" id="aba-avisos">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0 fw-bold" style="color:#856404">
+              <i class="fas fa-bell me-2 text-warning"></i>Avisos Preventivos
+            </h4>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="badge bg-warning text-dark fs-6" id="countAvisosBadge">0 ativos</span>
+            </div>
+          </div>
+
+          <!-- Filtros -->
+          <div class="d-flex gap-2 mb-3 flex-wrap no-print">
+            <input type="text" id="filtroAvisoTexto" class="form-control" style="max-width:220px" placeholder="Buscar ônibus ou motorista...">
+            <select id="filtroAvisoStatus" class="form-select" style="max-width:180px">
+              <option value="">Todos os status</option>
+              <option value="ativo">Ativos</option>
+              <option value="ciente">Ciente</option>
+              <option value="manutencao">Req. Manutenção</option>
+            </select>
+            <select id="filtroAvisoTipo" class="form-select" style="max-width:200px">
+              <option value="">Todos os tipos</option>
+              <option>Barulho Suspeito</option>
+              <option>Vibração Anormal</option>
+              <option>Fumaça Leve</option>
+              <option>Cheiro Estranho</option>
+              <option>Luz de Alerta Acesa</option>
+              <option>Freio com Ruído</option>
+              <option>Perda de Potência</option>
+              <option>Outro</option>
+            </select>
+          </div>
+
+          <div id="lista-avisos-central" class="row"></div>
+        </div>
+
         <!-- ══ RASTREAMENTO GPS ══ -->
         <div class="tab-pane fade" id="aba-rastreamento">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0 fw-bold" style="color:#003366"><i class="fas fa-satellite-dish me-2"></i>Central de Rastreamento</h4>
             <span class="badge bg-success"><i class="fas fa-circle me-1" style="font-size:7px"></i>Atualização ao vivo</span>
           </div>
-
-          <!-- Mapa de rastreamento -->
           <div class="table-container mb-4">
             <h5 class="fw-bold mb-3"><i class="fas fa-map me-2 text-success"></i>Mapa de Rastreamento</h5>
             <div id="mapa-rastreamento"></div>
           </div>
-
-          <!-- Filtros -->
           <div class="d-flex gap-2 mb-3 no-print">
             <input type="text" id="filtroRastreamento" class="form-control" style="max-width:260px" placeholder="Buscar ônibus ou motorista...">
             <select id="filtroStatusRastr" class="form-select" style="max-width:180px">
@@ -240,7 +277,6 @@
               <tbody id="listaMecanicosCadastrados"></tbody>
             </table>
           </div>
-
           <div class="table-container border-start border-primary border-5">
             <h4 class="secao-titulo text-primary"><i class="fas fa-warehouse me-2"></i>2. Cadastro de Bases</h4>
             <div class="row g-2 p-3 bg-light rounded mb-3">
@@ -258,7 +294,6 @@
               <tbody id="listaBasesCadastradas"></tbody>
             </table>
           </div>
-
           <div class="table-container border-top border-warning border-5">
             <h4 class="text-warning fw-bold mb-3">3. Atribuição de Mecânico à Base</h4>
             <div class="row g-3 bg-warning bg-opacity-10 p-3 rounded border border-warning">
@@ -289,7 +324,6 @@
               </table>
             </div>
           </div>
-
           <div class="table-container border-start border-success border-5">
             <h4 class="secao-titulo text-success"><i class="fas fa-link me-2"></i>Vincular Motorista ao Ônibus</h4>
             <div class="row g-3 p-3 bg-light rounded">
@@ -304,8 +338,6 @@
         <!-- ══ RELATÓRIOS ══ -->
         <div class="tab-pane fade" id="aba-relatorios">
           <div class="table-container">
-
-            <!-- Header com botões -->
             <div class="d-flex justify-content-between align-items-center mb-3 no-print">
               <h4 class="secao-titulo mb-0">Relatório de Incidentes</h4>
               <div class="d-flex gap-2">
@@ -313,21 +345,16 @@
                 <button onclick="imprimirRelatorio()" class="btn btn-sm btn-outline-dark"><i class="fas fa-print me-1"></i>Imprimir</button>
               </div>
             </div>
-
-            <!-- Cabeçalho de impressão (visível só ao imprimir) -->
             <div class="print-header" style="display:none" id="print-header">
               <h2 style="color:#003366">ÁGUIA CONECTA</h2>
               <h4>Relatório de Ocorrências de Manutenção</h4>
               <p>Gerado em: <span id="data-impressao"></span></p>
             </div>
-
-            <!-- Filtros -->
             <div id="filtro-relatorio" class="no-print">
               <div class="row g-2">
                 <div class="col-md-3"><label class="small fw-bold">Data Início</label><input type="date" id="filtroDataInicio" class="form-control form-control-sm"></div>
                 <div class="col-md-3"><label class="small fw-bold">Data Fim</label><input type="date" id="filtroDataFim" class="form-control form-control-sm"></div>
-                <div class="col-md-3">
-                  <label class="small fw-bold">Tipo de Problema</label>
+                <div class="col-md-3"><label class="small fw-bold">Tipo de Problema</label>
                   <select id="filtroProblema" class="form-select form-select-sm">
                     <option value="">Todos</option>
                     <option>Pneu Furado</option><option>Aquecimento no Motor</option>
@@ -340,34 +367,29 @@
                 </div>
               </div>
             </div>
-
-            <!-- Resumo -->
-            <div class="row g-2 mb-3" id="resumo-relatorio">
-              <div class="col-md-3"><div class="p-2 bg-light rounded text-center"><div class="small text-muted">Total de Incidentes</div><strong id="rel-total">0</strong></div></div>
+            <div class="row g-2 mb-3">
+              <div class="col-md-3"><div class="p-2 bg-light rounded text-center"><div class="small text-muted">Total</div><strong id="rel-total">0</strong></div></div>
               <div class="col-md-3"><div class="p-2 bg-light rounded text-center"><div class="small text-muted">Tempo Médio</div><strong id="rel-tempo-medio">---</strong></div></div>
-              <div class="col-md-3"><div class="p-2 bg-light rounded text-center"><div class="small text-muted">Problema Mais Comum</div><strong id="rel-problema-comum" style="font-size:12px">---</strong></div></div>
-              <div class="col-md-3"><div class="p-2 bg-light rounded text-center"><div class="small text-muted">Ônibus com Mais Ocorr.</div><strong id="rel-bus-mais">---</strong></div></div>
+              <div class="col-md-3"><div class="p-2 bg-light rounded text-center"><div class="small text-muted">Prob. Mais Comum</div><strong id="rel-problema-comum" style="font-size:12px">---</strong></div></div>
+              <div class="col-md-3"><div class="p-2 bg-light rounded text-center"><div class="small text-muted">Ônibus c/ Mais Ocorr.</div><strong id="rel-bus-mais">---</strong></div></div>
             </div>
-
-            <!-- Tabela -->
             <div class="table-responsive">
-              <table class="table table-hover align-middle" id="tabela-relatorio-print">
+              <table class="table table-hover align-middle">
                 <thead class="table-dark">
                   <tr><th>Data/Hora</th><th>Protocolo</th><th>Ônibus</th><th>Placa</th><th>Motorista</th><th>Mecânico</th><th>Problema</th><th>Local</th><th>Duração</th><th class="no-print">Foto</th><th>Status</th></tr>
                 </thead>
                 <tbody id="tabelaRelatorios"></tbody>
               </table>
             </div>
-
           </div>
         </div>
 
-      </div><!-- tab-content -->
-    </div><!-- main-content -->
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- Modal Despachar Socorro -->
+<!-- Modal Socorro -->
 <div class="modal fade" id="modalSocorro" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="border-radius:16px;overflow:hidden">
@@ -390,16 +412,12 @@
 
 <audio id="somAlerta" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
-<!-- Google Maps API -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmdXJ5KA87D3rdDqMVynTwQmGoJHDp3CI&callback=initMaps" async defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// ════════════════════════════════════════════════════
-//  FIREBASE
-// ════════════════════════════════════════════════════
 firebase.initializeApp({
     apiKey: "AIzaSyCse0N51grAeI3fHrFFP9Azo-hC9kIQ7qY",
     authDomain: "translog-231da.firebaseapp.com",
@@ -411,88 +429,44 @@ firebase.initializeApp({
 });
 const db = firebase.database();
 
-// ════════════════════════════════════════════════════
-//  ESTADO GLOBAL
-// ════════════════════════════════════════════════════
-let todosRelatorios     = [];
-let chamadosAnteriores  = new Set();
-let somLiberado         = false;
-let mapaMonit           = null;  // Google Maps — monitoramento
-let mapaRastr           = null;  // Google Maps — rastreamento
-let marcadoresMonit     = {};    // { numVeiculo: marker }
-let marcadoresRastr     = {};
-let infoWindowAtual     = null;
+let todosRelatorios    = [];
+let chamadosAnteriores = new Set();
+let avisosAnteriores   = new Set();
+let somLiberado        = false;
+let mapaMonit          = null;
+let mapaRastr          = null;
+let marcadoresMonit    = {};
+let marcadoresRastr    = {};
+let infoWindowAtual    = null;
 
 document.body.addEventListener('click', () => { somLiberado = true; }, { once: true });
+setInterval(() => { const el = document.getElementById('relogio-central'); if (el) el.innerText = new Date().toLocaleTimeString(); }, 1000);
 
-// Relógio
-setInterval(() => {
-    const el = document.getElementById('relogio-central');
-    if (el) el.innerText = new Date().toLocaleTimeString();
-}, 1000);
-
-// ════════════════════════════════════════════════════
-//  GOOGLE MAPS — INICIALIZAÇÃO (callback da API)
-// ════════════════════════════════════════════════════
+// ════ GOOGLE MAPS ════
 function initMaps() {
-    const centro = { lat: -22.9, lng: -43.1 }; // centro padrão — Brasil
-
-    // Mapa monitoramento
-    mapaMonit = new google.maps.Map(document.getElementById('mapa-google'), {
-        zoom: 12, center: centro,
-        mapTypeControl: false,
-        fullscreenControl: true,
-        streetViewControl: false,
-        styles: [{ featureType: "poi", stylers: [{ visibility: "off" }] }]
-    });
-
-    // Mapa rastreamento
-    mapaRastr = new google.maps.Map(document.getElementById('mapa-rastreamento'), {
-        zoom: 12, center: centro,
-        mapTypeControl: false,
-        fullscreenControl: true,
-        streetViewControl: false,
-    });
-
-    // Inicia listeners após mapas prontos
+    const centro = { lat: -22.9, lng: -43.1 };
+    mapaMonit = new google.maps.Map(document.getElementById('mapa-google'), { zoom: 12, center: centro, mapTypeControl: false, fullscreenControl: true, streetViewControl: false, styles: [{ featureType: "poi", stylers: [{ visibility: "off" }] }] });
+    mapaRastr = new google.maps.Map(document.getElementById('mapa-rastreamento'), { zoom: 12, center: centro, mapTypeControl: false, fullscreenControl: true, streetViewControl: false });
     monitorarSistema();
+    monitorarAvisos();
     iniciarRastreamento();
     carregarRelatorios();
 }
 
-// ════════════════════════════════════════════════════
-//  ATUALIZAR MARCADOR NO MAPA
-// ════════════════════════════════════════════════════
-function criarIconeMarcador(cor, letra) {
-    return {
-        path: google.maps.SymbolPath.CIRCLE,
-        fillColor: cor,
-        fillOpacity: 1,
-        strokeColor: 'white',
-        strokeWeight: 2,
-        scale: 14,
-        labelOrigin: new google.maps.Point(0, 0)
-    };
+function criarIconeMarcador(cor) {
+    return { path: google.maps.SymbolPath.CIRCLE, fillColor: cor, fillOpacity: 1, strokeColor: 'white', strokeWeight: 2, scale: 14, labelOrigin: new google.maps.Point(0, 0) };
 }
 
-function atualizarMarcador(mapa, marcadores, numVeiculo, lat, lng, titulo, cor, conteudoPopup) {
+function atualizarMarcador(mapa, marcadores, numVeiculo, lat, lng, titulo, cor, popup) {
     if (!lat || !lng || (lat === 0 && lng === 0)) return;
     const pos = { lat: parseFloat(lat), lng: parseFloat(lng) };
-
     if (marcadores[numVeiculo]) {
         marcadores[numVeiculo].setPosition(pos);
-        marcadores[numVeiculo].setIcon(criarIconeMarcador(cor, numVeiculo.toString()[0]));
-        marcadores[numVeiculo]._popup = conteudoPopup;
+        marcadores[numVeiculo].setIcon(criarIconeMarcador(cor));
+        marcadores[numVeiculo]._popup = popup;
     } else {
-        const marker = new google.maps.Marker({
-            position: pos,
-            map: mapa,
-            title: titulo,
-            label: { text: numVeiculo.toString(), color: 'white', fontSize: '10px', fontWeight: 'bold' },
-            icon: criarIconeMarcador(cor, numVeiculo.toString()[0]),
-            animation: google.maps.Animation.DROP
-        });
-        marker._popup = conteudoPopup;
+        const marker = new google.maps.Marker({ position: pos, map: mapa, title: titulo, label: { text: numVeiculo.toString(), color: 'white', fontSize: '10px', fontWeight: 'bold' }, icon: criarIconeMarcador(cor), animation: google.maps.Animation.DROP });
+        marker._popup = popup;
         marker.addListener('click', () => {
             if (infoWindowAtual) infoWindowAtual.close();
             infoWindowAtual = new google.maps.InfoWindow({ content: marker._popup });
@@ -502,43 +476,33 @@ function atualizarMarcador(mapa, marcadores, numVeiculo, lat, lng, titulo, cor, 
     }
 }
 
-function removerMarcador(marcadores, numVeiculo) {
-    if (marcadores[numVeiculo]) {
-        marcadores[numVeiculo].setMap(null);
-        delete marcadores[numVeiculo];
-    }
-}
-
-// ════════════════════════════════════════════════════
-//  MONITORAMENTO EM TEMPO REAL
-// ════════════════════════════════════════════════════
+// ════ MONITORAMENTO ════
 function monitorarSistema() {
     db.ref('chamados').on('value', snapCham => {
         const chamados = snapCham.val() || {};
-        const lista    = document.getElementById('listaAlertas');
+        const lista = document.getElementById('listaAlertas');
         const novosIds = new Set();
         let countAlertas = 0;
-        lista.innerHTML  = "";
+        lista.innerHTML = "";
 
         snapCham.forEach(child => {
             novosIds.add(child.key);
             const c = child.val();
             if (c.status_passo === 1) {
                 countAlertas++;
-                const tempoDecorrido = c.timestamp
-                    ? Math.round((Date.now() - c.timestamp) / 60000) + ' min atrás' : '---';
+                const tempo = c.timestamp ? Math.round((Date.now()-c.timestamp)/60000)+' min atrás' : '---';
                 lista.innerHTML += `
                     <div class="col-md-4 mb-3">
                         <div class="card border-danger shadow-sm h-100" style="border-radius:12px">
                             <div class="card-header bg-danger text-white py-2 d-flex justify-content-between">
                                 <span class="fw-bold">BUS ${c.numero} — ${c.placa}</span>
-                                <small class="opacity-75">${tempoDecorrido}</small>
+                                <small class="opacity-75">${tempo}</small>
                             </div>
                             <div class="card-body p-2">
                                 <h6 class="text-danger mb-1">${c.problema}</h6>
                                 <p class="small mb-1"><i class="fas fa-user me-1"></i>${c.motorista}</p>
                                 <p class="small mb-2"><i class="fas fa-map-marker-alt me-1"></i>${c.local}</p>
-                                ${c.midia ? `<img src="${c.midia}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;margin-bottom:8px">` : ''}
+                                ${c.midia?`<img src="${c.midia}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;margin-bottom:8px">`:''}
                                 <div class="d-flex gap-2">
                                     <button onclick="abrirModalSocorro('${child.key}')" class="btn btn-danger btn-sm flex-fill fw-bold"><i class="fas fa-truck me-1"></i>DESPACHAR</button>
                                     <a href="chat_motorista.html?id=${child.key}" target="_blank" class="btn btn-outline-info btn-sm"><i class="fas fa-comments"></i></a>
@@ -549,139 +513,101 @@ function monitorarSistema() {
             }
         });
 
-        // Som só para chamados novos
         novosIds.forEach(id => {
             if (!chamadosAnteriores.has(id) && somLiberado) {
-                document.getElementById('somAlerta').play().catch(() => {});
-                setTimeout(() => {
-                    document.getElementById('somAlerta').pause();
-                    document.getElementById('somAlerta').currentTime = 0;
-                }, 5000);
+                document.getElementById('somAlerta').play().catch(()=>{});
+                setTimeout(() => { document.getElementById('somAlerta').pause(); document.getElementById('somAlerta').currentTime=0; }, 5000);
             }
         });
         chamadosAnteriores = novosIds;
-
         document.getElementById('countAlertas').innerText = countAlertas;
         document.getElementById('containerAlertas').style.display = countAlertas > 0 ? 'block' : 'none';
 
-        // Tabela frota + marcadores no mapa
+        // Tabela frota + marcadores
         db.ref('frota').once('value', sFrota => {
             db.ref('heartbeats').once('value', sHeart => {
-                const sinais = sHeart.val() || {};
-                let html = ''; let op = 0; let manut = 0; let online = 0;
-                const numVeiculosAtivos = new Set();
+                db.ref('avisos').once('value', sAvisos => {
+                    const sinais = sHeart.val() || {};
+                    const avisos = sAvisos.val() || {};
+                    let html=''; let op=0; let manut=0; let online=0;
 
-                sFrota.forEach(sv => {
-                    const v = sv.val();
-                    const sinal    = sinais[v.numero];
-                    const isOnline = sinal && (Date.now() - sinal.timestamp) < 90000; // 90s
-                    const lat      = sinal?.lat || 0;
-                    const lng      = sinal?.lng || 0;
-                    const tempoStr = sinal ? new Date(sinal.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '---';
+                    sFrota.forEach(sv => {
+                        const v = sv.val();
+                        const sinal = sinais[v.numero];
+                        const isOnline = sinal && (Date.now()-sinal.timestamp) < 90000;
+                        const lat = sinal?.lat || 0; const lng = sinal?.lng || 0;
+                        const tempoStr = sinal ? new Date(sinal.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '---';
+                        if (v.status !== 'Disponível') op++;
+                        if (v.status === 'Quebrado' || v.status === 'Em Manutenção') manut++;
+                        if (isOnline) online++;
 
-                    if (v.status !== 'Disponível') op++;
-                    if (v.status === 'Quebrado' || v.status === 'Em Manutenção') manut++;
-                    if (isOnline) { online++; numVeiculosAtivos.add(v.numero); }
+                        let temOcorrencia=false; let chamadoKey='';
+                        for (let k in chamados) { if (chamados[k].numero==v.numero && chamados[k].status_passo<4) { temOcorrencia=true; chamadoKey=k; } }
 
-                    // Verifica se tem ocorrência
-                    let temOcorrencia = false;
-                    let chamadoKey    = '';
-                    for (let k in chamados) {
-                        if (chamados[k].numero == v.numero && chamados[k].status_passo < 4) {
-                            temOcorrencia = true; chamadoKey = k;
-                        }
-                    }
+                        let temAviso = false;
+                        for (let k in avisos) { if (avisos[k].numero==v.numero && avisos[k].status==='ativo') temAviso=true; }
 
-                    // Cor do marcador
-                    const cor = temOcorrencia ? '#dc3545' : isOnline ? '#28a745' : '#6c757d';
-
-                    // Popup do marcador
-                    const popup = `
-                        <div style="font-size:13px;line-height:1.6;min-width:180px">
-                            <strong style="color:#003366;font-size:15px">Ônibus ${v.numero}</strong><br>
+                        const cor = temOcorrencia ? '#dc3545' : temAviso ? '#ffc107' : isOnline ? '#28a745' : '#6c757d';
+                        const popup = `<div style="font-size:13px;line-height:1.6;min-width:180px">
+                            <strong style="color:#003366">Ônibus ${v.numero}</strong><br>
                             <span style="background:#f0f0f0;padding:1px 6px;border-radius:4px;font-family:monospace">${v.placa}</span><br>
-                            <i class="fas fa-user" style="color:#003366"></i> ${v.motoristaAtual || 'Sem motorista'}<br>
-                            ${temOcorrencia ? '<span style="color:#dc3545;font-weight:bold">🚨 OCORRÊNCIA ATIVA</span><br>' : ''}
-                            <span style="color:${isOnline?'#28a745':'#aaa'}">${isOnline ? '● Online' : '● Offline'}</span><br>
-                            <small style="color:#888">Último sinal: ${tempoStr}</small><br>
-                            ${lat ? `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="color:#003366">Abrir no Google Maps</a>` : ''}
+                            ${v.motoristaAtual||'Sem motorista'}<br>
+                            ${temOcorrencia?'<span style="color:#dc3545;font-weight:bold">🚨 OCORRÊNCIA ATIVA</span><br>':''}
+                            ${temAviso&&!temOcorrencia?'<span style="color:#f57c00;font-weight:bold">⚠️ AVISO PREVENTIVO</span><br>':''}
+                            <span style="color:${isOnline?'#28a745':'#aaa'}">${isOnline?'● Online':'● Offline'}</span><br>
+                            <small>Último sinal: ${tempoStr}</small>
+                            ${lat?`<br><a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">Abrir no Maps</a>`:''}
                         </div>`;
 
-                    // Atualiza marcador
-                    if (mapaMonit && lat) {
-                        atualizarMarcador(mapaMonit, marcadoresMonit, v.numero, lat, lng, `Ônibus ${v.numero}`, cor, popup);
-                    }
+                        if (mapaMonit && lat) atualizarMarcador(mapaMonit, marcadoresMonit, v.numero, lat, lng, `Ônibus ${v.numero}`, cor, popup);
 
-                    // Socorro
-                    let socorro = '<span class="text-muted small">Normal</span>';
-                    if (temOcorrencia) {
-                        socorro = chamados[chamadoKey]?.status_passo >= 2
-                            ? `<span class="badge bg-info text-dark"><i class="fas fa-truck me-1"></i>${chamados[chamadoKey].resposta_base}</span>`
-                            : `<span class="badge bg-danger animate-flash">🚨 PENDENTE</span>`;
-                    }
+                        let socorro = '<span class="text-muted small">Normal</span>';
+                        if (temOcorrencia) socorro = chamados[chamadoKey]?.status_passo>=2 ? `<span class="badge bg-info text-dark"><i class="fas fa-truck me-1"></i>${chamados[chamadoKey].resposta_base}</span>` : `<span class="badge bg-danger animate-flash">🚨 PENDENTE</span>`;
 
-                    html += `<tr>
-                        <td><strong>${v.numero}</strong><br><small class="text-muted">${v.placa}</small></td>
-                        <td>${v.motoristaAtual || '<span class="text-muted">---</span>'}</td>
-                        <td><span class="badge ${v.status==='Quebrado'?'bg-danger':v.status==='Em Operação'?'bg-primary':'bg-secondary'}">${v.status}</span></td>
-                        <td><span class="badge ${isOnline?'bg-success':'bg-secondary'}">${isOnline?'Online':'Offline'}</span></td>
-                        <td>${socorro}</td>
-                        <td>${lat ? `<span class="text-success small"><i class="fas fa-map-marker-alt me-1"></i>${tempoStr}</span>` : '<span class="text-muted small">Sem GPS</span>'}</td>
-                        <td>
-                            <div class="d-flex gap-1">
-                                ${lat ? `<button onclick="centralizarMapa(${lat},${lng},${v.numero})" class="btn btn-sm btn-outline-success" title="Ver no mapa"><i class="fas fa-crosshairs"></i></button>` : ''}
-                                ${temOcorrencia ? `<a href="chat_motorista.html?id=${chamadoKey}" target="_blank" class="btn btn-sm btn-outline-info" title="Chat"><i class="fas fa-comments"></i></a>` : ''}
-                            </div>
-                        </td>
-                    </tr>`;
+                        html += `<tr>
+                            <td><strong>${v.numero}</strong><br><small class="text-muted">${v.placa}</small></td>
+                            <td>${v.motoristaAtual||'<span class="text-muted">---</span>'}</td>
+                            <td>
+                                <span class="badge ${v.status==='Quebrado'?'bg-danger':v.status==='Em Operação'?'bg-primary':'bg-secondary'}">${v.status}</span>
+                                ${temAviso?'<span class="badge bg-warning text-dark ms-1" title="Aviso preventivo ativo">⚠️</span>':''}
+                            </td>
+                            <td><span class="badge ${isOnline?'bg-success':'bg-secondary'}">${isOnline?'Online':'Offline'}</span></td>
+                            <td>${socorro}</td>
+                            <td>${lat?`<span class="text-success small"><i class="fas fa-map-marker-alt me-1"></i>${tempoStr}</span>`:'<span class="text-muted small">Sem GPS</span>'}</td>
+                            <td><div class="d-flex gap-1">
+                                ${lat?`<button onclick="centralizarMapa(${lat},${lng},${v.numero})" class="btn btn-sm btn-outline-success" title="Mapa"><i class="fas fa-crosshairs"></i></button>`:''}
+                                ${temOcorrencia?`<a href="chat_motorista.html?id=${chamadoKey}" target="_blank" class="btn btn-sm btn-outline-info"><i class="fas fa-comments"></i></a>`:''}
+                            </div></td>
+                        </tr>`;
+                    });
+
+                    document.getElementById('tabelaMonitoramento').innerHTML = html || '<tr><td colspan="7" class="text-center text-muted py-4">Nenhum veículo em operação.</td></tr>';
+                    document.getElementById('countFrota').innerText    = op;
+                    document.getElementById('countOnline').innerText   = online;
+                    document.getElementById('countManutencao').innerText = manut;
                 });
-
-                // Remove marcadores de veículos offline
-                Object.keys(marcadoresMonit).forEach(num => {
-                    if (!numVeiculosAtivos.has(parseInt(num))) {
-                        // Mantém o marcador mas muda a cor para offline
-                    }
-                });
-
-                document.getElementById('tabelaMonitoramento').innerHTML = html || '<tr><td colspan="7" class="text-center text-muted py-4">Nenhum veículo em operação.</td></tr>';
-                document.getElementById('countFrota').innerHTML    = op;
-                document.getElementById('countOnline').innerText   = online;
-                document.getElementById('countManutencao').innerText = manut;
             });
         });
     });
 
-    // Atualização em tempo real dos heartbeats → marcadores no mapa
+    // Heartbeats → marcadores em tempo real
     db.ref('heartbeats').on('value', sHeart => {
         db.ref('frota').once('value', sFrota => {
             db.ref('chamados').once('value', sCham => {
-                const frota   = {};
-                const chamados = sCham.val() || {};
-                sFrota.forEach(sv => { frota[sv.val().numero] = sv.val(); });
-
-                sHeart.forEach(child => {
-                    const h   = child.val();
-                    const num = h.numVeiculo || child.key;
-                    const v   = frota[num] || {};
-                    if (!h.lat || !h.lng) return;
-
-                    const isOnline = (Date.now() - h.timestamp) < 90000;
-                    let temOcorrencia = false;
-                    for (let k in chamados) {
-                        if (chamados[k].numero == num) temOcorrencia = true;
-                    }
-                    const cor = temOcorrencia ? '#dc3545' : isOnline ? '#28a745' : '#6c757d';
-
-                    const popup = `
-                        <div style="font-size:13px;line-height:1.6;min-width:180px">
-                            <strong style="color:#003366">Ônibus ${num}</strong><br>
-                            <i class="fas fa-user"></i> ${h.motorista || v.motoristaAtual || '---'}<br>
-                            <span style="color:${isOnline?'#28a745':'#aaa'}">${isOnline?'● Online':'● Offline'}</span><br>
-                            <small>${new Date(h.timestamp).toLocaleTimeString()}</small>
-                        </div>`;
-
-                    if (mapaMonit) atualizarMarcador(mapaMonit, marcadoresMonit, num, h.lat, h.lng, `Ônibus ${num}`, cor, popup);
-                    if (mapaRastr) atualizarMarcador(mapaRastr, marcadoresRastr, num, h.lat, h.lng, `Ônibus ${num}`, cor, popup);
+                db.ref('avisos').once('value', sAvisos => {
+                    const frota={}; sFrota.forEach(sv => { frota[sv.val().numero]=sv.val(); });
+                    const chamados=sCham.val()||{}; const avisos=sAvisos.val()||{};
+                    sHeart.forEach(child => {
+                        const h=child.val(); const num=h.numVeiculo||child.key;
+                        if (!h.lat||!h.lng) return;
+                        const isOnline=(Date.now()-h.timestamp)<90000;
+                        let temOcorrencia=false; for (let k in chamados) { if (chamados[k].numero==num) temOcorrencia=true; }
+                        let temAviso=false; for (let k in avisos) { if (avisos[k].numero==num&&avisos[k].status==='ativo') temAviso=true; }
+                        const cor = temOcorrencia?'#dc3545':temAviso?'#ffc107':isOnline?'#28a745':'#6c757d';
+                        const popup=`<div style="font-size:13px;min-width:160px"><strong>Ônibus ${num}</strong><br>${h.motorista||'---'}<br><span style="color:${isOnline?'#28a745':'#aaa'}">${isOnline?'● Online':'● Offline'}</span><br><small>${new Date(h.timestamp).toLocaleTimeString()}</small></div>`;
+                        if (mapaMonit) atualizarMarcador(mapaMonit,marcadoresMonit,num,h.lat,h.lng,`Ônibus ${num}`,cor,popup);
+                        if (mapaRastr) atualizarMarcador(mapaRastr,marcadoresRastr,num,h.lat,h.lng,`Ônibus ${num}`,cor,popup);
+                    });
                 });
             });
         });
@@ -690,403 +616,336 @@ function monitorarSistema() {
 
 function centralizarMapa(lat, lng, num) {
     if (!mapaMonit) return;
-    mapaMonit.panTo({ lat, lng });
-    mapaMonit.setZoom(16);
-    if (marcadoresMonit[num]) {
-        google.maps.event.trigger(marcadoresMonit[num], 'click');
-    }
-    // Scrolla até o mapa
-    document.getElementById('mapa-google').scrollIntoView({ behavior: 'smooth' });
+    mapaMonit.panTo({lat,lng}); mapaMonit.setZoom(16);
+    if (marcadoresMonit[num]) google.maps.event.trigger(marcadoresMonit[num],'click');
+    document.getElementById('mapa-google').scrollIntoView({behavior:'smooth'});
 }
 
 // ════════════════════════════════════════════════════
-//  RASTREAMENTO GPS — aba dedicada
+//  AVISOS PREVENTIVOS
 // ════════════════════════════════════════════════════
+function monitorarAvisos() {
+    db.ref('avisos').on('value', snap => {
+        const resumo  = document.getElementById('listaAvisosResumo');
+        const lista   = document.getElementById('lista-avisos-central');
+        const novosIds = new Set();
+        resumo.innerHTML = '';
+        if (lista) lista.innerHTML = '';
+
+        let countAtivos = 0;
+        const filtroTexto  = (document.getElementById('filtroAvisoTexto')?.value||'').toLowerCase();
+        const filtroStatus = document.getElementById('filtroAvisoStatus')?.value||'';
+        const filtroTipo   = document.getElementById('filtroAvisoTipo')?.value||'';
+
+        let idx = 0;
+        snap.forEach(child => {
+            const a = child.val();
+            novosIds.add(child.key);
+            if (a.status === 'ativo') countAtivos++;
+
+            // Resumo no monitoramento (só ativos)
+            if (a.status === 'ativo' && resumo.children.length < 3) {
+                const hora = a.timestamp ? Math.round((Date.now()-a.timestamp)/60000)+'min atrás' : '---';
+                resumo.innerHTML += `
+                    <div class="col-md-4 mb-2">
+                        <div class="card h-100" style="border-radius:12px;border-left:4px solid #ffc107;background:#fffde7">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <strong>BUS ${a.numero}</strong>
+                                    <small class="text-muted">${hora}</small>
+                                </div>
+                                <span class="badge bg-warning text-dark mb-1">${a.tipo}</span>
+                                <p class="small mb-1">${a.descricao}</p>
+                                <p class="small text-muted mb-0"><i class="fas fa-user me-1"></i>${a.motorista}</p>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            // Lista completa da aba (com filtros)
+            if (lista) {
+                const matchTexto  = !filtroTexto  || a.numero?.toString().includes(filtroTexto) || (a.motorista||'').toLowerCase().includes(filtroTexto);
+                const matchStatus = !filtroStatus || a.status === filtroStatus;
+                const matchTipo   = !filtroTipo   || a.tipo === filtroTipo;
+                if (!matchTexto || !matchStatus || !matchTipo) return;
+
+                const hora = a.timestamp ? new Date(a.timestamp).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '---';
+                const statusBadge = a.status==='ativo' ? '<span class="badge bg-warning text-dark">Ativo</span>' : a.status==='ciente' ? '<span class="badge bg-info text-dark">Ciente</span>' : '<span class="badge bg-danger">Requer Manutenção</span>';
+
+                const col = document.createElement('div');
+                col.className = 'col-md-6 col-lg-4';
+                col.innerHTML = `
+                    <div class="card-aviso-central p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <strong style="font-size:1.1rem;color:#003366">Ônibus ${a.numero}</strong>
+                                <span class="badge bg-light text-dark border ms-2" style="font-family:monospace">${a.placa||'---'}</span>
+                            </div>
+                            ${statusBadge}
+                        </div>
+                        <span class="badge bg-warning text-dark mb-2">${a.tipo}</span>
+                        <p class="small mb-1" style="color:#5a3e00">${a.descricao}</p>
+                        <div class="small text-muted mb-1"><i class="fas fa-user me-1"></i>${a.motorista}</div>
+                        <div class="small text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>${a.local||'---'}</div>
+                        <div class="small text-muted mb-3"><i class="fas fa-clock me-1"></i>${hora}</div>
+                        ${a.status==='ativo' ? `
+                        <div class="d-flex gap-2">
+                            <button onclick="marcarAviso('${child.key}','ciente')" class="btn btn-sm btn-outline-info flex-fill">
+                                <i class="fas fa-eye me-1"></i>Ciente
+                            </button>
+                            <button onclick="marcarAviso('${child.key}','manutencao')" class="btn btn-sm btn-danger flex-fill">
+                                <i class="fas fa-tools me-1"></i>Req. Manutenção
+                            </button>
+                            <button onclick="excluirAviso('${child.key}')" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>` : `
+                        <div class="d-flex gap-2">
+                            <button onclick="excluirAviso('${child.key}')" class="btn btn-sm btn-outline-secondary w-100">
+                                <i class="fas fa-trash me-1"></i>Arquivar
+                            </button>
+                        </div>`}
+                    </div>`;
+                lista.appendChild(col);
+                const card = col.querySelector('.card-aviso-central');
+                setTimeout(() => card.classList.add('visivel'), idx * 60);
+                idx++;
+            }
+        });
+
+        // Atualiza contadores
+        document.getElementById('countAvisosCard').innerText = countAtivos;
+        document.getElementById('countAvisosBadge').innerText = countAtivos + ' ativos';
+        document.getElementById('containerAvisos').style.display = countAtivos > 0 ? 'block' : 'none';
+
+        const badgeSidebar = document.getElementById('badge-avisos-sidebar');
+        if (countAtivos > 0) { badgeSidebar.style.display='inline'; badgeSidebar.innerText=countAtivos; }
+        else { badgeSidebar.style.display='none'; }
+
+        if (lista && lista.innerHTML === '') {
+            lista.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="fas fa-bell-slash fa-2x mb-2 d-block"></i>Nenhum aviso encontrado.</div>';
+        }
+    });
+}
+
+function marcarAviso(id, novoStatus) {
+    if (novoStatus === 'manutencao') {
+        if (!confirm("Marcar como REQUER MANUTENÇÃO? Isso vai alertar o mecânico.")) return;
+    }
+    db.ref('avisos/' + id).update({ status: novoStatus });
+}
+
+function excluirAviso(id) {
+    if (confirm("Arquivar este aviso?")) db.ref('avisos/' + id).remove();
+}
+
+// Filtros de avisos em tempo real
+document.addEventListener('DOMContentLoaded', () => {
+    ['filtroAvisoTexto','filtroAvisoStatus','filtroAvisoTipo'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', monitorarAvisos);
+        document.getElementById(id)?.addEventListener('change', monitorarAvisos);
+    });
+});
+
+// ════ RASTREAMENTO ════
 function iniciarRastreamento() {
     db.ref('frota').on('value', sFrota => {
         db.ref('heartbeats').on('value', sHeart => {
             db.ref('chamados').on('value', sCham => {
-                const sinais  = sHeart.val()  || {};
-                const chamados = sCham.val()  || {};
-                const lista   = document.getElementById('lista-rastreamento');
+                const sinais=sHeart.val()||{}; const chamados=sCham.val()||{};
+                const lista=document.getElementById('lista-rastreamento');
                 if (!lista) return;
-                lista.innerHTML = "";
-
-                const filtroText   = (document.getElementById('filtroRastreamento')?.value || '').toLowerCase();
-                const filtroStatus = document.getElementById('filtroStatusRastr')?.value || '';
-                let idx = 0;
-
+                lista.innerHTML='';
+                const filtroText=(document.getElementById('filtroRastreamento')?.value||'').toLowerCase();
+                const filtroStatus=document.getElementById('filtroStatusRastr')?.value||'';
+                let idx=0;
                 sFrota.forEach(sv => {
-                    const v        = sv.val();
-                    const sinal    = sinais[v.numero];
-                    const isOnline = sinal && (Date.now() - sinal.timestamp) < 90000;
-                    const lat      = sinal?.lat || 0;
-                    const lng      = sinal?.lng || 0;
-                    const tempoStr = sinal ? new Date(sinal.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '---';
-
-                    let temOcorrencia = false; let chamadoKey = '';
-                    for (let k in chamados) {
-                        if (chamados[k].numero == v.numero && chamados[k].status_passo < 4) {
-                            temOcorrencia = true; chamadoKey = k;
-                        }
-                    }
-
-                    const matchText = !filtroText || v.numero?.toString().includes(filtroText) || (v.motoristaAtual||'').toLowerCase().includes(filtroText);
-                    const matchStatus = !filtroStatus ||
-                        (filtroStatus === 'online'     && isOnline) ||
-                        (filtroStatus === 'offline'    && !isOnline) ||
-                        (filtroStatus === 'ocorrencia' && temOcorrencia);
-
-                    if (!matchText || !matchStatus) return;
-
-                    const col = document.createElement('div');
-                    col.className = 'col-md-6 col-lg-4';
-                    col.innerHTML = `
-                        <div class="card-rastreamento p-3 ${temOcorrencia ? 'border-start border-4 border-danger' : ''}">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <strong style="font-size:1.3rem;color:#003366">Ônibus ${v.numero}</strong>
-                                    <span class="badge bg-light text-dark border ms-2" style="font-family:monospace">${v.placa}</span>
-                                </div>
-                                <span class="${isOnline ? 'online-dot' : 'offline-dot'}"></span>
-                            </div>
-                            <div class="small mb-1"><i class="fas fa-user text-primary me-1"></i>${v.motoristaAtual || '<span class="text-muted">Sem motorista</span>'}</div>
-                            <div class="small mb-1"><i class="fas fa-map-marker-alt ${lat ? 'text-success' : 'text-muted'} me-1"></i>${lat ? `${lat.toFixed(5)}, ${lng.toFixed(5)}` : 'GPS não disponível'}</div>
-                            <div class="small text-muted mb-2"><i class="fas fa-clock me-1"></i>Último sinal: ${tempoStr}</div>
-                            ${temOcorrencia ? `<div class="alert alert-danger py-1 px-2 small mb-2"><i class="fas fa-exclamation-triangle me-1"></i>Ocorrência ativa</div>` : ''}
-                            <div class="d-flex gap-2">
-                                ${lat ? `
-                                    <button onclick="centralizarMapaRastr(${lat},${lng},${v.numero})" class="btn btn-sm btn-success flex-fill"><i class="fas fa-map-marked-alt me-1"></i>Ver no Mapa</button>
-                                    <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="fab fa-google me-1"></i>Maps</a>
-                                ` : '<span class="text-muted small w-100 text-center">Sem coordenadas GPS</span>'}
-                                ${temOcorrencia ? `<a href="chat_motorista.html?id=${chamadoKey}" target="_blank" class="btn btn-sm btn-outline-info"><i class="fas fa-comments"></i></a>` : ''}
-                            </div>
-                        </div>`;
+                    const v=sv.val(); const sinal=sinais[v.numero];
+                    const isOnline=sinal&&(Date.now()-sinal.timestamp)<90000;
+                    const lat=sinal?.lat||0; const lng=sinal?.lng||0;
+                    const tempoStr=sinal?new Date(sinal.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'---';
+                    let temOcorrencia=false; let chamadoKey='';
+                    for (let k in chamados) { if (chamados[k].numero==v.numero&&chamados[k].status_passo<4) { temOcorrencia=true; chamadoKey=k; } }
+                    const matchText=!filtroText||v.numero?.toString().includes(filtroText)||(v.motoristaAtual||'').toLowerCase().includes(filtroText);
+                    const matchStatus=!filtroStatus||(filtroStatus==='online'&&isOnline)||(filtroStatus==='offline'&&!isOnline)||(filtroStatus==='ocorrencia'&&temOcorrencia);
+                    if (!matchText||!matchStatus) return;
+                    const col=document.createElement('div'); col.className='col-md-6 col-lg-4';
+                    col.innerHTML=`<div class="card-rastreamento p-3 ${temOcorrencia?'border-start border-4 border-danger':''}">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div><strong style="font-size:1.3rem;color:#003366">Ônibus ${v.numero}</strong><span class="badge bg-light text-dark border ms-2" style="font-family:monospace">${v.placa}</span></div>
+                            <span class="${isOnline?'online-dot':'offline-dot'}"></span>
+                        </div>
+                        <div class="small mb-1"><i class="fas fa-user text-primary me-1"></i>${v.motoristaAtual||'<span class="text-muted">Sem motorista</span>'}</div>
+                        <div class="small mb-1"><i class="fas fa-map-marker-alt ${lat?'text-success':'text-muted'} me-1"></i>${lat?`${lat.toFixed(5)}, ${lng.toFixed(5)}`:'GPS não disponível'}</div>
+                        <div class="small text-muted mb-2"><i class="fas fa-clock me-1"></i>Último sinal: ${tempoStr}</div>
+                        ${temOcorrencia?'<div class="alert alert-danger py-1 px-2 small mb-2"><i class="fas fa-exclamation-triangle me-1"></i>Ocorrência ativa</div>':''}
+                        <div class="d-flex gap-2">
+                            ${lat?`<button onclick="centralizarMapaRastr(${lat},${lng},${v.numero})" class="btn btn-sm btn-success flex-fill"><i class="fas fa-map-marked-alt me-1"></i>Ver no Mapa</button><a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="fab fa-google me-1"></i>Maps</a>`:'<span class="text-muted small w-100 text-center">Sem coordenadas GPS</span>'}
+                            ${temOcorrencia?`<a href="chat_motorista.html?id=${chamadoKey}" target="_blank" class="btn btn-sm btn-outline-info"><i class="fas fa-comments"></i></a>`:''}
+                        </div></div>`;
                     lista.appendChild(col);
-                    const card = col.querySelector('.card-rastreamento');
-                    setTimeout(() => card.classList.add('visivel'), idx * 60);
-                    idx++;
+                    const card=col.querySelector('.card-rastreamento');
+                    setTimeout(()=>card.classList.add('visivel'),idx*60); idx++;
                 });
-
-                if (lista.innerHTML === '') {
-                    lista.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="fas fa-satellite-dish fa-2x mb-2 d-block"></i>Nenhum veículo encontrado.</div>';
-                }
+                if (lista.innerHTML==='') lista.innerHTML='<div class="col-12 text-center text-muted py-5"><i class="fas fa-satellite-dish fa-2x mb-2 d-block"></i>Nenhum veículo encontrado.</div>';
             });
         });
     });
-
     document.getElementById('filtroRastreamento')?.addEventListener('input', iniciarRastreamento);
     document.getElementById('filtroStatusRastr')?.addEventListener('change', iniciarRastreamento);
 }
 
-function centralizarMapaRastr(lat, lng, num) {
+function centralizarMapaRastr(lat,lng,num) {
     if (!mapaRastr) return;
-    mapaRastr.panTo({ lat, lng });
-    mapaRastr.setZoom(16);
-    if (marcadoresRastr[num]) google.maps.event.trigger(marcadoresRastr[num], 'click');
-    document.getElementById('mapa-rastreamento').scrollIntoView({ behavior: 'smooth' });
+    mapaRastr.panTo({lat,lng}); mapaRastr.setZoom(16);
+    if (marcadoresRastr[num]) google.maps.event.trigger(marcadoresRastr[num],'click');
+    document.getElementById('mapa-rastreamento').scrollIntoView({behavior:'smooth'});
 }
 
-// ════════════════════════════════════════════════════
-//  CADASTROS
-// ════════════════════════════════════════════════════
+// ════ CADASTROS ════
 function cadastrarMotorista() {
-    const nome = document.getElementById('nomeMotorista').value.trim();
-    const mat  = document.getElementById('matriculaMotorista').value.trim();
-    const cpf  = document.getElementById('cpfMotorista').value.trim();
-    if (!nome || !mat) return alert("Nome e matrícula são obrigatórios.");
-    db.ref('motoristas/' + mat).set({ nome, matricula: mat, cpf });
-    ['nomeMotorista','matriculaMotorista','cpfMotorista'].forEach(id => document.getElementById(id).value = '');
+    const nome=document.getElementById('nomeMotorista').value.trim();
+    const mat=document.getElementById('matriculaMotorista').value.trim();
+    const cpf=document.getElementById('cpfMotorista').value.trim();
+    if (!nome||!mat) return alert("Nome e matrícula são obrigatórios.");
+    db.ref('motoristas/'+mat).set({nome,matricula:mat,cpf});
+    ['nomeMotorista','matriculaMotorista','cpfMotorista'].forEach(id=>document.getElementById(id).value='');
 }
-
 function cadastrarVeiculo() {
-    const placa  = document.getElementById('busPlaca').value.toUpperCase().trim();
-    const numero = document.getElementById('busNumero').value.trim();
-    if (!placa || !numero) return alert("Placa e número são obrigatórios.");
-    db.ref('frota/' + numero).set({ placa, numero, status: 'Disponível', motoristaAtual: '', matriculaAtual: '' });
-    ['busPlaca','busNumero'].forEach(id => document.getElementById(id).value = '');
+    const placa=document.getElementById('busPlaca').value.toUpperCase().trim();
+    const numero=document.getElementById('busNumero').value.trim();
+    if (!placa||!numero) return alert("Placa e número são obrigatórios.");
+    db.ref('frota/'+numero).set({placa,numero,status:'Disponível',motoristaAtual:'',matriculaAtual:''});
+    ['busPlaca','busNumero'].forEach(id=>document.getElementById(id).value='');
 }
-
 function cadastrarMecanicoNovo() {
-    const nome = document.getElementById('mecNome').value.trim();
-    const mat  = document.getElementById('mecMatricula').value.trim();
-    if (!nome || !mat) return alert("Nome e matrícula são obrigatórios.");
-    db.ref('cadastro_mecanicos/' + mat).set({ nome, matricula: mat, cpf: document.getElementById('mecCPF').value.trim() });
-    ['mecNome','mecMatricula','mecCPF'].forEach(id => document.getElementById(id).value = '');
+    const nome=document.getElementById('mecNome').value.trim();
+    const mat=document.getElementById('mecMatricula').value.trim();
+    if (!nome||!mat) return alert("Nome e matrícula são obrigatórios.");
+    db.ref('cadastro_mecanicos/'+mat).set({nome,matricula:mat,cpf:document.getElementById('mecCPF').value.trim()});
+    ['mecNome','mecMatricula','mecCPF'].forEach(id=>document.getElementById(id).value='');
 }
-
 async function buscarEndereco() {
-    const cep = document.getElementById('baseCEP').value.replace(/\D/g,'');
-    if (cep.length !== 8) return;
+    const cep=document.getElementById('baseCEP').value.replace(/\D/g,'');
+    if (cep.length!==8) return;
     try {
-        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const data = await res.json();
-        if (!data.erro) {
-            document.getElementById('baseRua').value    = data.logradouro;
-            document.getElementById('baseCidade').value = data.localidade;
-            document.getElementById('baseUF').value     = data.uf;
-        }
-    } catch(e) {}
+        const res=await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data=await res.json();
+        if (!data.erro) { document.getElementById('baseRua').value=data.logradouro; document.getElementById('baseCidade').value=data.localidade; document.getElementById('baseUF').value=data.uf; }
+    } catch(e){}
 }
-
 async function cadastrarBaseNova() {
-    const nome   = document.getElementById('baseNomeInput').value.trim();
-    const rua    = document.getElementById('baseRua').value.trim();
-    const num    = document.getElementById('baseNum').value.trim();
-    const cidade = document.getElementById('baseCidade').value.trim();
-    const uf     = document.getElementById('baseUF').value.trim();
-    const tel    = document.getElementById('baseTelInput').value.trim();
-    if (!nome || !rua) return alert("Nome e Rua são obrigatórios!");
-    const btn = document.getElementById('btnSalvarBase');
-    btn.disabled = true; btn.innerText = "Localizando...";
+    const nome=document.getElementById('baseNomeInput').value.trim();
+    const rua=document.getElementById('baseRua').value.trim();
+    const num=document.getElementById('baseNum').value.trim();
+    const cidade=document.getElementById('baseCidade').value.trim();
+    const uf=document.getElementById('baseUF').value.trim();
+    const tel=document.getElementById('baseTelInput').value.trim();
+    if (!nome||!rua) return alert("Nome e Rua são obrigatórios!");
+    const btn=document.getElementById('btnSalvarBase');
+    btn.disabled=true; btn.innerText="Localizando...";
     try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(`${rua},${num},${cidade},Brazil`)}`);
-        const geo = await res.json();
-        const lat = geo.length > 0 ? parseFloat(geo[0].lat) : 0;
-        const lng = geo.length > 0 ? parseFloat(geo[0].lon) : 0;
-        db.ref('cadastro_bases').push({ nome, rua, num, cidade, uf, tel, lat, lng });
+        const res=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(`${rua},${num},${cidade},Brazil`)}`);
+        const geo=await res.json();
+        db.ref('cadastro_bases').push({nome,rua,num,cidade,uf,tel,lat:geo.length>0?parseFloat(geo[0].lat):0,lng:geo.length>0?parseFloat(geo[0].lon):0});
         alert("Base salva!");
-        ['baseNomeInput','baseCEP','baseRua','baseNum','baseCidade','baseUF','baseTelInput'].forEach(id => document.getElementById(id).value='');
-    } catch(e) { alert("Erro na localização."); }
-    btn.disabled = false; btn.innerText = "SALVAR BASE";
+        ['baseNomeInput','baseCEP','baseRua','baseNum','baseCidade','baseUF','baseTelInput'].forEach(id=>document.getElementById(id).value='');
+    } catch(e){alert("Erro na localização.");}
+    btn.disabled=false; btn.innerText="SALVAR BASE";
 }
-
 function vincularMecanicoABase() {
-    const mat  = document.getElementById('selectMecVinculo').value;
-    const base = document.getElementById('selectBaseVinculo').value;
-    if (!mat || !base) return alert("Selecione mecânico e base.");
-    db.ref('cadastro_mecanicos/' + mat).once('value', s => {
-        db.ref('vinculos_equipe/' + mat).set({ nomeMec: s.val().nome, matriculaMec: mat, baseNome: base });
-    });
+    const mat=document.getElementById('selectMecVinculo').value;
+    const base=document.getElementById('selectBaseVinculo').value;
+    if (!mat||!base) return alert("Selecione mecânico e base.");
+    db.ref('cadastro_mecanicos/'+mat).once('value',s=>{ db.ref('vinculos_equipe/'+mat).set({nomeMec:s.val().nome,matriculaMec:mat,baseNome:base}); });
 }
-
 function vincularMotoristaOnibus() {
-    const num = document.getElementById('selectOnibusVinculo').value;
-    const mat = document.getElementById('selectMotoristaVinculo').value;
-    if (!num || !mat) return alert("Selecione ônibus e motorista.");
-    db.ref('motoristas/' + mat).once('value', s => {
-        db.ref('frota/' + num).update({ motoristaAtual: s.val()?.nome || '', matriculaAtual: mat, status: 'Em Operação', turno_inicio: firebase.database.ServerValue.TIMESTAMP });
-        alert(`Motorista ${s.val()?.nome} vinculado ao ônibus ${num}!`);
-    });
+    const num=document.getElementById('selectOnibusVinculo').value;
+    const mat=document.getElementById('selectMotoristaVinculo').value;
+    if (!num||!mat) return alert("Selecione ônibus e motorista.");
+    db.ref('motoristas/'+mat).once('value',s=>{ db.ref('frota/'+num).update({motoristaAtual:s.val()?.nome||'',matriculaAtual:mat,status:'Em Operação',turno_inicio:firebase.database.ServerValue.TIMESTAMP}); alert(`Motorista ${s.val()?.nome} vinculado!`); });
 }
-
 function desvincularMotoristaOnibus() {
-    const num = document.getElementById('selectOnibusVinculo').value;
+    const num=document.getElementById('selectOnibusVinculo').value;
     if (!num) return alert("Selecione o ônibus.");
-    if (confirm(`Desvincular motorista do ônibus ${num}?`)) {
-        db.ref('frota/' + num).update({ motoristaAtual: '', matriculaAtual: '', status: 'Disponível', turno_inicio: null });
-    }
+    if (confirm(`Desvincular motorista do ônibus ${num}?`)) db.ref('frota/'+num).update({motoristaAtual:'',matriculaAtual:'',status:'Disponível',turno_inicio:null});
 }
 
-// ════════════════════════════════════════════════════
-//  DESPACHO
-// ════════════════════════════════════════════════════
+// ════ DESPACHO ════
 function abrirModalSocorro(id) {
-    document.getElementById('modalChamadoId').value = id;
-    db.ref('cadastro_bases').once('value', s => {
-        let opt = "";
-        s.forEach(b => { opt += `<option value="${b.val().nome}">${b.val().nome}</option>`; });
-        document.getElementById('modalSelectBase').innerHTML = opt;
-        new bootstrap.Modal(document.getElementById('modalSocorro')).show();
-    });
+    document.getElementById('modalChamadoId').value=id;
+    db.ref('cadastro_bases').once('value',s=>{ let opt=""; s.forEach(b=>{opt+=`<option value="${b.val().nome}">${b.val().nome}</option>`;}); document.getElementById('modalSelectBase').innerHTML=opt; new bootstrap.Modal(document.getElementById('modalSocorro')).show(); });
 }
-
 async function confirmarEnvioSocorro() {
-    const id = document.getElementById('modalChamadoId').value;
-    await db.ref('chamados/' + id).update({
-        status: 'Socorro a Caminho', status_passo: 2,
-        resposta_base:     document.getElementById('modalSelectBase').value,
-        resposta_previsao: document.getElementById('modalPrevisao').value,
-        resposta_obs:      document.getElementById('modalObs').value
-    });
+    const id=document.getElementById('modalChamadoId').value;
+    await db.ref('chamados/'+id).update({status:'Socorro a Caminho',status_passo:2,resposta_base:document.getElementById('modalSelectBase').value,resposta_previsao:document.getElementById('modalPrevisao').value,resposta_obs:document.getElementById('modalObs').value});
     bootstrap.Modal.getInstance(document.getElementById('modalSocorro')).hide();
 }
 
-// ════════════════════════════════════════════════════
-//  RELATÓRIOS
-// ════════════════════════════════════════════════════
+// ════ RELATÓRIOS ════
 function carregarRelatorios() {
-    db.ref('historico').on('value', snap => {
-        todosRelatorios = [];
-        snap.forEach(child => todosRelatorios.push({ key: child.key, ...child.val() }));
-        todosRelatorios.reverse();
-        renderizarRelatorios(todosRelatorios);
-    });
+    db.ref('historico').on('value',snap=>{ todosRelatorios=[]; snap.forEach(child=>todosRelatorios.push({key:child.key,...child.val()})); todosRelatorios.reverse(); renderizarRelatorios(todosRelatorios); });
 }
-
 function renderizarRelatorios(lista) {
-    const tbody = document.getElementById('tabelaRelatorios');
-    tbody.innerHTML = "";
-    if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted">Nenhum registro encontrado.</td></tr>';
-        atualizarResumo([]);
-        return;
-    }
-    lista.forEach(r => {
-        const dataInicio = new Date(r.timestamp);
-        const dataFim    = r.finalizado_em ? new Date(r.finalizado_em) : null;
-        const duracao    = dataFim ? Math.round((dataFim - dataInicio) / 60000) + ' min' : '---';
-        tbody.innerHTML += `
-            <tr>
-                <td><div class="fw-bold small">${dataInicio.toLocaleDateString('pt-BR')}</div><div class="text-muted small">${dataInicio.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div></td>
-                <td><span class="badge bg-light text-dark border">#${r.protocolo||'---'}</span></td>
-                <td><strong>${r.numero}</strong></td>
-                <td><small class="text-muted" style="font-family:monospace">${r.placa||'---'}</small></td>
-                <td>${r.motorista}</td>
-                <td><span class="text-primary fw-bold">${r.mecanico_responsavel||'Mecânico Base'}</span></td>
-                <td><small>${r.problema}</small></td>
-                <td><small class="text-muted">${r.local||'---'}</small></td>
-                <td><span class="badge bg-info text-dark">${duracao}</span></td>
-                <td class="no-print">${r.midia ? `<a href="${r.midia}" target="_blank"><img src="${r.midia}" style="width:40px;height:40px;object-fit:cover;border-radius:6px"></a>` : '<span class="text-muted">—</span>'}</td>
-                <td><span class="badge bg-success">RESOLVIDO</span></td>
-            </tr>`;
+    const tbody=document.getElementById('tabelaRelatorios'); tbody.innerHTML="";
+    if (!lista.length) { tbody.innerHTML='<tr><td colspan="11" class="text-center py-4 text-muted">Nenhum registro encontrado.</td></tr>'; atualizarResumo([]); return; }
+    lista.forEach(r=>{
+        const di=new Date(r.timestamp); const df=r.finalizado_em?new Date(r.finalizado_em):null;
+        const dur=df?Math.round((df-di)/60000)+' min':'---';
+        tbody.innerHTML+=`<tr>
+            <td><div class="fw-bold small">${di.toLocaleDateString('pt-BR')}</div><div class="text-muted small">${di.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div></td>
+            <td><span class="badge bg-light text-dark border">#${r.protocolo||'---'}</span></td>
+            <td><strong>${r.numero}</strong></td>
+            <td><small class="text-muted" style="font-family:monospace">${r.placa||'---'}</small></td>
+            <td>${r.motorista}</td>
+            <td><span class="text-primary fw-bold">${r.mecanico_responsavel||'Mecânico Base'}</span></td>
+            <td><small>${r.problema}</small></td>
+            <td><small class="text-muted">${r.local||'---'}</small></td>
+            <td><span class="badge bg-info text-dark">${dur}</span></td>
+            <td class="no-print">${r.midia?`<a href="${r.midia}" target="_blank"><img src="${r.midia}" style="width:40px;height:40px;object-fit:cover;border-radius:6px"></a>`:'<span class="text-muted">—</span>'}</td>
+            <td><span class="badge bg-success">RESOLVIDO</span></td>
+        </tr>`;
     });
     atualizarResumo(lista);
 }
-
 function atualizarResumo(lista) {
-    document.getElementById('rel-total').innerText = lista.length;
-    if (!lista.length) { ['rel-tempo-medio','rel-problema-comum','rel-bus-mais'].forEach(id => document.getElementById(id).innerText='---'); return; }
-    const tempos = lista.filter(r => r.finalizado_em && r.timestamp).map(r => Math.round((r.finalizado_em - r.timestamp)/60000));
-    document.getElementById('rel-tempo-medio').innerText = tempos.length ? Math.round(tempos.reduce((a,b)=>a+b,0)/tempos.length)+'min' : '---';
-    const contProb = {}; lista.forEach(r => { contProb[r.problema]=(contProb[r.problema]||0)+1; });
-    const maisComum = Object.entries(contProb).sort((a,b)=>b[1]-a[1])[0];
-    document.getElementById('rel-problema-comum').innerText = maisComum ? maisComum[0] : '---';
-    const contBus = {}; lista.forEach(r => { contBus[r.numero]=(contBus[r.numero]||0)+1; });
-    const maisBus = Object.entries(contBus).sort((a,b)=>b[1]-a[1])[0];
-    document.getElementById('rel-bus-mais').innerText = maisBus ? `Ônibus ${maisBus[0]} (${maisBus[1]}x)` : '---';
+    document.getElementById('rel-total').innerText=lista.length;
+    if (!lista.length) { ['rel-tempo-medio','rel-problema-comum','rel-bus-mais'].forEach(id=>document.getElementById(id).innerText='---'); return; }
+    const tempos=lista.filter(r=>r.finalizado_em&&r.timestamp).map(r=>Math.round((r.finalizado_em-r.timestamp)/60000));
+    document.getElementById('rel-tempo-medio').innerText=tempos.length?Math.round(tempos.reduce((a,b)=>a+b,0)/tempos.length)+'min':'---';
+    const contProb={}; lista.forEach(r=>{contProb[r.problema]=(contProb[r.problema]||0)+1;});
+    const maisComum=Object.entries(contProb).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById('rel-problema-comum').innerText=maisComum?maisComum[0]:'---';
+    const contBus={}; lista.forEach(r=>{contBus[r.numero]=(contBus[r.numero]||0)+1;});
+    const maisBus=Object.entries(contBus).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById('rel-bus-mais').innerText=maisBus?`Ônibus ${maisBus[0]} (${maisBus[1]}x)`:'---';
 }
-
 function aplicarFiltros() {
-    let filtrado = [...todosRelatorios];
-    const di = document.getElementById('filtroDataInicio').value;
-    const df = document.getElementById('filtroDataFim').value;
-    const pb = document.getElementById('filtroProblema').value;
-    if (di) filtrado = filtrado.filter(r => new Date(r.timestamp) >= new Date(di));
-    if (df) filtrado = filtrado.filter(r => new Date(r.timestamp) <= new Date(df+'T23:59:59'));
-    if (pb) filtrado = filtrado.filter(r => r.problema === pb);
-    renderizarRelatorios(filtrado);
+    let f=[...todosRelatorios];
+    const di=document.getElementById('filtroDataInicio').value; const df=document.getElementById('filtroDataFim').value; const pb=document.getElementById('filtroProblema').value;
+    if (di) f=f.filter(r=>new Date(r.timestamp)>=new Date(di));
+    if (df) f=f.filter(r=>new Date(r.timestamp)<=new Date(df+'T23:59:59'));
+    if (pb) f=f.filter(r=>r.problema===pb);
+    renderizarRelatorios(f);
 }
-
-function limparFiltros() {
-    ['filtroDataInicio','filtroDataFim','filtroProblema'].forEach(id => document.getElementById(id).value='');
-    renderizarRelatorios(todosRelatorios);
-}
-
+function limparFiltros() { ['filtroDataInicio','filtroDataFim','filtroProblema'].forEach(id=>document.getElementById(id).value=''); renderizarRelatorios(todosRelatorios); }
 function exportarCSV() {
-    if (!todosRelatorios.length) return alert("Nenhum dado para exportar.");
-    const linhas = [['Data','Protocolo','Ônibus','Placa','Motorista','Mecânico','Problema','Local','Duração','Status']];
-    todosRelatorios.forEach(r => {
-        const data = new Date(r.timestamp).toLocaleString('pt-BR');
-        const dur  = r.finalizado_em ? Math.round((r.finalizado_em-r.timestamp)/60000)+'min' : '---';
-        linhas.push([data, r.protocolo||'', r.numero, r.placa||'', r.motorista, r.mecanico_responsavel||'', r.problema, r.local||'', dur, 'RESOLVIDO']);
-    });
-    const csv  = linhas.map(l => l.map(c => `"${c}"`).join(',')).join('\n');
-    const blob = new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href  = URL.createObjectURL(blob);
-    link.download = `relatorio_aguia_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.csv`;
-    link.click();
+    if (!todosRelatorios.length) return alert("Nenhum dado.");
+    const linhas=[['Data','Protocolo','Ônibus','Placa','Motorista','Mecânico','Problema','Local','Duração','Status']];
+    todosRelatorios.forEach(r=>{ const data=new Date(r.timestamp).toLocaleString('pt-BR'); const dur=r.finalizado_em?Math.round((r.finalizado_em-r.timestamp)/60000)+'min':'---'; linhas.push([data,r.protocolo||'',r.numero,r.placa||'',r.motorista,r.mecanico_responsavel||'',r.problema,r.local||'',dur,'RESOLVIDO']); });
+    const csv=linhas.map(l=>l.map(c=>`"${c}"`).join(',')).join('\n');
+    const link=document.createElement('a'); link.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'})); link.download=`relatorio_aguia_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.csv`; link.click();
 }
+function imprimirRelatorio() { document.getElementById('data-impressao').innerText=new Date().toLocaleString('pt-BR'); document.getElementById('print-header').style.display='block'; window.print(); document.getElementById('print-header').style.display='none'; }
 
-function imprimirRelatorio() {
-    document.getElementById('data-impressao').innerText = new Date().toLocaleString('pt-BR');
-    document.getElementById('print-header').style.display = 'block';
-    window.print();
-    document.getElementById('print-header').style.display = 'none';
-}
-
-// ════════════════════════════════════════════════════
-//  LISTENERS DE INTERFACE
-// ════════════════════════════════════════════════════
-db.ref('motoristas').on('value', s => {
-    let h=''; let opt='<option value="">Selecione motorista...</option>'; let c=0;
-    s.forEach(child => {
-        c++; const m = child.val();
-        h += `<tr><td>${m.matricula}</td><td>${m.nome}</td><td>${m.cpf||'---'}</td><td><span class="badge bg-secondary" id="status-mot-${m.matricula}">---</span></td><td><button onclick="db.ref('motoristas/${child.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`;
-        opt += `<option value="${m.matricula}">${m.nome} (${m.matricula})</option>`;
-    });
-    document.getElementById('tabelaMotoristas').innerHTML = h;
-    document.getElementById('selectMotoristaVinculo').innerHTML = opt;
-    document.getElementById('countMotoristas').innerText = c;
-});
-
-db.ref('heartbeats').on('value', s => {
-    s.forEach(child => {
-        const h = child.val();
-        const el = document.getElementById('status-mot-' + (h.matricula || ''));
-        if (el) {
-            const online = (Date.now() - h.timestamp) < 90000;
-            el.className = `badge ${online ? 'bg-success' : 'bg-secondary'}`;
-            el.innerText = online ? 'Online' : 'Offline';
-        }
-    });
-});
-
-db.ref('cadastro_mecanicos').on('value', s => {
-    let h=''; let opt='<option value="">Selecione mecânico...</option>'; let c=0;
-    s.forEach(child => {
-        c++; const m = child.val();
-        h += `<tr><td>${m.matricula}</td><td>${m.nome}</td><td>${m.cpf||'---'}</td><td><span class="badge bg-light text-dark border" id="base-mec-${m.matricula}">---</span></td><td><button onclick="db.ref('cadastro_mecanicos/${child.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`;
-        opt += `<option value="${m.matricula}">${m.nome}</option>`;
-    });
-    document.getElementById('listaMecanicosCadastrados').innerHTML = h;
-    document.getElementById('selectMecVinculo').innerHTML = opt;
-});
-
-db.ref('cadastro_bases').on('value', s => {
-    let h=''; let opt='<option value="">Selecione a base...</option>'; let c=0;
-    s.forEach(child => {
-        c++; const b = child.val();
-        h += `<tr><td><strong>${b.nome}</strong></td><td>${b.cidade||'---'}</td><td>${b.tel||'---'}</td><td>${b.lat?`<span class="text-success small"><i class="fas fa-check-circle me-1"></i>${parseFloat(b.lat).toFixed(4)}</span>`:'<span class="text-muted small">Não geoloc.</span>'}</td><td><button onclick="db.ref('cadastro_bases/${child.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`;
-        opt += `<option value="${b.nome}">${b.nome}</option>`;
-    });
-    document.getElementById('listaBasesCadastradas').innerHTML = h;
-    document.getElementById('selectBaseVinculo').innerHTML = opt;
-    document.getElementById('countBases').innerText = c;
-});
-
-db.ref('vinculos_equipe').on('value', s => {
-    let h = '';
-    s.forEach(child => {
-        const v = child.val();
-        h += `<tr><td>${v.nomeMec}</td><td>${v.matriculaMec}</td><td><span class="badge bg-primary">${v.baseNome}</span></td><td><button onclick="db.ref('vinculos_equipe/${child.key}').remove()" class="btn btn-sm text-danger">Remover</button></td></tr>`;
-        const el = document.getElementById('base-mec-' + v.matriculaMec);
-        if (el) el.innerText = v.baseNome;
-    });
-    document.getElementById('tabelaVinculosAtivos').innerHTML = h;
-});
-
-db.ref('frota').on('value', s => {
-    let h=''; let optOnibus='<option value="">Selecione o ônibus...</option>';
-    s.forEach(child => {
-        const v = child.val();
-        optOnibus += `<option value="${v.numero}">Ônibus ${v.numero} — ${v.placa}</option>`;
-        h += `<tr>
-            <td><strong>${v.numero}</strong></td><td>${v.placa}</td>
-            <td><span class="badge ${v.status==='Em Operação'?'bg-primary':v.status==='Quebrado'?'bg-danger':'bg-secondary'}">${v.status}</span></td>
-            <td>${v.motoristaAtual||'<span class="text-muted">---</span>'}</td>
-            <td><span class="badge bg-secondary" id="online-frota-${v.numero}">---</span></td>
-            <td><span class="text-muted small" id="pos-frota-${v.numero}">Aguardando...</span></td>
-            <td><button onclick="db.ref('frota/${child.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td>
-        </tr>`;
-    });
-    document.getElementById('tabelaFrotaInterna').innerHTML = h;
-    document.getElementById('selectOnibusVinculo').innerHTML = optOnibus;
-});
-
-// Atualiza badges de online na tabela de frota
-db.ref('heartbeats').on('value', s => {
-    s.forEach(child => {
-        const h = child.val();
-        const num = h.numVeiculo || child.key;
-        const online = (Date.now() - h.timestamp) < 90000;
-        const elOnline = document.getElementById('online-frota-' + num);
-        const elPos    = document.getElementById('pos-frota-' + num);
-        if (elOnline) { elOnline.className = `badge ${online?'bg-success':'bg-secondary'}`; elOnline.innerText = online?'Online':'Offline'; }
-        if (elPos && h.lat) { elPos.innerText = `${parseFloat(h.lat).toFixed(4)}, ${parseFloat(h.lng).toFixed(4)}`; elPos.className = 'text-success small'; }
-    });
-});
+// ════ LISTENERS ════
+db.ref('motoristas').on('value',s=>{ let h=''; let opt='<option value="">Selecione motorista...</option>'; let c=0; s.forEach(child=>{ c++; const m=child.val(); h+=`<tr><td>${m.matricula}</td><td>${m.nome}</td><td>${m.cpf||'---'}</td><td><span class="badge bg-secondary" id="status-mot-${m.matricula}">---</span></td><td><button onclick="db.ref('motoristas/${child.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`; opt+=`<option value="${m.matricula}">${m.nome} (${m.matricula})</option>`; }); document.getElementById('tabelaMotoristas').innerHTML=h; document.getElementById('selectMotoristaVinculo').innerHTML=opt; document.getElementById('countMotoristas').innerText=c; });
+db.ref('heartbeats').on('value',s=>{ s.forEach(child=>{ const h=child.val(); const el=document.getElementById('status-mot-'+(h.matricula||'')); if (el) { const online=(Date.now()-h.timestamp)<90000; el.className=`badge ${online?'bg-success':'bg-secondary'}`; el.innerText=online?'Online':'Offline'; } }); });
+db.ref('cadastro_mecanicos').on('value',s=>{ let h=''; let opt='<option value="">Selecione mecânico...</option>'; s.forEach(child=>{ const m=child.val(); h+=`<tr><td>${m.matricula}</td><td>${m.nome}</td><td>${m.cpf||'---'}</td><td><span class="badge bg-light text-dark border" id="base-mec-${m.matricula}">---</span></td><td><button onclick="db.ref('cadastro_mecanicos/${child.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`; opt+=`<option value="${m.matricula}">${m.nome}</option>`; }); document.getElementById('listaMecanicosCadastrados').innerHTML=h; document.getElementById('selectMecVinculo').innerHTML=opt; });
+db.ref('cadastro_bases').on('value',s=>{ let h=''; let opt='<option value="">Selecione a base...</option>'; let c=0; s.forEach(child=>{ c++; const b=child.val(); h+=`<tr><td><strong>${b.nome}</strong></td><td>${b.cidade||'---'}</td><td>${b.tel||'---'}</td><td>${b.lat?`<span class="text-success small"><i class="fas fa-check-circle me-1"></i>${parseFloat(b.lat).toFixed(4)}</span>`:'<span class="text-muted small">Não geoloc.</span>'}</td><td><button onclick="db.ref('cadastro_bases/${child.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`; opt+=`<option value="${b.nome}">${b.nome}</option>`; }); document.getElementById('listaBasesCadastradas').innerHTML=h; document.getElementById('selectBaseVinculo').innerHTML=opt; document.getElementById('countBases').innerText=c; });
+db.ref('vinculos_equipe').on('value',s=>{ let h=''; s.forEach(child=>{ const v=child.val(); h+=`<tr><td>${v.nomeMec}</td><td>${v.matriculaMec}</td><td><span class="badge bg-primary">${v.baseNome}</span></td><td><button onclick="db.ref('vinculos_equipe/${child.key}').remove()" class="btn btn-sm text-danger">Remover</button></td></tr>`; const el=document.getElementById('base-mec-'+v.matriculaMec); if (el) el.innerText=v.baseNome; }); document.getElementById('tabelaVinculosAtivos').innerHTML=h; });
+db.ref('frota').on('value',s=>{ let h=''; let optOnibus='<option value="">Selecione o ônibus...</option>'; s.forEach(child=>{ const v=child.val(); optOnibus+=`<option value="${v.numero}">Ônibus ${v.numero} — ${v.placa}</option>`; h+=`<tr><td><strong>${v.numero}</strong></td><td>${v.placa}</td><td><span class="badge ${v.status==='Em Operação'?'bg-primary':v.status==='Quebrado'?'bg-danger':'bg-secondary'}">${v.status}</span></td><td>${v.motoristaAtual||'<span class="text-muted">---</span>'}</td><td><span class="badge bg-secondary" id="online-frota-${v.numero}">---</span></td><td><span class="text-muted small" id="pos-frota-${v.numero}">Aguardando...</span></td><td><button onclick="db.ref('frota/${child.key}').remove()" class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button></td></tr>`; }); document.getElementById('tabelaFrotaInterna').innerHTML=h; document.getElementById('selectOnibusVinculo').innerHTML=optOnibus; });
+db.ref('heartbeats').on('value',s=>{ s.forEach(child=>{ const h=child.val(); const num=h.numVeiculo||child.key; const online=(Date.now()-h.timestamp)<90000; const elO=document.getElementById('online-frota-'+num); const elP=document.getElementById('pos-frota-'+num); if (elO){elO.className=`badge ${online?'bg-success':'bg-secondary'}`;elO.innerText=online?'Online':'Offline';} if (elP&&h.lat){elP.innerText=`${parseFloat(h.lat).toFixed(4)}, ${parseFloat(h.lng).toFixed(4)}`;elP.className='text-success small';} }); });
 </script>
 </body>
 </html>
